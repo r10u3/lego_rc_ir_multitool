@@ -1,0 +1,7 @@
+{
+    "project_folder" : "/home/pi/Projects/lego_rc_0_0_2",
+    "rc_mode" : "SGL",
+    "maps_config_file" : "maps/maps_config.json",
+    "system_mode" : "ir_ctl",
+    "gpio_pin" : 18
+}

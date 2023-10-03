@@ -1,0 +1,29 @@
+[[protocols]]
+name = "combo_direct_ch1_26ns"
+protocol = "pulse_distance"
+margin = 200
+header_pulse = 158
+header_space = 1026
+bit_pulse = 158
+bit_0_space = 263
+bit_1_space = 553
+trailer_pulse = 158
+bits = 16
+
+[protocols.scancodes]
+0x010E = "FLT_FLT"
+0x011F = "FWD_FLT"
+0x012C = "REV_FLT"
+0x013D = "BRK_FLT"
+0x014A = "FLT_FWD"
+0x015B = "FWD_FWD"
+0x0168 = "REV_FWD"
+0x0179 = "BRK_FWD"
+0x0186 = "FLT_REV"
+0x0197 = "FWD_REV"
+0x01A4 = "REV_REV"
+0x01B5 = "BRK_REV"
+0x01C2 = "FLT_BRK"
+0x01D3 = "FWD_BRK"
+0x01E0 = "REV_BRK"
+0x01F1 = "BRK_BRK"

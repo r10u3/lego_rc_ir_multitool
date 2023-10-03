@@ -1,0 +1,6 @@
+{
+    "space" : ["red" , "BRK"],
+    "up"    : ["red" , "FWD"],
+    "down"  : ["red" , "REV"],
+    "l"     : ["red" , "FLT"]
+}
