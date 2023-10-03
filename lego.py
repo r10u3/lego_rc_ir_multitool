@@ -61,7 +61,7 @@ else:
 ## Set up KEYBOARD
 import keypad
 button_maps_file_name = MAPS_CONFIG['button_maps']['folder'] + '/' + MAPS_CONFIG['button_maps'][rc_mode]
-kb = keypad.Keyboard(button_maps_file_name, rc_mode)
+kb = keypad.Keypad(button_maps_file_name)
 
 def on_press(key: str) -> bool:
     print(f'Key {key} pressed')
