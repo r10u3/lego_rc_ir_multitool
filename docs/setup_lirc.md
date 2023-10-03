@@ -25,7 +25,7 @@ sudo apt-get install lirc
 
 ### 2. Edit <code>/etc/lirc/lirc_options.conf</code>
 ```
-$ sudo nano /etc/lirc/lirc_options.conf
+sudo nano /etc/lirc/lirc_options.conf
 ```
 ```
 driver = default
