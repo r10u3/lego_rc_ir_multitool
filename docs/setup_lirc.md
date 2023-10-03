@@ -1,4 +1,16 @@
-# Setup LIRC
+# LIRC
+## What is LIRC?
+>LIRC is a package that allows you to decode and send infra-red signals of many (but not all) commonly used remote controls.
+>
+>Recent linux kernels makes it possible to use some IR remote controls as regular input devices. Sometimes this makes LIRC redundant. However, LIRC offers more flexibility and functionality and is still the right tool in a lot of scenarios.
+>
+>The most important part of LIRC is the lircd daemon which decodes IR signals received by the device drivers and provides the information on a socket. It also accepts commands for IR signals to be sent if the hardware supports this.
+>
+> [lirc.org](https://www.lirc.org/)
+
+In our case, we use LIRC to send commands via a PWM GPIO pin and custom hardware (see [rc_emitter.md](rc_emitter.md))
+
+## Setup LIRC
 > **Notes:**
 >
 > [LIRC man pages](https://www.lirc.org/html/)
