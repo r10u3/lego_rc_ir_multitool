@@ -1,48 +1,54 @@
-NAME = 'Combo_Direct'
+class Combo_Direct:
+    
+    def __init__(self) -> None:
+        pass
 
-SPEEDS = {
-    0 : 'FLT',
-    7 : 'FWD',
-    -99 : 'BRK',
-    -7 : 'REV',
-}
+    NAME = 'Combo_Direct'
 
-# holds speeds
-state = {
-            'red'  : 0 , 
-            'blue' : 0
-        }
+    SPEEDS = {
+        0 : 'FLT',
+        7 : 'FWD',
+        -99 : 'BRK',
+        -7 : 'REV',
+    }
 
-def get_keycode(speed_red: int , speed_blue: int) -> str:
-    global SPEEDS
-    if (speed_red not in SPEEDS or speed_blue not in SPEEDS):
-        return 'ERROR: one of the speeds not in range'
-    keycode = SPEEDS[speed_red]+'_'+SPEEDS[speed_blue]
-    return keycode
+    # holds speeds
+    state = {
+                'red'  : 0 , 
+                'blue' : 0
+            }
+    
+    def __init__(self) -> None:
+        pass
 
-def set_speed(color: str , speed: int) -> str:
-    global state
-    if (speed == -99):
-        state[color] = -99
-        keycode = get_keycode(state['red'] , state['blue'])
-        state[color] = 0
-    else:
-        state[color] = speed
-        keycode = get_keycode(state['red'] , state['blue'])
-    return keycode
+    def get_keycode(self , speed_red: int , speed_blue: int) -> str:
+        if (speed_red not in self.SPEEDS or speed_blue not in self.SPEEDS):
+            return 'ERROR: one of the speeds not in range'
+        keycode = self.SPEEDS[speed_red]+'_'+self.SPEEDS[speed_blue]
+        return keycode
 
-def action(mapped_key) -> str:
-    color = mapped_key[0]
-    action= mapped_key[1]
-    if action == 'BRK':
-        data = set_speed(color , -99)
-    elif action == 'FWD':
-        data = set_speed(color , +7)
-    elif action == 'REV':
-        data = set_speed(color , -7)
-    elif action == 'FLT':
-        data = set_speed(color , 0)
-    else:
-        error = f'Action {action} not recognized'
-        raise Exception(error)
-    return data
+    def set_speed(self , color: str , speed: int) -> str:
+        if (speed == -99):
+            self.state[color] = -99
+            keycode = self.get_keycode(self.state['red'] , self.state['blue'])
+            self.state[color] = 0
+        else:
+            self.state[color] = speed
+            keycode = self.get_keycode(self.state['red'] , self.state['blue'])
+        return keycode
+
+    def action(self , mapped_key) -> str:
+        color = mapped_key[0]
+        action= mapped_key[1]
+        if action == 'BRK':
+            data = self.set_speed(color , -99)
+        elif action == 'FWD':
+            data = self.set_speed(color , +7)
+        elif action == 'REV':
+            data = self.set_speed(color , -7)
+        elif action == 'FLT':
+            data = self.set_speed(color , 0)
+        else:
+            error = f'Action {action} not recognized'
+            raise Exception(error)
+        return data

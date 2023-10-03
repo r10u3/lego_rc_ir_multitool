@@ -1,6 +1,6 @@
 import subprocess
 
-class IR_Transmitter:
+class IR_ir_ctl:
     def __init__(self: any , keymap_file_name: str, keymap_folder_name: str,  gpio_pin: str) -> None:
         self.keymap_file_name = keymap_folder_name + '/' + keymap_file_name
         print(f'IR_Transmitter: ir-ctl: {self.keymap_file_name}')

@@ -1,6 +1,6 @@
 import piir
 
-class IR_Transmitter:
+class IR_PiIR:
     def __init__(self: any , keymap_file_name: str, keymap_folder_name: str,  gpio_pin: str) -> None:
         keymap_file_with_path = keymap_folder_name + '/' + keymap_file_name
         self.REMOTE_TX = piir.Remote(keymap_file_with_path, gpio_pin)
