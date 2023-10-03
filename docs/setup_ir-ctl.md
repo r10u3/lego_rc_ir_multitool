@@ -16,7 +16,7 @@
 ### 1. Check if ir-ctl is installed by default.
 This command also lists all capabilities of the default device (most likely /dev/lirc0)
 ```
-$ ir-ctl -f
+ir-ctl -f
 ```
 <code>
 Receive features /dev/lirc0:
@@ -30,7 +30,7 @@ Send features /dev/lirc0:
 
 ### 2. Install <code>v4l-utils</code> if <code>ir-ctl</code> is not installed
 ```
-$ sudo apt-get install v4l-utils
+sudo apt-get install v4l-utils
 ```
 
 ## Test
