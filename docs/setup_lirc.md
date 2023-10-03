@@ -66,3 +66,37 @@ irw || true
 sleep 1
 done
 ```
+
+### 7. Copy LIRC Keymap Files to <code>/etc/lirc/lircd.conf.d/</code>
+LIRC expects all files to be located at /etc/lirc/lircd.conf.d/. 
+
+> **Notes:**
+>
+> Of course, you need to have the keymaps locally already. So perform this step after all files are copied or extracted on the Raspberry Pi.
+>
+> I use the default user <code>pi</code> and you need to change the <code>[project folder]</code> to its actual name.
+```
+$ sudo cp -r /home/pi/Projects/[project folder]/maps/keymaps/lirc /etc/lirc/lircd.conf.d/
+```
+We also hide <code>devinput.lircd.conf</code>. This is not necessary, but reduces bloat by loading less remotes 
+```
+$ sudo mv /etc/lirc/lircd.conf.d/devinput.lircd.conf /etc/lirc/lircd.conf.d/devinput.lircd.conf.dist
+```
+## Test
+### 1. Make sure lircd service is running
+```
+$ sudo systemctl status lirc.service
+```
+### 2. List all the available remotes.
+```
+irsend LIST "" ""
+```
+### 3. List all the available codes for a particular remote
+```
+irsend LIST "cmb_pwm_ch1" ""
+```
+### 4. Send a sample code
+```
+irsend SEND_ONCE cmb_pwm_ch1 FW2A_FW2B
+```
+
