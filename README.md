@@ -2,35 +2,19 @@
 <em>Last updated: 9/29/2023</em>
 ## Introduction
 
-This project is part of using a Raspberry Pi as a [Lego:tm: PowerFunctions](#legotm-protocol) controller. There are many tutorials that do something similar. Most use LIRC. Some are outdated.
+This project is part of using a Raspberry Pi as a [Lego:tm: PowerFunctions](#legotm-protocol) controller. 
 
-In this tutorial we use <a href="https://pypi.org/project/PiIR/">PiIR</a>.  PiIR is a remote control for Raspberry Pi. It is a client program for pigpio, a hardware-timed GPIO library.
+There are three IR tools that I found that work with Python and I use in this project:
+* LIRC
+* <code>ir-ctl</code>
+* PiIR
 
-## Preparation
+You can find information on how to set up the project in the docs section. Relevant documents are:
+- setup.md: shows the initial steps
+- setup_lirc.md: shows how to set up LIRC
+- setup_ir-ctl.md: shows how to set up <code>ir-ctl</code>
+- setup_piir: shows how to set up PiIR
 
-#### Install sshkeyboard
-> **Note:** Installation of Python packages take a while, so be patient.
-
-```
-sudo pip3 install sshkeyboard
-```
-
-#### Unload and decompress
-The file <code>Lego_RC_PiIR_0_0_1_beta.tar.gz</code> has all the packages included in this project. Unzip it to any folder and run
-```
-python app.py
-```
-
-#### Setup <code>/boot/conifig.txt</code>
-I have previously set up pin 18 as <code>pwm-ir-tx</code> in <code>/boot/config.txt</code>. I am not aware if this is necessary, I did it before I started with PiIR.
-```
-sudo nano /boot/config.txt
-``` 
-```
-# Uncomment this to enable infrared communication.
-#dtoverlay=gpio-ir,gpio_pin=17
-dtoverlay=pwm-ir-tx,gpio_pin=18
-```
 
 ## Simple Lego_PiIR API
 
