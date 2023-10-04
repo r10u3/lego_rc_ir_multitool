@@ -18,7 +18,7 @@ In our case, we use LIRC to send commands via a PWM GPIO pin and custom hardware
 > [Rich101101's Easy Setup IR Remote Control Using LIRC for the Raspberry PI (RPi)](https://www.instructables.com/Setup-IR-Remote-Control-Using-LIRC-for-the-Raspber/)
 
 
-### 1. Install LIRC if ir-ctl is not installed
+### 1. Install LIRC if it is not installed
 ```
 sudo apt-get install lirc
 ```
