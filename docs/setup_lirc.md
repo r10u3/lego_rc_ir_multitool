@@ -18,14 +18,14 @@ In our case, we use LIRC to send commands via a PWM GPIO pin and custom hardware
 > [Rich101101's Easy Setup IR Remote Control Using LIRC for the Raspberry PI (RPi)](https://www.instructables.com/Setup-IR-Remote-Control-Using-LIRC-for-the-Raspber/)
 
 
-### 1. Install LIRC if ir-ctl is not installed
+### 1. Install LIRC if it is not installed
 ```
-$ sudo apt-get install lirc
+sudo apt-get install lirc
 ```
 
 ### 2. Edit <code>/etc/lirc/lirc_options.conf</code>
 ```
-$ sudo nano /etc/lirc/lirc_options.conf
+sudo nano /etc/lirc/lirc_options.conf
 ```
 ```
 driver = default
@@ -34,26 +34,26 @@ device = /dev/lirc0
 
 ### 3. Start service and check
 ```
-$ sudo systemctl start lircd.socket lircd.service
+sudo systemctl start lircd.socket lircd.service
 ```
 ```
-$ sudo systemctl status lirc.service
+sudo systemctl status lirc.service
 ```
 
 ### 4. Reboot
 ```
-$ sudo reboot
+sudo reboot
 ```
 
 ### 5. Stop, start and check status of lircd
 ```
-$ sudo systemctl stop lircd.service
+sudo systemctl stop lircd.service
 ```
 ```
-$ sudo systemctl start lircd.service
+sudo systemctl start lircd.service
 ```
 ```
-$ sudo systemctl status lircd.service
+sudo systemctl status lircd.service
 ```
 
 ### 6. Create bash to keep irw alive
@@ -76,16 +76,16 @@ LIRC expects all files to be located at /etc/lirc/lircd.conf.d/.
 >
 > I use the default user <code>pi</code> and you need to change the <code>[project folder]</code> to its actual name.
 ```
-$ sudo cp -r /home/pi/Projects/[project folder]/maps/keymaps/lirc /etc/lirc/lircd.conf.d/
+sudo cp -r [project folder]/maps/keymaps/lirc /etc/lirc/lircd.conf.d/
 ```
 We also hide <code>devinput.lircd.conf</code>. This is not necessary, but reduces bloat by loading less remotes 
 ```
-$ sudo mv /etc/lirc/lircd.conf.d/devinput.lircd.conf /etc/lirc/lircd.conf.d/devinput.lircd.conf.dist
+sudo mv /etc/lirc/lircd.conf.d/devinput.lircd.conf /etc/lirc/lircd.conf.d/devinput.lircd.conf.dist
 ```
 ## Test
 ### 1. Make sure lircd service is running
 ```
-$ sudo systemctl status lirc.service
+sudo systemctl status lirc.service
 ```
 ### 2. List all the available remotes.
 ```
@@ -160,7 +160,7 @@ end remote
 
 ### 1. Install LIRC for python
 ```
-$ sudo pip3 install lirc
+sudo pip3 install lirc
 ```
 ### 2. LIRC API: Sending IR
 ```

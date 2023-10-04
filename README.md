@@ -2,81 +2,160 @@
 <em>Last updated: 9/29/2023</em>
 ## Introduction
 
-This project is part of using a Raspberry Pi as a [Lego:tm: PowerFunctions](#legotm-protocol) controller. There are many tutorials that do something similar. Most use LIRC. Some are outdated.
+This project is part of using a Raspberry Pi as a [Lego:tm: PowerFunctions](#legotm-protocol) controller. 
 
-In this tutorial we use <a href="https://pypi.org/project/PiIR/">PiIR</a>.  PiIR is a remote control for Raspberry Pi. It is a client program for pigpio, a hardware-timed GPIO library.
+There are three IR tools that I found that work with Python and I use in this project:
+* LIRC:
+  - LIRC is a package that allows you to decode and send infra-red signals of many (but not all) commonly used remote controls.
+  - Recent linux kernels makes it possible to use some IR remote controls as regular input devices. Sometimes this makes LIRC redundant. However, LIRC offers more flexibility and functionality and is still the right tool in a lot of scenarios.
+  - The most important part of LIRC is the lircd daemon which decodes IR signals received by the device drivers and provides the information on a socket. It also accepts commands for IR signals to be sent if the hardware supports this.
+  - [lirc.org](https://www.lirc.org/)
+* <code>ir-ctl</code>
+  - ir-ctl is a tool that allows one to list the features of a lirc device, set its options, receive raw IR, and send IR.
+  - IR can be sent as the keycode of a keymap, or using a scancode, or using raw IR.
+  - [<code>ir-ctl</code> - Man Page](https://www.mankier.com/1/ir-ctl)
+* PiIR
+   - PiIR is a client program for pigpio, the excellent hardware-timed GPIO library. Some code are taken from its sample program irrp.py.
+   - It records and plays IR remote control code.
+   - It decodes and encodes NEC, Sony, RC5, RC6, AEHA, Mitsubishi, Sharp and Nokia formats.
+   - It dumps decoded and prettified data to help you analyze your air conditioner's remote.
+   - It provides both command-line and programmatic control.
+   - [PiIR 0.2.5](https://pypi.org/project/PiIR/) by Takeshi Sone
 
-## Preparation
+## Setup
+> **Notes:**
+>
+> You can find more detailed information on how to set up the project in the docs section. Relevant documents are:
+> - setup.md: shows the initial steps
+> - setup_lirc.md: shows how to set up LIRC
+> - setup_ir-ctl.md: shows how to set up <code>ir-ctl</code>
+> - setup_piir: shows how to set up PiIR
 
-#### Install sshkeyboard
-> **Note:** Installation of Python packages take a while, so be patient.
-
-```
-sudo pip3 install sshkeyboard
-```
-
-#### Unload and decompress
-The file <code>Lego_RC_PiIR_0_0_1_beta.tar.gz</code> has all the packages included in this project. Unzip it to any folder and run
-```
-python app.py
-```
-
-#### Setup <code>/boot/conifig.txt</code>
-I have previously set up pin 18 as <code>pwm-ir-tx</code> in <code>/boot/config.txt</code>. I am not aware if this is necessary, I did it before I started with PiIR.
-```
-sudo nano /boot/config.txt
-``` 
+The basic steps for the setup are:
+### 1. Edit /boot/config.txt and reboot
 ```
 # Uncomment this to enable infrared communication.
-#dtoverlay=gpio-ir,gpio_pin=17
 dtoverlay=pwm-ir-tx,gpio_pin=18
 ```
+```
+sudo reboot
+```
+### 2. Setup LIRC
+#### a. Install LIRC
+```
+sudo apt-get install lirc
+```
+#### b. Edit <code>/etc/lirc/lirc_options.conf</code>
+```
+driver = default
+device = /dev/lirc0
+```
+#### c. Start service and check
+```
+sudo systemctl start lircd.socket lircd.service
+```
+```
+sudo systemctl status lirc.service
+```
+#### d. Install LIRC Python
+```
+sudo pip3 install lirc
+```
 
-## Simple Lego_PiIR API
+### 3. Setup <code>ir-ctl</code>
+#### a. Check if ir-ctl is installed by default.
+```
+ir-ctl -f
+```
+#### b. Install <code>v4l-utils</code> if <code>ir-ctl</code> is not installed
+```
+sudo apt-get install v4l-utils
+```
 
-### Setup
-We include a very simple app that uses <code>sshkeyboard</code> to capture keyboard strokes. The keys are configured in the <code>maps/button_maps</code> folder. One file per rc mode. Each mode has its own set of key mappings. I only coded for the red output in most cases. Here are some comparative examples:
+### 4. Setup PiIR
+#### a. Install PiIR
+```
+sudo pip3 install PiIR
+```
+#### b. Start pigpio daemon and check status
+```
+sudo systemctl enable pigpiod
+```
+```
+sudo systemctl start pigpiod
+```
+```
+sudo systemctl status pigpiod
+```
 
-|  Key    | Combo PWM | Combo Direct | Single PWM |
-| ------- | --------- | ------------ | ---------- |
-| &uarr;  | INC       | | |
-| &darr;  | DEC       | | |
-| SPACE BAR | BRK     | | |
-| 'l'     | FLT       | | |
+### 5. Reboot
+```
+sudo reboot
+```
 
+### 6. Copy/extract project
+#### a. Download and extract
+Use your favorite tool to do this
 
-#### App Imports
-Use this code if you are building your own app and using the Power Functions modules. 
-
-> **Note:** Make sure that your module matches the module **mode** in the config file.
+#### b. Copy LIRC Keymap Files to <code>/etc/lirc/lircd.conf.d/</code>
+LIRC expects all files to be located at /etc/lirc/lircd.conf.d/. 
 
 ```
-import power_functions.config as cfg
-config_file = 'config.json'
-cfg.config(config_file)
-
-# comment this if you are bypassing lego_piir_remote_simple
-import lego_piir_remote_simple as rc_lego
-
-# uncomment this if bypassing rc_lego.start_listen_pynput() 
-# and accessing the power functions module directly.
-# if (cfg.CONFIG['remote_mode'] == 'PWM'):
-#     import power_functions.combo_pwm as pf
-# elif (cfg.CONFIG['remote_mode'] == 'DIR'):
-#     import power_functions.combo_direct as pf
-# elif (cfg.CONFIG['remote_mode'] == 'SGL'):
-#     import power_functions.single_pwm as pf
-# elif (cfg.CONFIG['remote_mode'] == 'OTH'):
-#     import power_functions.single_other as pf
-
+sudo cp -r [project folder]/maps/keymaps/lirc /etc/lirc/lircd.conf.d/
 ```
-With this (uncommenting the bottom block) you can access the functions defined in the module combo_pwm directly using the prefix <code>pf.</code>
+We also hide <code>devinput.lircd.conf</code>. This is not necessary, but reduces bloat by loading less remotes 
+```
+sudo mv /etc/lirc/lircd.conf.d/devinput.lircd.conf /etc/lirc/lircd.conf.d/devinput.lircd.conf.dist
+```
 
-#### Config file format.
-> **Notes:**
-> * PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using writePWMFrequency(mypi, 12, 8000)."[^1] Lego uses 38KHz.
-> * Only one channel (Channel 1) is included in the PiIR format file (<code>combo_pwm_ch1_26ns.json</code>)
+### 7. Test
+#### a. Test LIRC
+List all the available remotes.
+```
+irsend LIST "" ""
+```
+List all the available codes for a particular remote
+```
+irsend LIST "cmb_pwm_ch1" ""
+```
+Send a sample code
+```
+irsend SEND_ONCE cmb_pwm_ch1 FW2A_FW2B
+```
+#### b. Test ir-ctl
+First, navigate to the project's directory. Then send key with ir-ctl
+```
+ir-ctl –-keymap=maps/keymaps/ir_ctl/combo_pwm_ch1_26ns.toml --keycode=FW2A_FW2B --verbose
+```
 
+#### c. Test PiIR
+Send a sample code. Again, first navigate to the project's directory.
+```
+piir play --gpio 18 --file maps/keymaps/piir/combo_pwm_ch1_26ns.json FW2_FW2
+```
+
+## IR Multitool Configuration
+
+### Config file
+<code>config.json</code>
+```
+{
+    "project_folder" : "/home/pi/Projects/lego_rc_0_0_2",
+    "maps_config_file" : "maps/maps_config.json",
+    "rc_mode" : "SGL",
+    "ir_tool" : "ir_ctl",
+    "gpio_pin" : 18
+}
+```
+#### <code>project_folder</code>
+This is the absolute path to the project. It is not really used anywhere
+
+#### <code>maps_config_file</code>
+This is quite important. If you move the config file, make sure to modify here. I recommend you leave it where it is.
+
+The <code>maps_config_file</code> file has links to keymaps and button maps. If you change the names of the keymaps or use different ones, make sure to update the <code>maps_config_file</code>.
+
+#### <code>rc_mode</code>
 The available modes are:
    - PWM: Combo PWM
    - DIR: Combo Direct
@@ -84,205 +163,128 @@ The available modes are:
    - OTH: Single Clear/Set/Toggle/Inc/Dec (doesn't work)
    - EXT: Extended (not implemented)
 
-<code>config.json</code>
+#### <code>ir_tool</code>
+The available tools are:
+   - lirc
+   - ir_ctl
+   - piir
+
+#### <code>gpio_pin</code>
+PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using writePWMFrequency(mypi, 12, 8000)."[^1] Lego uses 38KHz.
+
+### Button Maps
+The keys are configured in the <code>maps/button_maps</code> folder. One file per rc mode. Each mode has its own set of key mappings. I only coded for the red output in most cases. Here are some comparative examples:
+
+|  Key    | Combo PWM | Combo Direct | Single PWM |
+| ------- | --------- | ------------ | ---------- |
+| &uarr;  | INC       | FWD | INC |
+| &darr;  | DEC       | REV | DEC |
+| SPACE BAR | BRK     | BRK | BRK |
+| 'l'     | FLT       | FLT | FLT |
+| '1'     | FW1       | n/a | FW1 |
+| '2'     | FW2       | n/a | FW2 |
+| ...     | ...       | ... | ... |
+| '7'     | FW7       | n/a | FW7 |
+| 'a'     | RV1       | n/a | RV1 |
+| 'b'     | RV2       | n/a | RV2 |
+| ...     | ...       | ... | ... |
+| 'g'     | RV7       | n/a | RV7 |
+
+One important difference between the Single PWM and both Combo modes is that with Single, the state is permanent. When you press a key, the motor starts and keeps going. With the combo modes, the motor moves only for about a second and stops. You need to keep sending keys to keep the motor going.
+
+### Keymaps
+Every tool has its own different keymap format. They all have a header with basic protocol parameters followed by scancode-keycode pairs. But each has a different format:
+* LIRC: lirc keymaps have a .conf extension and follow the basic rules of configuration files
+* ir-ctl: uses the [toml](https://toml.io/en/) format
+* PiIR: uses json files
+
+The common parameters in the header include (the names might change from one format to another but the meaning remains):
+* header_pulse = 158
+* header_space = 1026
+* bit_pulse = 158
+* bit_0_space = 263
+* bit_1_space = 553
+* trailer_pulse = 158
+* bits = 16
+* carrier = 38000
+
+You can find more detailed descriptions of each file format in each tool's setup file.
+
+## Multitool API
+If you want to use parts of this project as an API, you can do without the <code>lego.py</code> file and access the objects directly. Here is a description of each object and their methods
+
+### Power Functions (Encoders)
+#### Features
+* There are four types (classes):
+  * Combo_PWM
+  * Combo_Direct
+  * Single_PWM
+  * Single_Other
+  * Extended is not coded yet
+* All have the same methods and attributes with the same signatures
+* Keep track of current speeds for red and blue outputs (only red is functional though)
+* Perform actions:
+  * set speed
+  * change speed in increments
+* Provide keycode corresponding to self reported speeds
+
+#### Methods
+##### New Object
+Does not require any parameters. The methods to create each type of object are:
 ```
-{
-    "gpio_pin" : 18,
-    "remote_mode" : "PWM",
-    "piir_maps_folder" : "/etc/lego/maps/piir_keymaps",
-    "button_maps_folder" : "/etc/lego/maps/button_maps",
-    "piir_format_file" : "combo_pwm_ch1_26ns.json",
-    "button_map_file" : "button_map_combo.json"
-}
+import power_functions.combo_pwm as pf
+rc_encoder = pf.Combo_PWM()
+```
+or
+```
+import power_functions.combo_direct as pf
+rc_encoder = pf.Combo_Direct()
+```
+or
+```
+import power_functions.single_pwm as pf
+rc_encoder = pf.Single_PWM()
+```
+or
+```
+import power_functions.single_other as pf
+rc_encoder = pf.Single_Other()
 ```
 
-#### Button Map File
-I included only keys for the **red** output. Feel free to change this at your convenience. There are two button maps: a general one, and one specific to the Single Clear/Set/Toggle/Inc/Dec mode. This last one is almost like a keymap.
-<code>maps/button_maps/button_map_cmb_pwm.json</code>
-```
-{
-    "Key.space" : ["red" , "BRK"],
-    "Key.up"    : ["red" , "INC"],
-    "Key.down"  : ["red" , "DEC"],
-    "L"         : ["red" , "FLT"],
-    "0"   : ["red" , 0],
-    "1"   : ["red" , 1],
-    "2"   : ["red" , 2],
-    "3"   : ["red" , 3],
-    "4"   : ["red" , 4],
-    "5"   : ["red" , 5],
-    "6"   : ["red" , 6],
-    "7"   : ["red" , 7],
-    "A"   : ["red" , -1],
-    "B"   : ["red" , -2],
-    "C"   : ["red" , -3],
-    "D"   : ["red" , -4],
-    "E"   : ["red" , -5],
-    "F"   : ["red" , -6],
-    "G"   : ["red" , -7]
-}
-```
-
-### Functions
-
-#### Start keyboard capture
-##### <code>rc_lego.start_listen_pynput() -> None</code>
-```
-rc_lego.start_listen_pynput()
-```
-
-#### Perform actions
-##### <code>pf.action(key: str) -> keycode: str</code>
+##### <code>action(key: str) -> keycode: str</code>
 Returns <code>keycode</code>. Key must exist in keymap.json. Actions programmed are:
 * break then float=‘BRK’
 * increment speed=‘INC’
 * decrement speed= ‘DEC’
-* float= ‘FLT’.
+* float= ‘FLT’
+* set speed (-7..+7) except Combo Direct which does not support intermediate speeds.
 ```
-pf.action(key)
+rc_encoder.action(key)
 ```
 
-#### Change/Set Speeds -> <code>keycode</code>
-
-##### <code>pf.speed_change(color: str , increment: int) -> keycode: str</code>
+##### <code>speed_change(color: str , increment: int) -> keycode: str</code>
 Change speed by increments. Returns <code>keycode</code>.
 The range of speeds is -7 - +7. Float is 0. If <code>abs(state[color] + increment) > 7</code> it will not change speed and return the keycode for the current speed.
+The Combo Direct mode only supports full forward and full backward. It does not support intermediate speeds.
 ```
-pf.speed_change(color, increment)
+rc_encoder.speed_change(color, increment)
 ```
 
-##### <code>pf.set_speed(color: str , speed: int) -> keycode: str</code>
+##### <code>set_speed(color: str , speed: int) -> keycode: str</code>
 Sets speed. Returns <code>keycode</code>.
-* The range of speeds is -7 to +7
+* The range of speeds is -7 to +7 (except Combo Direct)
 * 0 is Float
 * -99: break then float
 ```
-pf.set_speed(color , speed)
+rc_encoder.set_speed(color , speed)
 ```
 
 #### Other functions
 
-##### <code>pf.get_keycode(speed_red: int , speed_blue: int) -> keycode: str</code>
+##### <code>get_keycode(speed_red: int , speed_blue: int) -> keycode: str</code>
 Get keycode for red-blue combo speeds. Returns <code>keycode</code>
 ```
-pf.get_keycode(speed_red , speed_blue)
+rc_encoder.get_keycode(speed_red , speed_blue)
 ```
-
-
-## PiIR
-> **Note:** See [PiIR project homepage](https://pypi.org/project/PiIR/) for more information
-
-### Installing PiIR
-
-Install PiIR:
-
-```
-sudo pip3 install PiIR
-```
-
-Start pigpio daemon:
-
-```
-sudo systemctl enable pigpiod
-```
-```
-sudo systemctl start pigpiod
-```
-
-### Command line usage
-Send IR signal for FW2A_FW2B from cmb_pwm_ch1.json on GPIO 18.
-```
-piir play --gpio 18 --file /etc/lego/maps/piir_keymaps/combo_pwm_ch1_26ns.json FW2A_FW2B
-```
-### PiIR API
-#### Instantiate the PiIR remote
-> **Notes:**
-> * We use GPIO 18 (pin 12), but you can use any **hardware** PWM pin. Make sure to be consistent across the project. You will need to change the config files and the <code>/boot/conf.txt</code>
-> * The 26ns refers to the length of a cycle = 1/38,000 Hz
-```
-import piir
-remote_tx = piir.Remote(CONFIG['piir_maps_folder'] + '/' + CONFIG['piir_format_file'], CONFIG['gpio_pin'])
-```
-
-#### To send the same IR signal from a python script:
-```
-remote_tx.send('FW2A_FW2B')
-```
-
-> **Note:** There are test files with sample keycodes and a plain format file <code>piir_26ns.json</code> which has no keycodes. It only has the basic transmission parameters for the Lego:tm: protocol. Since in our code we send keycodes, we use the complete version with keycodes.
-
-#### You can send arbitrary data like this:
-```
-remote_tx.send_data('42 2B')
-```
-or this:
-```
-remote_tx.send_data(bytes([0x422B]))
-```
-### PiIR File Format
-
-PiIR File Format has two main parts: a <code>format</code> section and a <code>"keys"</code> section. The protocol, in the format section, seems to follow a multiplier format, with a timebase and all definitions as multiples of the base. The keys section consists of keycode name-Hex code pairs. The following example has a format consistent with the Lego:tm: protocol followed by a sample of keys (the whole file would be too long), <em>pre-reversed</em>, for the Combo PWM mode. The whole format file is at <code>maps/piir_keymaps/combo_pwm_ch1_26ns.json</code>
-
-```
-{
-  "format": {
-    "preamble": [ 6, 39 ],
-    "coding": "ppm",
-    "zero": [ 6, 10 ],
-    "one": [ 6, 21 ],
-    "postamble": [ 6 ],
-    "timebase": 26,
-    "gap": 1026
-  },
-  "keys": {
-    "FLTA_FLTB" : "02 D0",
-    "FW1A_FLTB" : "02 58",
-    "FW2A_FLTB" : "02 94",
-    "FW3A_FLTB" : "02 1C",
-    "FW4A_FLTB" : "02 F2",
-    "FW5A_FLTB" : "02 7A",
-    "FW6A_FLTB" : "02 B6",
-    "FW7A_FLTB" : "02 3E"
-  }
-}
-```
-
-After some testing, it seems that piir converts the output of <code>FW2A_FW2B = 42 2B</code> into <code>42 D4</code>. PiIR seems to reverse bits plus reverse most and least significant bytes. As a result, we can either create keymap files that pre-reverse the bits or create the code on the fly programmatically. In this 'simple' project we go with the first option. In either case we need to pre-reverse the data as follows:
-1. Convert Keycode to Bytes in Hex
-1. Convert to Binary
-1. Reverse Bits
-1. Convert back to Bytes in Hex
-1. Reverse Bytes
-
-For example:
-| Keycode | Scancode | Scancode in bits | Bits reversed | Bits Reversed in Bytes | Bytes Reversed<br />(LSB first) |
-| ------- | -------- | ---------------- | ---------------- | ------- | -------- |
-| FW2A_FW2B | 42 2B | 0100 0010 0010 1011 | 1101 0100 0100 0010 | D4 42 | 42 D4 |
-
-## Lego:tm: Protocol
-
-You can find information on Lego:tm: Power Functions RC on [Philo's page on Power Functions](https://www.philohome.com/pf/pf.htm). The protocol itself is laid out in [LEGO:tm: Power Functions RC Version 1.2](docs/LEGO_Power_Functions_RC_v120.pdf) (PDF, 370kb).
-
-A code in the Lego:tm: protocol consists of (a) a start pulse/space, (b) sixteen –16– bits, and (c) a stop pulse/space. “Low bit consists of 6 cycles of IR and 10 “cycles” of pause, high bit of 6 cycles IR and 21 “cycles” of pause and start bit of 6 cycles IR and 39 “cycles” of pause.” All pulses are the same length in the Lego:tm: protocol. Start, stop, high and low bits are distinguished by the pause length.
-The following table shows the timings for each of the intervals.
-
-| Element          | Cycles @ 38000 Hz | Duration                 | PiIR Parameter  |
-| ---------------- | ----------------- | ------------------------ | --------------- |
-| Cycle            | 1 cycle           | 1 / 38,000  =  26 &mu;s  | "timebase" = 26 |
-| Pulse            | 6 cycles          | 6 / 38,000  = 158 &mu;s  |  |
-| Start/Stop Space | 39 cycles         | 39 / 38,000 =1,026 &mu;s | "preamble" = [6 , 39] <br /> "postamble" = [6] <br /> "gap" = 1026 |
-| Low Bit Space    | 10 cycles         | 10 / 38,000 = 263 &mu;s  | "zero" = [6 , 10] |
-| High Bit Space   | 21 cycles         | 21 / 38,000 = 553 &mu;s  | "one" = [6 , 21] |
-
-The sixteen bits are grouped into four groups of four bits each called <em>nibbles</em>. The first two nibbles are configuration, except for Combo PWM where the second nibble is data. The third nibble is data. And the fourth nibble is Longitudinal Redundancy Check (a !XOR of the respective bits of the first three nibbles).
-
-For the test we will send the code for Combo PWM mode - Channel 1 - Forward Step 2 / Forward Step 2. This way we ensure we have movement in both outputs. The first nibble (4) indicates the mode and channel. The second (2) and third (2) nibbles are the speeds for red and blue outputs respectively. The fourth one (B) is the LRC. The following table shows the conversion from key to pulse timings (+ is a pulse, while - is a space).
-> **Note:**  Pulse timings are as they should be sent. With PiIR we pre-process the hexadecimal code so the timings are correct; but timings are not affected.
-
-| Action | Keycode | Scancode<br />(Hexadecimal) | Scancode<br />(Hexadecimal)<br />Pre-Reversed | Scancode Timings |
-| ------ | ------- | ---------- | ---------- | ---------------------------------- |
-| Mode: Combo PWM<br />Channel 1<br />Output A: Forward Step 2<br />Output B: Forward Step 2 | FW2A_FW2B | 42 2B | 42 D4 | +158 -1026 <br />+158 -263 +158 -553 +158 -263 +158 -263 <br />+158 -263 +158 -263 +158 -553 +158 -263 <br />+158 -263 +158 -263 +158 -553 +158 -263 <br />+158 -553 +158 -263 +158 -553 +158 -553<br />+158 |
-
-> **Note:** Mode and channel are not included in the keycode because all keycodes in the file are Combo PWM / Channel 1. I create different files for different mode/channel pairs. Otherwise each file would be too large.
 
 [^1]: [Raspberry Pi PWM, MathWorks](https://www.mathworks.com/help/supportpkg/raspberrypiio/ug/the-raspberry-pi-pwm.html)
