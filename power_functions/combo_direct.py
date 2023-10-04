@@ -33,8 +33,11 @@ class Combo_Direct:
             keycode = self.get_keycode(self.state['red'] , self.state['blue'])
             self.state[color] = 0
         else:
-            self.state[color] = speed
-            keycode = self.get_keycode(self.state['red'] , self.state['blue'])
+            if (abs(speed) == 7):
+                self.state[color] = speed
+                keycode = self.get_keycode(self.state['red'] , self.state['blue'])
+            else:
+                raise Exception(f'Sorry, speed of {speed} is not allowed in Combo Direct mode')
         return keycode
 
     def action(self , mapped_key) -> str:
