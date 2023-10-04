@@ -27,16 +27,16 @@ rc_mode = RC_MODES[CONFIG['rc_mode']]
 RC_MODE = CONFIG['rc_mode']
 if (CONFIG['rc_mode'] == 'PWM'):
     import power_functions.combo_pwm as pf
-    rc_decoder = pf.Combo_PWM()
+    rc_encoder = pf.Combo_PWM()
 elif (CONFIG['rc_mode'] == 'DIR'):
     import power_functions.combo_direct as pf
-    rc_decoder = pf.Combo_Direct()
+    rc_encoder = pf.Combo_Direct()
 elif (CONFIG['rc_mode'] == 'SGL'):
     import power_functions.single_pwm as pf
-    rc_decoder = pf.Single_PWM()
+    rc_encoder = pf.Single_PWM()
 elif (CONFIG['rc_mode'] == 'OTH'):
     import power_functions.single_other as pf
-    rc_decoder = pf.Single_Other()
+    rc_encoder = pf.Single_Other()
 else:
     raise Exception(f'No Remote Mode')
 
@@ -72,7 +72,7 @@ def on_press(key: str) -> bool:
     if kb.is_mapped_key(key):
         mapped_key = kb.get_action(key)
         print(f'Mapped Key: {mapped_key}')
-        data = rc_decoder.action(mapped_key)
+        data = rc_encoder.action(mapped_key)
         remote_tx.send(data)
         print(f'keycode sent: {data}')
         return True
