@@ -272,7 +272,7 @@ remote_tx = irt.IR_PiIR(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GP
   * Combo_PWM
   * Combo_Direct
   * Single_PWM
-  * Single_Other
+  * Single_Other (doesn't work)
   * Extended is not coded yet
 * All have the same methods and attributes with the same signatures
 * Keep track of current speeds for red and blue outputs (only red is functional though)
@@ -328,8 +328,6 @@ Sets speed. Returns <code>keycode</code>.
 ```
 rc_encoder.set_speed(color , speed)
 ```
-
-#### Other functions
 
 ##### <code>get_keycode(speed_red: int , speed_blue: int) -> keycode: str</code>
 Get keycode for red-blue combo speeds. Returns <code>keycode</code>
