@@ -116,11 +116,11 @@ irsend LIST "" ""
 ```
 List all the available codes for a particular remote
 ```
-irsend LIST "cmb_pwm_ch1" ""
+irsend LIST "combo_pwm_ch1_26ns" ""
 ```
 Send a sample code
 ```
-irsend SEND_ONCE cmb_pwm_ch1 FW2A_FW2B
+irsend SEND_ONCE combo_pwm_ch1_26ns FW2A_FW2B
 ```
 #### b. Test ir-ctl
 First, navigate to the project's directory. Then send key with ir-ctl
@@ -189,6 +189,7 @@ The keys are configured in the <code>maps/button_maps</code> folder. One file pe
 | 'b'     | RV2       | n/a | RV2 |
 | ...     | ...       | ... | ... |
 | 'g'     | RV7       | n/a | RV7 |
+| Noteworthy |-Both outputs simultaneously<br />-Speeds -7..+7<br />-Only one second|-Both outputs simultaneously<br />-Speeds Full Forward, Full Backward, Float, Break only<br />-Only one second | -One output at a time<br />-Speeds -7..+7<br />-Permanent state until new key changes it |
 
 One important difference between the Single PWM and both Combo modes is that with Single, the state is permanent. When you press a key, the motor starts and keeps going. With the combo modes, the motor moves only for about a second and stops. You need to keep sending keys to keep the motor going.
 
