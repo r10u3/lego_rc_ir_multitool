@@ -1,5 +1,5 @@
 # Lego:tm: Power Functions & Raspberry Pi
-<em>Last updated: 9/29/2023</em>
+<em>Last updated: 10/4/2023</em>
 ## Introduction
 
 This project is part of using a Raspberry Pi as a [Lego:tm: PowerFunctions](#legotm-protocol) controller. 
@@ -195,11 +195,11 @@ One important difference between the Single PWM and both Combo modes is that wit
 
 ### Keymaps
 Every tool has its own different keymap format. They all have a header with basic protocol parameters followed by scancode-keycode pairs. But each has a different format:
-* LIRC: lirc keymaps have a .conf extension and follow the basic rules of configuration files
-* ir-ctl: uses the [toml](https://toml.io/en/) format
-* PiIR: uses json files
+* LIRC: lirc keymaps have a <code>[.conf](https://www.lirc.org/html/lircd.conf.html)</code> extension and follow the basic rules of configuration files. Example for [Combo PWM](maps/keymaps/lirc/combo_pwm_ch1_26ns.conf).
+* ir-ctl: uses the <code>[toml](https://toml.io/en/)</code> format. Example for [Combo PWM](maps/keymaps/ir_ctl/combo_pwm_ch1_26ns.toml).
+* PiIR: uses json files. Example for [Combo PWM](maps/keymaps/piir/combo_pwm_ch1_26ns.json).
 
-The common parameters in the header include (the names might change from one format to another but the meaning remains):
+The common parameters in the header include (the names and format might change from one format to another but the meaning and values remain):
 * header_pulse = 158
 * header_space = 1026
 * bit_pulse = 158
@@ -209,7 +209,7 @@ The common parameters in the header include (the names might change from one for
 * bits = 16
 * carrier = 38000
 
-You can find more detailed descriptions of each file format in each tool's setup file.
+You can find more detailed descriptions of each file format in each tool's setup file in the <code>docs</code> folder.
 
 ## Multitool API
 If you want to use parts of this project as an API, you can do without the <code>lego.py</code> file and access the objects directly. Here is a description of each object and their methods
@@ -220,7 +220,7 @@ If you want to use parts of this project as an API, you can do without the <code
 * Note that the <code>keypad</code> does not match buttons to keycodes; the <code>power_functions</code> (or encoders) do that while keeping track of state. The reason is that we can have keys that don't map to codes. For example, in the Combo PWM <code>button_map</code> (where the mappings are configured) there is a button map for 'INC' (increment), but there is no such code in the Lego protocol for the Combo PWM mode. The <code>Combo_PWM</code> object creates the corresponding code by calculating the speed = current speed + 1.
 
 #### Methods
-##### New Object
+##### New Object: <code>Keypad(mapped_keys_file_name: str) -> Keypad</code>
 The required parameters are:
 * **<code>mapped_keys_file_name</code>:** from <code>maps/maps_config.json</code>.
 ```
@@ -247,7 +247,7 @@ Returns the action associated to a particular key. The action is an array with [
 * Send code to tool to be transmitted
 
 #### Methods
-##### New Object
+##### New Object: <code>Tool(keymap_file_name: str, keymap_folder_name: str,  gpio_pin: str) -> Tool</code>
 Require the following arguments:
 * **keymap_file_name:** from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code> and PiIR to locate the keymap. <code>LIRC</code> uses remote names instead of keymap files. The remote name inside the keymap file should match the name of the keymap file minus the extension.
 * **keymap_folder_name:** from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code> and PiIR to locate the keymap. <code>LIRC</code> keymaps are all located at <code>/etc/lirc/lircd.conf.d</code>
