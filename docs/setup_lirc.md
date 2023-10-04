@@ -76,7 +76,7 @@ LIRC expects all files to be located at /etc/lirc/lircd.conf.d/.
 >
 > I use the default user <code>pi</code> and you need to change the <code>[project folder]</code> to its actual name.
 ```
-sudo cp -r /home/pi/Projects/[project folder]/maps/keymaps/lirc /etc/lirc/lircd.conf.d/
+sudo cp -r [project folder]/maps/keymaps/lirc /etc/lirc/lircd.conf.d/
 ```
 We also hide <code>devinput.lircd.conf</code>. This is not necessary, but reduces bloat by loading less remotes 
 ```
