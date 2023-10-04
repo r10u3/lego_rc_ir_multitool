@@ -214,6 +214,58 @@ You can find more detailed descriptions of each file format in each tool's setup
 ## Multitool API
 If you want to use parts of this project as an API, you can do without the <code>lego.py</code> file and access the objects directly. Here is a description of each object and their methods
 
+### Keypad
+#### Features
+* The <code>keypad</code> maps buttons to actions.
+* Note that the <code>keypad</code> does not match buttons to keycodes; the <code>power_functions</code> (or encoders) do that while keeping track of state. The reason is that we can have keys that don't map to codes. For example, in the Combo PWM <code>button_map</code> (where the mappings are configured) there is a button map for 'INC' (increment), but there is no such code in the Lego protocol for the Combo PWM mode. The <code>Combo_PWM</code> object creates the corresponding code by calculating the speed = current speed + 1.
+
+#### Methods
+##### New Object
+The required parameters are:
+* **<code>mapped_keys_file_name</code>:** from <code>maps/maps_config.json</code>.
+```
+import keypad
+
+kb = keypad.Keypad(button_maps_file_name)
+```
+
+##### <code>is_mapped_key(self , key: str) -> bool</code>
+Checks whether a particular key (e.g., &uarr;) is in the button map. Return a boolean.
+
+##### <code>get_action(self , key: str) -> [str , str]</code>
+Returns the action associated to a particular key. The action is an array with [color , action] pairs.
+
+
+### IR Tools
+#### Features
+* There are three types (classes):
+  * LIRC
+  * ir-ctl
+  * PiIR
+
+* All have the same methods and attributes with the same signatures
+* Send code to tool to be transmitted
+
+#### Methods
+##### New Object
+Require the following arguments:
+* **keymap_file_name:** from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code> and PiIR to locate the keymap. <code>LIRC</code> uses remote names instead of keymap files. The remote name inside the keymap file should match the name of the keymap file minus the extension.
+* **keymap_folder_name:** from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code> and PiIR to locate the keymap. <code>LIRC</code> keymaps are all located at <code>/etc/lirc/lircd.conf.d</code>
+* **gpio_pin:** from <code>config.json</code>. Used by PiIR. <code>LIRC</code> and <code>ir-ctl</code> use the pin configured in the <code>/boot/config.txt</code> file.
+The methods to create each type of object are:
+```
+import ir_tools.ir_ctl as irt
+remote_tx = irt.IR_ir_ctl(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GPIO_PIN)
+```
+```
+import ir_tools.lirc as irt
+remote_tx = irt.IR_LIRC(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GPIO_PIN)
+```
+```
+import ir_tools.piir as irt
+remote_tx = irt.IR_PiIR(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GPIO_PIN)
+```
+
 ### Power Functions (Encoders)
 #### Features
 * There are four types (classes):
@@ -236,17 +288,14 @@ Does not require any parameters. The methods to create each type of object are:
 import power_functions.combo_pwm as pf
 rc_encoder = pf.Combo_PWM()
 ```
-or
 ```
 import power_functions.combo_direct as pf
 rc_encoder = pf.Combo_Direct()
 ```
-or
 ```
 import power_functions.single_pwm as pf
 rc_encoder = pf.Single_PWM()
 ```
-or
 ```
 import power_functions.single_other as pf
 rc_encoder = pf.Single_Other()
