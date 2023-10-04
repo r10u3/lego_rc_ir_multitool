@@ -17,7 +17,7 @@ In our case, we will play IR remote control code.
 ## Setup <code>pigpio</code>
 > **Note:**
 >
-> [PiIR project page](https://pypi.org/project/PiIR/))
+> [PiIR project page](https://pypi.org/project/PiIR/)
 
 ### 1. Install PiIR
 ```
