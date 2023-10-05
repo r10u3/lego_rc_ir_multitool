@@ -8,10 +8,10 @@ class Keypad:
         # print(f'using {MAPPED_KEYS}')
 
 
-    def is_mapped_key(self , key):
+    def is_mapped_key(self , key: str) -> bool:
         return key in self.MAPPED_KEYS
 
 
-    def get_action(self , key):
+    def get_action(self , key: str) -> [str , str]:
         return self.MAPPED_KEYS[key]
 
