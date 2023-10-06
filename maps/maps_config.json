@@ -25,6 +25,14 @@
             "single_pwm"   : "single_pwm_ch1_26ns.toml",
             "single_other" : "single_other_ch1_26ns_red.toml",
             "extended"     : "extended_ch1_26ns_red.toml"
+        },
+        "rpigpio" : {
+            "folder" : "maps/keymaps/rpigpio",
+            "combo_direct" : "combo_direct_ch1_26ns.json",
+            "combo_pwm"    : "combo_pwm_ch1_26ns.json",
+            "single_pwm"   : "single_pwm_ch1_26ns.json",
+            "single_other" : "single_other_ch1_26ns_red.json",
+            "extended"     : "extended_ch1_26ns_red.json"
         }
     },
     "button_maps" : {

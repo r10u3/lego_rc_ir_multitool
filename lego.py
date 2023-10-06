@@ -48,6 +48,9 @@ REMOTE_KEYMAP_FILE_NAME = MAPS_CONFIG['keymaps'][CONFIG['ir_tool']][rc_mode]
 if (ir_tool == 'piir'):
     import ir_tools.piir as irt
     remote_tx = irt.IR_PiIR(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , CONFIG['gpio_pin'])
+elif (ir_tool == 'rpigpio'):
+    import ir_tools.rpigpio as irt
+    remote_tx = irt.PiGPIO(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , CONFIG['gpio_pin'])
 elif (ir_tool == 'lirc'):
     import ir_tools.lirc as irt
     remote_tx = irt.IR_LIRC(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , CONFIG['gpio_pin'])

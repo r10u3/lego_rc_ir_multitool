@@ -1,0 +1,10 @@
+{
+  "parameters": {
+    "pulse"    :  6,
+    "heading"  : 39,
+    "zero"     : 10,
+    "one"      : 21,
+    "trailing" : 39,
+    "frequency": 38000
+  }
+}
