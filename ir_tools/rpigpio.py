@@ -90,6 +90,7 @@ class PiGPIO:
         wave_chain = self.append_scancode(wave_chain , bin_data)
         wave_chain.append(self.stop_wave)
         print(wave_chain)
+        self.pi.wave_tx_stop()
         self.pi.wave_chain(wave_chain)
         return wave_chain
     
