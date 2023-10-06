@@ -314,7 +314,7 @@ Arguments:
 * **data_bytes:** the scancode as an hexadecimal string.
 
 ##### send_scancode(data: int) -> None:
-This method is unique to RPiGPIO. It takes a scancode in integer format (e.g., 1234 or 0x422B), and sends it. The code must be a valid code. The method does not check for validity. The code is sent anyway and the receiver will reject it without any error.
+This method is unique to RPiGPIO. It takes a scancode in integer format (e.g., 16939 or 0x422B), and sends it. The code must be a valid code. The method does not check for validity. The code is sent anyway and the receiver will reject it without any error.
 Arguments:
 * **data_bytes:** the scancode as an integer.
 
