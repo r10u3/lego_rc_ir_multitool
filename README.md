@@ -73,10 +73,11 @@ sudo apt-get install v4l-utils
 ```
 
 ### 4. Setup PiIR
-#### a. Install PiIR
+#### a. Install pigpio
 ```
-sudo pip3 install PiIR
+sudo apt-get install pigpio python-pigpio python3-pigpio
 ```
+
 #### b. Start pigpio daemon and check status
 ```
 sudo systemctl enable pigpiod
@@ -88,12 +89,35 @@ sudo systemctl start pigpiod
 sudo systemctl status pigpiod
 ```
 
-### 5. Reboot
+#### c. Install PiIR
+```
+sudo pip3 install PiIR
+```
+
+### 4. Setup RPiGPIO
+This tool also uses pigpio, so you should have already performed these steps. If you pick and choose your tools, these steps would required to use RPiGPIO. But only if you didn't do it already.
+#### a. Install pigpio
+```
+sudo apt-get install pigpio python-pigpio python3-pigpio
+```
+
+#### b. Start pigpio daemon and check status
+```
+sudo systemctl enable pigpiod
+```
+```
+sudo systemctl start pigpiod
+```
+```
+sudo systemctl status pigpiod
+```
+
+### 6. Reboot
 ```
 sudo reboot
 ```
 
-### 6. Copy/extract project
+### 7. Copy/extract project
 #### a. Download and extract
 Use your favorite tool to do this
 
@@ -108,7 +132,7 @@ We also hide <code>devinput.lircd.conf</code>. This is not necessary, but reduce
 sudo mv /etc/lirc/lircd.conf.d/devinput.lircd.conf /etc/lirc/lircd.conf.d/devinput.lircd.conf.dist
 ```
 
-### 7. Test
+### 8. Test
 #### a. Test LIRC
 List all the available remotes.
 ```
@@ -238,10 +262,11 @@ Returns the action associated to a particular key. The action is an array with [
 
 ### IR Tools
 #### Features
-* There are three types (classes):
+* There are four types (classes):
   * LIRC
   * ir-ctl
   * PiIR
+  * RPiGPIO
 
 * All have the same methods and attributes with the same signatures
 * Send code to tool to be transmitted
@@ -265,6 +290,22 @@ remote_tx = irt.IR_LIRC(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GP
 import ir_tools.piir as irt
 remote_tx = irt.IR_PiIR(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GPIO_PIN)
 ```
+
+##### send(data: str) -> None:
+It converts a keycode (e.g., 'FW2_FW2') to scancode (e.g., 0x422B) and sends it.
+Arguments:
+* **data:** this is the keycode. For example 'FW2_FW2'
+
+##### send_x(data_bytes: str) -> None:
+This method is unique to PiIR and RPiGPIO. It takes a scancode in hexadecimal string format (e.g., '42 2B') and sends it.
+> **Note:** PiIR reverses the bits in each byte, so you need to pre-process the data to be sent. This is not the case with RPiGPIO, which was custom coded for this application.
+Arguments:
+* **data_bytes:** the scancode as an hexadecimal string.
+
+##### send_scancode(data: int) -> None:
+This method is unique to RPiGPIO. It takes a scancode in integer format (e.g., 1234 or 0x422B), and sends it. The code must be a valid code. The method does not check for validity. The code is sent anyway and the receiver will reject it without any error.
+Arguments:
+* **data_bytes:** the scancode as an integer.
 
 ### Power Functions (Encoders)
 #### Features

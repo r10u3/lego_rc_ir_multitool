@@ -10,8 +10,8 @@ ONE_SPACE_CYCLES = 21
 
 class PiGPIO:
 
-    def __init__(self , pin , config_file_name):
-        with open(config_file_name, 'r') as config_file:
+    def __init__(self , config_file_name , config_file_folder , pin):
+        with open(config_file_folder + '/' + config_file_name, 'r') as config_file:
             config = json.loads(config_file.read())
 
         frequency          = config['parameters']['frequency']
@@ -72,7 +72,7 @@ class PiGPIO:
             pulse.append(cycle_off)
         return pulse
 
-    def append_scancode(self , wave_chain: pigpio.wave_chain , scancode : int) -> pigpio.pi.wave_chain:
+    def append_scancode(self , wave_chain , scancode : int):
         for bit in scancode:
             if bit == '0':
                 wave_chain.append(self.zero_wave)

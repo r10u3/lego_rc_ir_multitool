@@ -5,7 +5,8 @@
     "zero"     : 10,
     "one"      : 21,
     "trailing" : 39,
-    "frequency": 38000
+    "frequency": 38000,
+    "bits"     : 16
   },
   "keycodes": {
     "FLT_FLT" : "0x400B",
