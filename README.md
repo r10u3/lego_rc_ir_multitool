@@ -4,7 +4,7 @@
 
 This project is part of using a Raspberry Pi as a [Lego:tm: PowerFunctions](#legotm-protocol) controller. 
 
-There are three IR tools that I found that work with Python and I use in this project:
+There are four IR tools that I found that work with Python and I use in this project:
 * LIRC:
   - LIRC is a package that allows you to decode and send infra-red signals of many (but not all) commonly used remote controls.
   - Recent linux kernels makes it possible to use some IR remote controls as regular input devices. Sometimes this makes LIRC redundant. However, LIRC offers more flexibility and functionality and is still the right tool in a lot of scenarios.
@@ -15,12 +15,17 @@ There are three IR tools that I found that work with Python and I use in this pr
   - IR can be sent as the keycode of a keymap, or using a scancode, or using raw IR.
   - [<code>ir-ctl</code> - Man Page](https://www.mankier.com/1/ir-ctl)
 * PiIR
-   - PiIR is a client program for pigpio, the excellent hardware-timed GPIO library. Some code are taken from its sample program irrp.py.
+   - PiIR is a client program for pigpio, a hardware-timed GPIO library. Some code are taken from its sample program irrp.py.
    - It records and plays IR remote control code.
    - It decodes and encodes NEC, Sony, RC5, RC6, AEHA, Mitsubishi, Sharp and Nokia formats.
    - It dumps decoded and prettified data to help you analyze your air conditioner's remote.
    - It provides both command-line and programmatic control.
    - [PiIR 0.2.5](https://pypi.org/project/PiIR/) by Takeshi Sone
+* pigpio
+   - "pigpio is a library for the Raspberry which allows control of the General Purpose Input Outputs (GPIO).  pigpio works on all versions of the Pi." [^1]
+   - Among other things, it allows waveforms to generate GPIO level changes (time accurate to a few &mu;s)
+   - I developed a custom object to handle the codes.
+   - With almost direct access to the GPIO, this is the fastest of all tools; especially for direct codes (rather than INC/DEC).
 
 ## Setup
 > **Notes:**
@@ -94,7 +99,7 @@ sudo systemctl status pigpiod
 sudo pip3 install PiIR
 ```
 
-### 4. Setup RPiGPIO
+### 5. Setup RPiGPIO
 This tool also uses pigpio, so you should have already performed these steps. If you pick and choose your tools, these steps would required to use RPiGPIO. But only if you didn't do it already.
 #### a. Install pigpio
 ```
@@ -158,6 +163,12 @@ Send a sample code. Again, first navigate to the project's directory.
 piir play --gpio 18 --file maps/keymaps/piir/combo_pwm_ch1_26ns.json FW2_FW2
 ```
 
+#### c. Test rpigpio
+Send a sample code. Again, first navigate to the project's directory.
+```
+python -c 'import ir_tools.rpigpio as irt; irt.test_send("maps/keymaps/rpigpio/combo_pwm_ch1_26ns.json" , 18 , "FW2_FW2")'
+```
+
 ## IR Multitool Configuration
 
 ### Config file
@@ -194,7 +205,7 @@ The available tools are:
    - piir
 
 #### <code>gpio_pin</code>
-PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using writePWMFrequency(mypi, 12, 8000)."[^1] Lego uses 38KHz.
+PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using writePWMFrequency(mypi, 12, 8000)."[^2] Lego uses 38KHz.
 
 ### Button Maps
 The keys are configured in the <code>maps/button_maps</code> folder. One file per rc mode. Each mode has its own set of key mappings. I only coded for the red output in most cases. Here are some comparative examples:
@@ -376,4 +387,5 @@ Get keycode for red-blue combo speeds. Returns <code>keycode</code>
 rc_encoder.get_keycode(speed_red , speed_blue)
 ```
 
-[^1]: [Raspberry Pi PWM, MathWorks](https://www.mathworks.com/help/supportpkg/raspberrypiio/ug/the-raspberry-pi-pwm.html)
+[^1]: [The pigpio library](https://abyz.me.uk/rpi/pigpio/), joan@abyz.me.uk
+[^2]: [Raspberry Pi PWM, MathWorks](https://www.mathworks.com/help/supportpkg/raspberrypiio/ug/the-raspberry-pi-pwm.html)
