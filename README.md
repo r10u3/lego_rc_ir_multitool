@@ -149,7 +149,7 @@ irsend LIST "combo_pwm_ch1_26ns" ""
 ```
 Send a sample code
 ```
-irsend SEND_ONCE combo_pwm_ch1_26ns FW2A_FW2B
+irsend SEND_ONCE combo_pwm_ch1_26ns FW2_FW2
 ```
 #### b. Test ir-ctl
 First, navigate to the project's directory. Then send key with ir-ctl
