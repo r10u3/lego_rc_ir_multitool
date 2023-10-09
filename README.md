@@ -216,8 +216,8 @@ PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz 
 ### 2. Button Maps
 The keys are configured in the <code>maps/button_maps</code> folder. One file per rc mode. Each mode has its own set of key mappings. I only coded for the red output in most cases. Here are some comparative examples:
 
-|  Key    | Combo PWM | Combo Direct | Single PWM |
-| ------- | --------- | ------------ | ---------- |
+|  Key         |  Combo PWM   | Combo Direct |  Single PWM  |
+| ------------ | ------------ | ------------ | ------------ |
 | &uarr;  | INC       | FWD | INC |
 | &darr;  | DEC       | REV | DEC |
 | SPACE BAR | BRK     | BRK | BRK |
@@ -230,7 +230,7 @@ The keys are configured in the <code>maps/button_maps</code> folder. One file pe
 | 'b'     | RV2       | n/a | RV2 |
 | ...     | ...       | ... | ... |
 | 'g'     | RV7       | n/a | RV7 |
-| Noteworthy |-Both outputs simultaneously<br />-Speeds -7..+7<br />-Only one second|-Both outputs simultaneously<br />-Speeds Full Forward, Full Backward, Float, Break only<br />-Only one second | -One output at a time<br />-Speeds -7..+7<br />-Permanent state until new key changes it |
+| Noteworthy |<p>&bull; Both outputs simultaneously</p><p>&bull; Speeds -7..+7</p><p>&bull; Only one second</p>|<p>&bull; Both outputs simultaneously</p><p>&bull; Speeds Full Forward, Full Backward, Float, Break only</p><p>&bull; Only one second</p> | <p>&bull; One output at a time</p><p>&bull; Speeds -7..+7</p><p>&bull; Permanent state until new key changes it</p> |
 
 One important difference between the Single PWM and both Combo modes is that with Single, the state is permanent. When you press a key, the motor starts and keeps going. With the combo modes, the motor moves only for about a second and stops. You need to keep sending keys to keep the motor going.
 
@@ -243,7 +243,7 @@ Every tool has its own different keymap format. They all have a header with basi
 
 The common parameters in the header include (the names and format might change from one format to another but the meaning and values remain):
 
-| Parameter | Value | Unit | Cycles | Notes |
+| Parameter | Value[^3] | Unit | Cycles[^4] | Notes |
 |-----------|-------|------|--------|-------|
 | carrier | 38000 | Hz | n/a | |
 | cycle length | 26 | &mu;s | 1 | 1/carrier<br />**Note:** Not included as parameter, just for information purposes. Used by rpigpio to design waves. |
@@ -254,7 +254,8 @@ The common parameters in the header include (the names and format might change f
 | bit_1_space | 553 | &mu;s | 21 | 21 x cycle length |
 | trailer_pulse | 158 | &mu;s | 6 | 6 x cycle length |
 | bits | 16 | n/a | | |
-
+[^3]: Used by LIRC and <code>ir-ctl</code>
+[^4]: Used by PiIR and RPiGPIO
 
 You can find more detailed descriptions of each file format in each tool's setup file in the <code>docs</code> folder.
 
