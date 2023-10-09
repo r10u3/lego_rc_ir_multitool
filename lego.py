@@ -43,20 +43,21 @@ else:
 ## Set up System Mode
 ## Set up Remote TX Object
 ir_tool = CONFIG['ir_tool']
+GPIO = CONFIG['GPIO']
 REMOTE_KEYMAP_FOLDER_NAME = MAPS_CONFIG['keymaps'][ir_tool]['folder']
 REMOTE_KEYMAP_FILE_NAME = MAPS_CONFIG['keymaps'][CONFIG['ir_tool']][rc_mode]
 if (ir_tool == 'piir'):
     import ir_tools.piir as irt
-    remote_tx = irt.IR_PiIR(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , CONFIG['gpio_pin'])
+    remote_tx = irt.IR_PiIR(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GPIO)
 elif (ir_tool == 'rpigpio'):
     import ir_tools.rpigpio as irt
-    remote_tx = irt.PiGPIO(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , CONFIG['gpio_pin'])
+    remote_tx = irt.RPiGPIO(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GPIO)
 elif (ir_tool == 'lirc'):
     import ir_tools.lirc as irt
-    remote_tx = irt.IR_LIRC(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , CONFIG['gpio_pin'])
+    remote_tx = irt.IR_LIRC(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GPIO)
 elif (ir_tool == 'ir_ctl'):
     import ir_tools.ir_ctl as irt
-    remote_tx = irt.IR_ir_ctl(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , CONFIG['gpio_pin'])
+    remote_tx = irt.IR_ir_ctl(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GPIO)
 else:
     raise Exception(f'No IR Tool')
 

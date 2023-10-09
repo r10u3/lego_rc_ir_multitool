@@ -3,5 +3,5 @@
     "rc_mode" : "PWM",
     "maps_config_file" : "maps/maps_config.json",
     "ir_tool" : "rpigpio",
-    "gpio_pin" : 18
+    "GPIO" : 18
 }

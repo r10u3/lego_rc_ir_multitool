@@ -13,7 +13,7 @@ def test_send(config_file_name_and_path , GPIO , keycode):
     my_pigpio = PiGPIO(config_file_name , config_file_folder , GPIO)
     my_pigpio.send(keycode)
 
-class PiGPIO:
+class RPiGPIO:
 
     def __init__(self: any , keymap_file_name: str, keymap_folder_name: str,  GPIO: str) -> None:
         with open(keymap_folder_name + '/' + keymap_file_name, 'r') as config_file:
