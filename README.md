@@ -152,28 +152,28 @@ irsend LIST "" ""
 ```
 List all the available codes for a particular remote
 ```
-irsend LIST "combo_pwm_ch1_26ns" ""
+irsend LIST "combo_pwm_ch1" ""
 ```
 Send a sample code
 ```
-irsend SEND_ONCE combo_pwm_ch1_26ns FW2_FW2
+irsend SEND_ONCE combo_pwm_ch1 FW2_FW2
 ```
 #### b. Test ir-ctl
 First, navigate to the project's directory. Then send key with ir-ctl
 ```
-ir-ctl –-keymap=maps/keymaps/ir_ctl/combo_pwm_ch1_26ns.toml --keycode=FW2A_FW2B --verbose
+ir-ctl –-keymap=maps/keymaps/ir_ctl/combo_pwm_ch1.toml --keycode=FW2A_FW2B --verbose
 ```
 
 #### c. Test PiIR
 Send a sample code. Again, first navigate to the project's directory.
 ```
-piir play --gpio 18 --file maps/keymaps/piir/combo_pwm_ch1_26ns.json FW2_FW2
+piir play --gpio 18 --file maps/keymaps/piir/combo_pwm_ch1.json FW2_FW2
 ```
 
 #### c. Test rpigpio
 Send a sample code. Again, first navigate to the project's directory.
 ```
-python -c 'import ir_tools.rpigpio as irt; irt.test_send("maps/keymaps/rpigpio/combo_pwm_ch1_26ns.json" , 18 , "FW2_FW2")'
+python -c 'import ir_tools.rpigpio as irt; irt.test_send("maps/keymaps/rpigpio/combo_pwm_ch1.json" , 18 , "FW2_FW2")'
 ```
 
 ## IR Multitool Configuration
@@ -238,10 +238,10 @@ One important difference between the Single PWM and both Combo modes is that wit
 
 ### 3. Keymaps
 Every tool has its own different keymap format. They all have a header with basic protocol parameters followed by scancode-keycode pairs. But each has a different format:
-* LIRC: lirc keymaps have a <code>[.conf](https://www.lirc.org/html/lircd.conf.html)</code> extension and follow the basic rules of configuration files. Example for [Combo PWM](maps/keymaps/lirc/combo_pwm_ch1_26ns.conf).
-* ir-ctl: uses the <code>[toml](https://toml.io/en/)</code> format. Example for [Combo PWM](maps/keymaps/ir_ctl/combo_pwm_ch1_26ns.toml).
-* PiIR: uses json files. Example for [Combo PWM](maps/keymaps/piir/combo_pwm_ch1_26ns.json).
-* PiGPIO: uses json files. Example for [Combo PWM](maps/keymaps/rpigpio/combo_pwm_ch1_26ns.json).
+* LIRC: lirc keymaps have a <code>[.conf](https://www.lirc.org/html/lircd.conf.html)</code> extension and follow the basic rules of configuration files. Example for [Combo PWM](maps/keymaps/lirc/combo_pwm_ch1.conf).
+* ir-ctl: uses the <code>[toml](https://toml.io/en/)</code> format. Example for [Combo PWM](maps/keymaps/ir_ctl/combo_pwm_ch1.toml).
+* PiIR: uses json files. Example for [Combo PWM](maps/keymaps/piir/combo_pwm_ch1.json).
+* PiGPIO: uses json files. Example for [Combo PWM](maps/keymaps/rpigpio/combo_pwm_ch1.json).
 
 The common parameters in the header include (the names and format might change from one format to another but the meaning and values remain):
 
