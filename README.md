@@ -26,7 +26,9 @@ There are four IR tools that I found that work with Python and I use in this pro
    - "pigpio is a library for the Raspberry which allows control of the General Purpose Input Outputs (GPIO).  pigpio works on all versions of the Pi." [^1]
    - Among other things, it allows waveforms to generate GPIO level changes (time accurate to a few &mu;s)
    - I developed a custom object to handle the codes.
-   - With almost direct access to the GPIO, this is the fastest of all tools; especially for direct codes (rather than INC/DEC).
+   - With almost direct access to the GPIO.
+ 
+In comparing speeds roughly by eye, there is no noticeable difference between the tools. New keys are almost instantaneous, while repeated keys seem limited by sshkeyboard. This poses a limitation for increment/decrement where it takes multiple keystrokes of the same key to reach a particular speed.
 
 ## Setup
 > **Notes:**
