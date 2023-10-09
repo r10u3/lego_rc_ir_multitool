@@ -313,6 +313,10 @@ remote_tx = irt.IR_LIRC(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GP
 import ir_tools.piir as irt
 remote_tx = irt.IR_PiIR(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GPIO_PIN)
 ```
+```
+import ir_tools.rpigpio as irt
+remote_tx = irt.RPiGPIO(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GPIO)
+```
 
 ##### &#x25B6; send(data: str) -> None:
 It converts a keycode (e.g., 'FW2_FW2') to scancode (e.g., 0x422B) and sends it.
