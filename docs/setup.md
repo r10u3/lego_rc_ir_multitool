@@ -5,7 +5,7 @@ These instructions are required regardless of the tool you use.
 > Some of this content was extracted from [Vaughan Harper' blog](https://vaughanharper.com/2020/08/12/configuring-an-infrared-remote-control-to-control-runeaudio-archlinux-without-needing-lirc/)
 
 ### 1. Edit /boot/config.txt
-```
+<pre><code>
 $ sudo nano /boot/config.txt
 
 # Comment this to disable audio.
@@ -16,9 +16,8 @@ $ sudo nano /boot/config.txt
 
 # Uncomment this to enable infrared communication.
 #dtoverlay=gpio-ir,gpio_pin=17
-dtoverlay=pwm-ir-tx,gpio_pin=18
-```
-
+<b>dtoverlay=pwm-ir-tx,gpio_pin=18</b>
+</code></pre>
 ### 2. Reboot
 ```
 $ sudo reboot
