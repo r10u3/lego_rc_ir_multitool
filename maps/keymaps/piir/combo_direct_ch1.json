@@ -1,0 +1,30 @@
+{
+  "format": {
+    "preamble": [ 6, 39 ],
+    "coding": "ppm",
+    "zero": [ 6, 10 ],
+    "one": [ 6, 21 ],
+    "postamble": [ 6 ],
+    "carrier": 38000,
+    "timebase": 26,
+    "gap": 1026
+  },
+  "keys": {
+    "FLT_FLT" : "80 70",
+    "FWD_FLT" : "80 F8",
+    "REV_FLT" : "80 34",
+    "BRK_FLT" : "80 BC",
+    "FLT_FWD" : "80 52",
+    "FWD_FWD" : "80 DA",
+    "REV_FWD" : "80 16",
+    "BRK_FWD" : "80 9E",
+    "FLT_REV" : "80 61",
+    "FWD_REV" : "80 E9",
+    "REV_REV" : "80 25",
+    "BRK_REV" : "80 AD",
+    "FLT_BRK" : "80 43",
+    "FWD_BRK" : "80 CB",
+    "REV_BRK" : "80 07",
+    "BRK_BRK" : "80 8F"
+  }
+}

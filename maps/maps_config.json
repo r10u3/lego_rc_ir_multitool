@@ -4,35 +4,35 @@
         "folder": "maps/keymaps",
         "piir" : {
             "folder" : "maps/keymaps/piir",
-            "combo_direct" : "combo_direct_ch1_26ns.json",
-            "combo_pwm"    : "combo_pwm_ch1_26ns.json",
-            "single_pwm"   : "single_pwm_ch1_26ns.json",
-            "single_other" : "single_other_ch1_26ns_red.json",
-            "extended"     : "extended_ch1_26ns_red.json"
+            "combo_direct" : "combo_direct_ch1.json",
+            "combo_pwm"    : "combo_pwm_ch1.json",
+            "single_pwm"   : "single_pwm_ch1.json",
+            "single_other" : "single_other_ch1_red.json",
+            "extended"     : "extended_ch1_red.json"
         },
         "lirc" : {
             "folder" : "maps/keymaps/lirc",
-            "combo_direct" : "combo_direct_ch1_26ns.conf",
-            "combo_pwm"    : "combo_pwm_ch1_26ns.conf",
-            "single_pwm"   : "single_pwm_ch1_26ns.conf",
-            "single_other" : "single_other_ch1_26ns_red.conf",
-            "extended"     : "extended_ch1_26ns_red.conf"
+            "combo_direct" : "combo_direct_ch1.conf",
+            "combo_pwm"    : "combo_pwm_ch1.conf",
+            "single_pwm"   : "single_pwm_ch1.conf",
+            "single_other" : "single_other_ch1_red.conf",
+            "extended"     : "extended_ch1_red.conf"
         },
         "ir_ctl" : {
             "folder" : "maps/keymaps/ir_ctl",
-            "combo_direct" : "combo_direct_ch1_26ns.toml",
-            "combo_pwm"    : "combo_pwm_ch1_26ns.toml",
-            "single_pwm"   : "single_pwm_ch1_26ns.toml",
-            "single_other" : "single_other_ch1_26ns_red.toml",
-            "extended"     : "extended_ch1_26ns_red.toml"
+            "combo_direct" : "combo_direct_ch1.toml",
+            "combo_pwm"    : "combo_pwm_ch1.toml",
+            "single_pwm"   : "single_pwm_ch1.toml",
+            "single_other" : "single_other_ch1_red.toml",
+            "extended"     : "extended_ch1_red.toml"
         },
         "rpigpio" : {
             "folder" : "maps/keymaps/rpigpio",
-            "combo_direct" : "combo_direct_ch1_26ns.json",
-            "combo_pwm"    : "combo_pwm_ch1_26ns.json",
-            "single_pwm"   : "single_pwm_ch1_26ns.json",
-            "single_other" : "single_other_ch1_26ns_red.json",
-            "extended"     : "extended_ch1_26ns_red.json"
+            "combo_direct" : "combo_direct_ch1.json",
+            "combo_pwm"    : "combo_pwm_ch1.json",
+            "single_pwm"   : "single_pwm_ch1.json",
+            "single_other" : "single_other_ch1_red.json",
+            "extended"     : "extended_ch1_red.json"
         }
     },
     "button_maps" : {

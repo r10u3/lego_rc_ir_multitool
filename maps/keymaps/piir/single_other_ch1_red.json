@@ -1,0 +1,30 @@
+{
+  "format": {
+    "preamble": [ 6, 39 ],
+    "coding": "ppm",
+    "zero": [ 6, 10 ],
+    "one": [ 6, 21 ],
+    "postamble": [ 6 ],
+    "carrier": 38000,
+    "timebase": 26,
+    "gap": 1026
+  },
+  "keys": {
+    "R_TOG_0000" : "60 90",
+    "R_TOG_DIR" : "60 18",
+    "R_INC_NUM" : "60 D4",
+    "R_DEC_NUM" : "60 5C",
+    "R_INC_PWM" : "60 B2",
+    "R_DEC_PWM" : "60 3A",
+    "R_FUL_FWD" : "60 F6",
+    "R_FUL_BCK" : "60 7E",
+    "R_TOG_1000" : "60 81",
+    "R_CLR_C1" : "60 09",
+    "R_SET_C1" : "60 C5",
+    "R_TOG_C1" : "60 4D",
+    "R_CLR_C2" : "60 09",
+    "R_SET_C2" : "60 C5",
+    "R_TOG_C2" : "60 4D",
+    "R_TOG_1111" : "60 6F"
+    }
+}
