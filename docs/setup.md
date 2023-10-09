@@ -1,9 +1,8 @@
 # Initial Setup of IR on Raspberry Pi
-> **Notes:**
-> 
+These instructions are required regardless of the tool you use.
+
+> **Note:**
 > Some of this content was extracted from [Vaughan Harper' blog](https://vaughanharper.com/2020/08/12/configuring-an-infrared-remote-control-to-control-runeaudio-archlinux-without-needing-lirc/)
->
-> I use a Raspberry Pi 1A v2. This model is limited to one hardware PWM pin (Pin 12 = GPIO18)
 
 ### 1. Edit /boot/config.txt
 ```
@@ -34,6 +33,7 @@ gpio_ir_tx              3607  0
 ```
 
 ### 4. See if GPIO 18 is PWM
+> **Note:** I use a Raspberry Pi 1A v2. This model is limited to one hardware PWM pin (Pin 12 = GPIO18)
 ```
 $ raspi-gpio get 18
 
