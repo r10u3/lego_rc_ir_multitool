@@ -1,17 +1,22 @@
 import pigpio
 import json
-GPIO=18
-CARRIER = 38000
 
-PULSE_CYCLES = 6
-START_SPACE_CYCLES = 39
-ZERO_SPACE_CYCLES = 10
-ONE_SPACE_CYCLES = 21
+def test_send(config_file_name_and_path , GPIO , keycode):
+    x = config_file_name_and_path.rfind('/')
+    if (x == -1):
+        config_file_folder = ''
+        config_file_name = config_file_name_and_path
+    else:
+        config_file_folder = config_file_name_and_path[0:x]
+        config_file_name = config_file_name_and_path[x+1:]
+
+    my_pigpio = PiGPIO(config_file_name , config_file_folder , GPIO)
+    my_pigpio.send(keycode)
 
 class PiGPIO:
 
-    def __init__(self , config_file_name , config_file_folder , pin):
-        with open(config_file_folder + '/' + config_file_name, 'r') as config_file:
+    def __init__(self: any , keymap_file_name: str, keymap_folder_name: str,  GPIO: str) -> None:
+        with open(keymap_folder_name + '/' + keymap_file_name, 'r') as config_file:
             config = json.loads(config_file.read())
 
         frequency          = config['parameters']['frequency']
@@ -21,14 +26,13 @@ class PiGPIO:
         one_space_length   = config['parameters']['one']
         stop_space_length  = config['parameters']['trailing']
         self.bits          = config['parameters']['bits']
-
         self.keymap        = config['keycodes']
+        self.__config(GPIO , frequency , pulse_length , start_space_length , zero_space_length, one_space_length , stop_space_length)
+        print(f'Remote: rpigpio: {keymap_file_name}')
 
-        self.__config(pin , frequency , pulse_length , start_space_length , zero_space_length, one_space_length , stop_space_length)
-
-    def __config(self , pin , frequency , pulse_length , start_space_length , zero_space_length, one_space_length , stop_space_length) -> None:
+    def __config(self , GPIO , frequency , pulse_length , start_space_length , zero_space_length, one_space_length , stop_space_length) -> None:
         self.pi = pigpio.pi()       # pi1 accesses the local Pi's GPIO
-        self.pi.set_mode(pin, pigpio.OUTPUT)
+        self.pi.set_mode(GPIO, pigpio.OUTPUT)
 
         start_delay = int(1000000 / frequency * start_space_length)
         zero_delay  = int(1000000 / frequency * zero_space_length )
