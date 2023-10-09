@@ -1,12 +1,12 @@
 {
   "parameters": {
     "pulse"    :  6,
-    "heading"  : 39,
-    "zero"     : 10,
-    "one"      : 21,
-    "trailing" : 39,
-    "frequency": 38000,
-    "bits"     : 16
+    "heading_space"  : 39,
+    "zero_space"     : 10,
+    "one_space"      : 21,
+    "trailing_space" : 39,
+    "frequency"      : 38000,
+    "bits"           : 16
   },
   "keycodes": {
     "FLT_FLT" : "0x010E",

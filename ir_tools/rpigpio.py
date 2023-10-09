@@ -10,7 +10,7 @@ def test_send(config_file_name_and_path , GPIO , keycode):
         config_file_folder = config_file_name_and_path[0:x]
         config_file_name = config_file_name_and_path[x+1:]
 
-    my_pigpio = PiGPIO(config_file_name , config_file_folder , GPIO)
+    my_pigpio = RPiGPIO(config_file_name , config_file_folder , GPIO)
     my_pigpio.send(keycode)
 
 class RPiGPIO:
@@ -21,10 +21,10 @@ class RPiGPIO:
 
         frequency          = config['parameters']['frequency']
         pulse_length       = config['parameters']['pulse']
-        start_space_length = config['parameters']['heading']
-        zero_space_length  = config['parameters']['zero']
-        one_space_length   = config['parameters']['one']
-        stop_space_length  = config['parameters']['trailing']
+        start_space_length = config['parameters']['heading_space']
+        zero_space_length  = config['parameters']['zero_space']
+        one_space_length   = config['parameters']['one_space']
+        stop_space_length  = config['parameters']['trailing_space']
         self.bits          = config['parameters']['bits']
         self.keymap        = config['keycodes']
         self.__config(GPIO , frequency , pulse_length , start_space_length , zero_space_length, one_space_length , stop_space_length)
