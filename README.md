@@ -2,7 +2,7 @@
 <em>Last updated: 10/9/2023</em>
 ## Introduction
 
-This project is part of using a Raspberry Pi as a [Lego:tm: PowerFunctions](#legotm-protocol) controller. 
+This project is part of using a Raspberry Pi as a [Lego:tm: PowerFunctions](#legotm-protocol) controller. In my case, I use a headless Raspberry Pi 1 version 2, with Raspbian Bullseye. I also use a simple transmitter using an IR LED and a simple circuit (see [rc_transmitter](docs/rc_transmitter.md) for more details).
 > **Note:** Technically, the app can use any remote. Except for the pigpio which is only coded for pulse distance encoding.
 
 There are four IR tools that I found that work with Python and I use in this project:
@@ -232,9 +232,9 @@ The keys are configured in the <code>maps/button_maps</code> folder. One file pe
 | 'b'     | RV2       | n/a | RV2 | TOG_B |
 | ...     | ...       | ... | ... | ... |
 | 'g'     | RV7       | n/a | RV7 | n/a |
-| Noteworthy |<p>&bull; Both outputs simultaneously</p><p>&bull; Speeds -7&#184;&#184;+7</p><p>&bull; Only one second</p>|<p>&bull; Both outputs simultaneously</p><p>&bull; Speeds Full Forward, Full Backward, Float, Break only</p><p>&bull; Only one second</p> | <p>&bull; One output at a time</p><p>&bull; Speeds -7&#184;&#184;+7</p><p>&bull; Permanent state until new key changes it</p> | <p>&bull; One output at a time</p><p>&bull; Red speeds -7&#184;&#184;+7, blue speeds Full Forward/Float</p><p>&bull; Permanent state until new key changes it</p><p>&bull; Toggle address bit, but doesn't accept <em>extended</em> commands with <code>address bit = 1</code> |
+| Noteworthy |<p>&bull; Both outputs simultaneously</p><p>&bull; Speeds -7&#183;&#183;+7</p><p>&bull; Only one second</p>|<p>&bull; Both outputs simultaneously</p><p>&bull; Speeds Full Forward, Full Backward, Float, Break only</p><p>&bull; Only one second</p> | <p>&bull; One output at a time</p><p>&bull; Speeds -7&#183;&#183;+7</p><p>&bull; Permanent state until new key changes it</p> | <p>&bull; One output at a time</p><p>&bull; Red speeds -7&#183;&#183;+7, blue speeds Full Forward/Float</p><p>&bull; Permanent state until new key changes it</p><p>&bull; Toggle address bit, but doesn't accept <em>extended</em> commands with <code>address bit = 1</code> |
 
-One important difference between the Single PWM and both Combo modes is that with Single, the state is permanent. When you press a key, the motor starts and keeps going. With the combo modes, the motor moves only for about a second and stops. You need to keep sending keys to keep the motor going.
+One important difference between the Single PWM, Extended and both Combo modes is that with Single and Extended, the state is permanent. When you press a key, the motor starts and keeps going. With the combo modes, the motor moves only for about a second and stops. You need to keep sending keycodes to keep the motor going.
 
 ### 3. Keymaps
 Every tool has its own different keymap format. They all have a header with basic protocol parameters followed by scancode-keycode pairs. But each has a different format:
@@ -379,14 +379,14 @@ Returns <code>keycode</code>. Key must exist in keymap.json. Actions programmed 
 * increment speed=‘INC’
 * decrement speed= ‘DEC’
 * float= ‘FLT’
-* set speed (-7&#184;&#184;+7) except Combo Direct which does not support intermediate speeds.
+* set speed (-7&#183;&#183;+7) except Combo Direct which does not support intermediate speeds.
 ```
 rc_encoder.action(key)
 ```
 
 ##### &#x25B6; <code>speed_change(color: str , increment: int) -> keycode: str</code>
 Change speed by increments. Returns <code>keycode</code>.
-The range of speeds is -7&#184;&#184;+7. Float is 0. If <code>abs(state[color] + increment) > 7</code> it will not change speed and return the keycode for the current speed.
+The range of speeds is -7&#183;&#183;+7. Float is 0. If <code>abs(state[color] + increment) > 7</code> it will not change speed and return the keycode for the current speed.
 The Combo Direct mode only supports full forward and full backward. It does not support intermediate speeds.
 ```
 rc_encoder.speed_change(color, increment)
@@ -394,7 +394,7 @@ rc_encoder.speed_change(color, increment)
 
 ##### &#x25B6; <code>set_speed(color: str , speed: int) -> keycode: str</code>
 Sets speed. Returns <code>keycode</code>.
-* The range of speeds is -7&#184;&#184;+7 (except Combo Direct)
+* The range of speeds is -7&#183;&#183;+7 (except Combo Direct)
 * 0 is Float
 * -99: break then float
 ```
