@@ -14,4 +14,4 @@ The **ground is connected to a ground** (like PIN 6).
 
 We **connect the power to 5V** (like PIN 4) rather than a 3.3. This has two reasons and a caveat: (1) it provides more power to the LEDs; (2) it draws power directly from the source, with less risk of burning the RPi (I think); and (3) the caveat is that by drawing more power, we might be leaving too little for the RPi. This happened to me and took a while to figure out. I was getting a USB error. The solution was to use a more powerful power supply (1.2A).
 
-The **output pin is connected to PIN 12** (or GPIO 18). Any PWM pin would do for output. The RPi 1B has only one PWM.
+The **output pin is connected to PIN 12** (or GPIO 18). Any hardware PWM pin would do for output. The RPi 1B has only one PWM.
