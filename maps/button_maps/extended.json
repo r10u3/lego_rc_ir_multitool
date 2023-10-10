@@ -1,0 +1,7 @@
+{
+    "space" : ["red" , "BRK"],
+    "up"    : ["red" , "INC"],
+    "down"  : ["red" , "DEC"],
+    "b"     : ["blue" , "TOG"],
+    "a"     : ["" , "TOG_ADDR"]
+}

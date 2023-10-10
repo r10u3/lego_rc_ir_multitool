@@ -51,7 +51,6 @@ class Single_PWM:
         return keycode
 
     def set_speed(self , color: str , speed: int) -> str:
-        global state
         if (speed == -99):
             self.state[color] = -99
             keycode = self.get_keycode(color , self.state[color])

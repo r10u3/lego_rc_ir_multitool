@@ -8,7 +8,7 @@
             "combo_pwm"    : "combo_pwm_ch1.json",
             "single_pwm"   : "single_pwm_ch1.json",
             "single_other" : "single_other_ch1_red.json",
-            "extended"     : "extended_ch1_red.json"
+            "extended"     : "extended_ch1.json"
         },
         "lirc" : {
             "folder" : "maps/keymaps/lirc",
@@ -16,7 +16,7 @@
             "combo_pwm"    : "combo_pwm_ch1.conf",
             "single_pwm"   : "single_pwm_ch1.conf",
             "single_other" : "single_other_ch1_red.conf",
-            "extended"     : "extended_ch1_red.conf"
+            "extended"     : "extended_ch1.conf"
         },
         "ir_ctl" : {
             "folder" : "maps/keymaps/ir_ctl",
@@ -24,7 +24,7 @@
             "combo_pwm"    : "combo_pwm_ch1.toml",
             "single_pwm"   : "single_pwm_ch1.toml",
             "single_other" : "single_other_ch1_red.toml",
-            "extended"     : "extended_ch1_red.toml"
+            "extended"     : "extended_ch1.toml"
         },
         "rpigpio" : {
             "folder" : "maps/keymaps/rpigpio",
@@ -32,7 +32,7 @@
             "combo_pwm"    : "combo_pwm_ch1.json",
             "single_pwm"   : "single_pwm_ch1.json",
             "single_other" : "single_other_ch1_red.json",
-            "extended"     : "extended_ch1_red.json"
+            "extended"     : "extended_ch1.json"
         }
     },
     "button_maps" : {

@@ -202,8 +202,8 @@ The available modes are:
    - PWM: Combo PWM
    - DIR: Combo Direct
    - SGL: Single PWM
+   - EXT: Extended
    - OTH: Single Clear/Set/Toggle/Inc/Dec (doesn't work)
-   - EXT: Extended (not implemented)
 
 #### d. <code>ir_tool</code>
 The available tools are:
@@ -218,21 +218,21 @@ PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz 
 ### 2. Button Maps
 The keys are configured in the <code>maps/button_maps</code> folder. One file per rc mode. Each mode has its own set of key mappings. I only coded for the red output in most cases. Here are some comparative examples:
 
-|  Key         |  Combo PWM   | Combo Direct |  Single PWM  |
-| ------------ | ------------ | ------------ | ------------ |
-| &uarr;  | INC       | FWD | INC |
-| &darr;  | DEC       | REV | DEC |
-| SPACE BAR | BRK     | BRK | BRK |
-| 'l'     | FLT       | FLT | FLT |
-| '1'     | FW1       | n/a | FW1 |
-| '2'     | FW2       | n/a | FW2 |
-| ...     | ...       | ... | ... |
-| '7'     | FW7       | n/a | FW7 |
-| 'a'     | RV1       | n/a | RV1 |
-| 'b'     | RV2       | n/a | RV2 |
-| ...     | ...       | ... | ... |
-| 'g'     | RV7       | n/a | RV7 |
-| Noteworthy |<p>&bull; Both outputs simultaneously</p><p>&bull; Speeds -7..+7</p><p>&bull; Only one second</p>|<p>&bull; Both outputs simultaneously</p><p>&bull; Speeds Full Forward, Full Backward, Float, Break only</p><p>&bull; Only one second</p> | <p>&bull; One output at a time</p><p>&bull; Speeds -7..+7</p><p>&bull; Permanent state until new key changes it</p> |
+|  Key         |  Combo PWM   | Combo Direct |  Single PWM  |   Extended   |
+| ------------ | ------------ | ------------ | ------------ | ------------ |
+| &uarr;  | INC       | FWD | INC | INC |
+| &darr;  | DEC       | REV | DEC | DEC |
+| SPACE BAR | BRK     | BRK | BRK | BRK |
+| 'l'     | FLT       | FLT | FLT | n/a |
+| '1'     | FW1       | n/a | FW1 | n/a |
+| '2'     | FW2       | n/a | FW2 | n/a |
+| ...     | ...       | ... | ... | ... |
+| '7'     | FW7       | n/a | FW7 | n/a |
+| 'a'     | RV1       | n/a | RV1 | TOG_ADDR |
+| 'b'     | RV2       | n/a | RV2 | TOG_B |
+| ...     | ...       | ... | ... | ... |
+| 'g'     | RV7       | n/a | RV7 | n/a |
+| Noteworthy |<p>&bull; Both outputs simultaneously</p><p>&bull; Speeds -7&#184;&#184;+7</p><p>&bull; Only one second</p>|<p>&bull; Both outputs simultaneously</p><p>&bull; Speeds Full Forward, Full Backward, Float, Break only</p><p>&bull; Only one second</p> | <p>&bull; One output at a time</p><p>&bull; Speeds -7&#184;&#184;+7</p><p>&bull; Permanent state until new key changes it</p> | <p>&bull; One output at a time</p><p>&bull; Red speeds -7&#184;&#184;+7, blue speeds Full Forward/Float</p><p>&bull; Permanent state until new key changes it</p><p>&bull; Toggle address bit, but doesn't accept <em>extended</em> commands with <code>address bit = 1</code> |
 
 One important difference between the Single PWM and both Combo modes is that with Single, the state is permanent. When you press a key, the motor starts and keeps going. With the combo modes, the motor moves only for about a second and stops. You need to keep sending keys to keep the motor going.
 
@@ -343,13 +343,14 @@ Arguments:
   * Combo_PWM
   * Combo_Direct
   * Single_PWM
+  * Extended
   * Single_Other (doesn't work)
-  * Extended is not coded yet
 * All have the same methods and attributes with the same signatures
-* Keep track of current speeds for red and blue outputs (only red is functional though)
+* Keep track of current speeds for red and blue outputs. Only red is functional though, except for <em>Extended</em> mode.
 * Perform actions:
   * set speed
   * change speed in increments
+  * in some cases toggle between full forward and float
 * Provide keycode corresponding to self reported speeds
 
 #### b. Methods
@@ -378,14 +379,14 @@ Returns <code>keycode</code>. Key must exist in keymap.json. Actions programmed 
 * increment speed=‘INC’
 * decrement speed= ‘DEC’
 * float= ‘FLT’
-* set speed (-7..+7) except Combo Direct which does not support intermediate speeds.
+* set speed (-7&#184;&#184;+7) except Combo Direct which does not support intermediate speeds.
 ```
 rc_encoder.action(key)
 ```
 
 ##### &#x25B6; <code>speed_change(color: str , increment: int) -> keycode: str</code>
 Change speed by increments. Returns <code>keycode</code>.
-The range of speeds is -7 - +7. Float is 0. If <code>abs(state[color] + increment) > 7</code> it will not change speed and return the keycode for the current speed.
+The range of speeds is -7&#184;&#184;+7. Float is 0. If <code>abs(state[color] + increment) > 7</code> it will not change speed and return the keycode for the current speed.
 The Combo Direct mode only supports full forward and full backward. It does not support intermediate speeds.
 ```
 rc_encoder.speed_change(color, increment)
@@ -393,7 +394,7 @@ rc_encoder.speed_change(color, increment)
 
 ##### &#x25B6; <code>set_speed(color: str , speed: int) -> keycode: str</code>
 Sets speed. Returns <code>keycode</code>.
-* The range of speeds is -7 to +7 (except Combo Direct)
+* The range of speeds is -7&#184;&#184;+7 (except Combo Direct)
 * 0 is Float
 * -99: break then float
 ```

@@ -17,9 +17,6 @@ class Single_Other:
             }
 
     def get_keycode(self , color: str , action: str) -> str:
-        #print(f'color: {color}')
-        #print(COLORS)
-        #print (COLORS[color])
         keycode = self.COLORS[color] + '_' + action
         return keycode
 

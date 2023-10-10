@@ -37,6 +37,9 @@ elif (CONFIG['rc_mode'] == 'SGL'):
 elif (CONFIG['rc_mode'] == 'OTH'):
     import power_functions.single_other as pf
     rc_encoder = pf.Single_Other()
+elif (CONFIG['rc_mode'] == 'EXT'):
+    import power_functions.extended as pf
+    rc_encoder = pf.Extended()
 else:
     raise Exception(f'No Remote Mode')
 
