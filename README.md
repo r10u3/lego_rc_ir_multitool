@@ -2,7 +2,7 @@
 <em>Last updated: 10/9/2023</em>
 ## Introduction
 
-This project is part of using a Raspberry Pi as a [Lego:tm: PowerFunctions](#legotm-protocol) controller. In my case, I use a headless Raspberry Pi 1 version 2, with Raspbian Bullseye. I also use a simple transmitter using an IR LED and a simple circuit (see [rc_transmitter](docs/rc_transmitter.md) for more details).
+This project is part of using a Raspberry Pi as a [Lego:tm: PowerFunctions](docs/Lego_Protocol.md) controller. In my case, I use a headless Raspberry Pi 1 version 2, with Raspbian Bullseye. I also use a simple transmitter using an IR LED and a simple circuit (see [rc_transmitter](docs/rc_transmitter.md) for more details).
 > **Note:** Technically, the app can use any remote. Except for the pigpio which is only coded for pulse distance encoding.
 
 There are four IR tools that I found that work with Python and I use in this project:
