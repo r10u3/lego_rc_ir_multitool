@@ -7,7 +7,7 @@
 * Breadboard cables as needed (I use AWG22)
 * Circuit and Connections
 
-We use the following circuit: ![transmitter_circuit](docs/rpi_with_tx_circuit.jpg)
+We use the following circuit: ![transmitter_circuit](rpi_with_tx_circuit.jpg)
 This circuit will serve two purposes: (1) it can be used to test a particular pin using the LED, (2) it will emit IR using the IR-LED.
 
 The **ground is connected to a ground** (like PIN 6).
