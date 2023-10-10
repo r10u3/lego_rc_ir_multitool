@@ -27,10 +27,7 @@ class RPiGPIO:
         stop_space_length  = config['parameters']['trailing_space']
         self.bits          = config['parameters']['bits']
         self.keymap        = config['keycodes']
-        self.__config(GPIO , frequency , pulse_length , start_space_length , zero_space_length, one_space_length , stop_space_length)
-        print(f'Remote: rpigpio: {keymap_file_name}')
 
-    def __config(self , GPIO , frequency , pulse_length , start_space_length , zero_space_length, one_space_length , stop_space_length) -> None:
         self.pi = pigpio.pi()       # pi1 accesses the local Pi's GPIO
         self.pi.set_mode(GPIO, pigpio.OUTPUT)
 
@@ -65,6 +62,8 @@ class RPiGPIO:
         self.pi.wave_add_generic(one_wave_generic)
         self.stop_wave = self.pi.wave_create() # create and save id
 
+        print(f'Remote: rpigpio: {keymap_file_name}')
+    
     def append_pulse(self , GPIO: int, carrier: int, cycles: int) -> pigpio.pulse:
         half_cycle = int(1000000  / carrier / 2)
         #                            ON       OFF      DELAY
@@ -76,25 +75,26 @@ class RPiGPIO:
             pulse.append(cycle_off)
         return pulse
 
-    def append_scancode(self , wave_chain , scancode : int):
+    def append_scancode(self , wave_chain , scancode : str):
         for bit in scancode:
             if bit == '0':
                 wave_chain.append(self.zero_wave)
             elif bit == '1':
                 wave_chain.append(self.one_wave)
             else:
-                raise Exception(f'Sorry, character {bit} is not a bit')
+                error = f'Sorry, character {bit} is not a bit'
+                raise Exception(error)
         return wave_chain
 
     def send_scancode(self , data: int) -> pigpio.pi.wave_chain:
+        self.pi.wave_tx_stop()
         bin_data = bin(data)[2:].zfill(self.bits)
-        print(bin_data)
+        print(f'Binary data: {bin_data}')
         wave_chain = []
         wave_chain.append(self.start_wave)
         wave_chain = self.append_scancode(wave_chain , bin_data)
         wave_chain.append(self.stop_wave)
-        print(wave_chain)
-        self.pi.wave_tx_stop()
+        print(f'Wave Chain: {wave_chain}')
         self.pi.wave_chain(wave_chain)
         return wave_chain
     
