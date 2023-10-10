@@ -26,22 +26,23 @@ MAPS_CONFIG = get_maps_config(CONFIG['maps_config_file'])
 rc_mode = RC_MODES[CONFIG['rc_mode']]
 RC_MODE = CONFIG['rc_mode']
 if (CONFIG['rc_mode'] == 'PWM'):
-    import power_functions.combo_pwm as pf
+    import power_functions_encoders.combo_pwm as pf
     rc_encoder = pf.Combo_PWM()
 elif (CONFIG['rc_mode'] == 'DIR'):
-    import power_functions.combo_direct as pf
+    import power_functions_encoders.combo_direct as pf
     rc_encoder = pf.Combo_Direct()
 elif (CONFIG['rc_mode'] == 'SGL'):
-    import power_functions.single_pwm as pf
+    import power_functions_encoders.single_pwm as pf
     rc_encoder = pf.Single_PWM()
 elif (CONFIG['rc_mode'] == 'OTH'):
-    import power_functions.single_other as pf
+    import power_functions_encoders.single_other as pf
     rc_encoder = pf.Single_Other()
 elif (CONFIG['rc_mode'] == 'EXT'):
-    import power_functions.extended as pf
+    import power_functions_encoders.extended as pf
     rc_encoder = pf.Extended()
 else:
-    raise Exception(f'No Remote Mode')
+    error = f'ERR_Lego_10: No Remote Mode'
+    raise Exception(error)
 
 ## Set up System Mode
 ## Set up Remote TX Object
@@ -51,18 +52,19 @@ REMOTE_KEYMAP_FOLDER_NAME = MAPS_CONFIG['keymaps'][ir_tool]['folder']
 REMOTE_KEYMAP_FILE_NAME = MAPS_CONFIG['keymaps'][CONFIG['ir_tool']][rc_mode]
 if (ir_tool == 'piir'):
     import ir_tools.piir as irt
-    remote_tx = irt.IR_PiIR(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GPIO)
+    remote_tx = irt.IR_PiIR(GPIO , REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME)
 elif (ir_tool == 'rpigpio'):
     import ir_tools.rpigpio as irt
-    remote_tx = irt.RPiGPIO(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GPIO)
+    remote_tx = irt.RPiGPIO(GPIO , REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME)
 elif (ir_tool == 'lirc'):
     import ir_tools.lirc as irt
-    remote_tx = irt.IR_LIRC(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GPIO)
+    remote_tx = irt.IR_LIRC(GPIO , REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME)
 elif (ir_tool == 'ir_ctl'):
     import ir_tools.ir_ctl as irt
-    remote_tx = irt.IR_ir_ctl(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GPIO)
+    remote_tx = irt.IR_ir_ctl(GPIO , REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME)
 else:
-    raise Exception(f'No IR Tool')
+    error = f'ERR_Lego_020: No IR Tool'
+    raise Exception(error)
 
 
 ## Set up KEYBOARD
@@ -79,7 +81,7 @@ def on_press(key: str) -> bool:
     if kb.is_mapped_key(key):
         mapped_key = kb.get_action(key)
         print(f'Mapped Key: {mapped_key}')
-        data = rc_encoder.action(mapped_key)
+        data = rc_encoder.action(*mapped_key)
         remote_tx.send(data)
         print(f'keycode sent: {data}')
         return True

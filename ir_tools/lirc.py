@@ -1,8 +1,7 @@
 import lirc
 
-
 class IR_LIRC:
-    def __init__(self: any , keymap_file_name: str, keymap_folder_name: str,  gpio_pin: str) -> None:
+    def __init__(self: any ,  GPIO: str , keymap_file_name: str, keymap_folder_name : str = '/maps/keymaps/lirc') -> None:
         self.LIRC_CLIENT = lirc.Client()
         self.REMOTE_NAME = keymap_file_name[0 : (len(keymap_file_name)-5)]
         print(f'Remote: lirc: {keymap_file_name}')

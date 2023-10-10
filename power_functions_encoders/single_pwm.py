@@ -1,10 +1,8 @@
-class Combo_PWM:
+class Single_PWM:
     
     def __init__(self) -> None:
         pass
-
-
-    NAME = 'Combo_PWM'
+    NAME = 'Single_PWM'
 
     SPEEDS = {
         0 : 'FLT',
@@ -25,38 +23,44 @@ class Combo_PWM:
         -1 : 'RV1'
     }
 
+    COLORS = {
+        'red': 'R',
+        'blue': 'B'
+    }
+
     # holds speeds
     state = {
                 'red'  : 0 , 
                 'blue' : 0
             }
 
-    def get_keycode(self , speed_red: int , speed_blue: int) -> str:
-        if (speed_red not in self.SPEEDS or speed_blue not in self.SPEEDS):
-            return 'ERROR: one of the speeds not in range'
-        keycode = self.SPEEDS[speed_red]+'_'+self.SPEEDS[speed_blue]
+    def get_keycode(self , color: str , speed: int) -> str:
+        #print(f'color: {color}')
+        #print(self.COLORS)
+        if (speed not in self.SPEEDS):
+            return 'ERROR: Speed not in range'
+        #print (self.COLORS[color])
+        keycode = self.COLORS[color] + "_" + self.SPEEDS[speed]
         return keycode
 
     def speed_change(self , color: str , increment: int) -> str:
         if (abs(self.state[color] + increment) <= 7):
             self.state[color] += increment
-            #print (f'Color: {color} | State[{color}]: {state[color]} | increment: {increment}')
-        keycode = self.get_keycode(self.state['red'] , self.state['blue'])
+            #print (f'Color: {color} | self.state[{color}]: {self.state[color]} | increment: {increment}')
+        keycode = self.get_keycode(color , self.state[color])
         return keycode
 
     def set_speed(self , color: str , speed: int) -> str:
         if (speed == -99):
             self.state[color] = -99
-            keycode = self.get_keycode(self.state['red'] , self.state['blue'])
+            keycode = self.get_keycode(color , self.state[color])
             self.state[color] = 0
         else:
             self.state[color] = speed
-            keycode = self.get_keycode(self.state['red'] , self.state['blue'])
+            keycode = self.get_keycode(color , self.state[color])
         return keycode
 
-    def action(self , mapped_key) -> str:
-        color = mapped_key[0]
-        action= mapped_key[1]
+    def action(self , color , action) -> str:
         if action == 'BRK':
             data = self.set_speed(color , -99)
         elif action == 'INC':

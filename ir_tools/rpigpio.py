@@ -15,7 +15,7 @@ def test_send(config_file_name_and_path , GPIO , keycode):
 
 class RPiGPIO:
 
-    def __init__(self: any , keymap_file_name: str, keymap_folder_name: str,  GPIO: str) -> None:
+    def __init__(self: any ,  GPIO: str , keymap_file_name: str, keymap_folder_name = '/maps/keymaps/lirc') -> None:
         with open(keymap_folder_name + '/' + keymap_file_name, 'r') as config_file:
             config = json.loads(config_file.read())
 
@@ -64,7 +64,7 @@ class RPiGPIO:
 
         print(f'Remote: rpigpio: {keymap_file_name}')
     
-    def append_pulse(self , GPIO: int, carrier: int, cycles: int) -> pigpio.pulse:
+    def append_pulse(self , GPIO: int, carrier: int, cycles: int) -> [pigpio.pulse]:
         half_cycle = int(1000000  / carrier / 2)
         #                            ON       OFF      DELAY
         cycle_on    = pigpio.pulse(1<<GPIO,    0   , half_cycle )

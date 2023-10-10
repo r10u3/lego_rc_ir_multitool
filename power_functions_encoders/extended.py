@@ -34,7 +34,7 @@ class Extended:
                 'blue' : 0
             }
     
-    toggle_bit = '0'
+    toggle_bit = '1'
     addres_bit = '0'
     
     def __init__(self) -> None:
@@ -67,7 +67,7 @@ class Extended:
         elif increment == -1:
             keycode = 'DEC_R' + '_' + self.toggle_bit + '0'
         else:
-            error = f'Sorry, there is a problem with the speed increment'
+            error = f'ERR_EXT_010: Sorry, there is a problem with the speed increment'
             raise Exception(error)
         return keycode
 
@@ -85,14 +85,11 @@ class Extended:
             self.state[color] = 7
             keycode = 'TOG_B_' + self.toggle_bit + '0'
         else:
-            error = f'Sorry, color: {color}-speed: {speed}- state: {self.state[color]} combination is not valid or does not have enough information'
+            error = f'ERR_EXT_020: Sorry, color: {color}-speed: {speed}- state: {self.state[color]} combination is not valid or does not have enough information'
             raise Exception(error)
         return keycode
 
-        
-    def action(self , mapped_key) -> str:
-        color = mapped_key[0]
-        action= mapped_key[1]
+    def action(self , color: str , action: str) -> str:
         if action == 'BRK':
             self.state[color] = 0
             data = 'BRK_R' + '_' + self.toggle_bit + '0'
@@ -106,14 +103,14 @@ class Extended:
             elif (self.state['blue'] == 0):
                 self.state['blue'] = 7
             else:
-                error = f'Sorry, there is a problem with the speed of the Blue output'
+                error = f'ERR_EXT_030: Sorry, there is a problem with the speed of the Blue output'
                 raise Exception(error)
             data = 'TOG_B' + '_' + self.toggle_bit + '0'
         elif action == 'TOG_ADDR':
             self.toggle_address_bit()
             data = 'TOGG' + '_' + self.toggle_bit + self.addres_bit
         else:
-            error = f'Action {action} not recognized'
+            error = f'ERR_EXT_040: Action {action} not recognized'
             raise Exception(error)
         self.toggle_toggle_bit()
         return data

@@ -22,27 +22,26 @@ class Combo_Direct:
         pass
 
     def get_keycode(self , speed_red: int , speed_blue: int) -> str:
-        if (speed_red not in self.SPEEDS or speed_blue not in self.SPEEDS):
-            return 'ERROR: one of the speeds not in range'
+        if speed_red not in self.SPEEDS or speed_blue not in self.SPEEDS:
+            error = 'ERR_DIR_10: one of the speeds not in range' 
+            raise Exception(error)
         keycode = self.SPEEDS[speed_red]+'_'+self.SPEEDS[speed_blue]
         return keycode
 
     def set_speed(self , color: str , speed: int) -> str:
-        if (speed == -99):
+        if speed == -99:
             self.state[color] = -99
             keycode = self.get_keycode(self.state['red'] , self.state['blue'])
             self.state[color] = 0
+        elif abs(speed) == 7 or speed == 0:
+            self.state[color] = speed
+            keycode = self.get_keycode(self.state['red'] , self.state['blue'])
         else:
-            if (abs(speed) == 7):
-                self.state[color] = speed
-                keycode = self.get_keycode(self.state['red'] , self.state['blue'])
-            else:
-                raise Exception(f'Sorry, speed of {speed} is not allowed in Combo Direct mode')
+            error = f'ERR_DIR_20: Sorry, speed of {speed} is not allowed in Combo Direct mode'
+            raise Exception(error)
         return keycode
 
-    def action(self , mapped_key) -> str:
-        color = mapped_key[0]
-        action= mapped_key[1]
+    def action(self , color , action) -> str:
         if action == 'BRK':
             data = self.set_speed(color , -99)
         elif action == 'FWD':
@@ -52,6 +51,6 @@ class Combo_Direct:
         elif action == 'FLT':
             data = self.set_speed(color , 0)
         else:
-            error = f'Action {action} not recognized'
+            error = f'ERR_DIR_30: Action {action} not recognized'
             raise Exception(error)
         return data

@@ -15,7 +15,7 @@
             "combo_direct" : "combo_direct_ch1.conf",
             "combo_pwm"    : "combo_pwm_ch1.conf",
             "single_pwm"   : "single_pwm_ch1.conf",
-            "single_other" : "single_other_ch1_red.conf",
+            "single_other" : "single_other_ch1.conf",
             "extended"     : "extended_ch1.conf"
         },
         "ir_ctl" : {

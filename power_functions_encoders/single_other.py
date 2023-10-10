@@ -32,9 +32,7 @@ class Single_Other:
         else:
             self.state[color] = speed
 
-    def action(self , mapped_key) -> str:
-        color = mapped_key[0]
-        action= mapped_key[1]
+    def action(self , color , action) -> str:
         if action in ['INC_NUM','INC_PWM']:
             self.speed_change(color , +1)
         elif action in ['DEC_NUM','DEC_PWM']:
@@ -46,7 +44,7 @@ class Single_Other:
         elif action in ['TOG_DIR','TOG_0000','TOG_1000','TOG_1111','CLR_C1','SET_C1','TOG_C1','CLR_C2','SET_C2','TOG_C2']:
             self.set_speed(color , 0)
         else:
-            error = f'Action {action} not recognized'
+            error = f'SGL_EXT_010: Action {action} not recognized'
             raise Exception(error)
         data = self.get_keycode(color , action)
         return data

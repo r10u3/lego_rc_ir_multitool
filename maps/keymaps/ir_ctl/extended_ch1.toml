@@ -1,0 +1,41 @@
+[[protocols]]
+name = "single_pwm_ch1_26ns"
+protocol = "pulse_distance"
+margin = 200
+header_pulse = 158
+header_space = 1026
+bit_pulse = 158
+bit_0_space = 263
+bit_1_space = 553
+trailer_pulse = 158
+bits = 16
+
+[protocols.scancodes]
+0x000F = "BRK_R_00"
+0x001E = "INC_R_00"
+0x002D = "DEC_R_00"
+0x004B = "TOG_B_00"
+0x0069 = "T_ABIT_00"
+0x0078 = "TOGG_00"
+0x0087 = "RSVD_00"
+0x8007 = "BRK_R_10"
+0x8016 = "INC_R_10"
+0x8025 = "DEC_R_10"
+0x8043 = "TOG_B_10"
+0x8061 = "T_ABIT_10"
+0x8070 = "TOGG_10"
+0x808F = "RSVD_10"
+0x0807 = "BRK_R_01"
+0x0816 = "INC_R_01"
+0x0825 = "DEC_R_01"
+0x0843 = "TOG_B_01"
+0x0861 = "T_ABIT_01"
+0x0870 = "TOGG_01"
+0x088F = "RSVD_01"
+0x880F = "BRK_R_11"
+0x881E = "INC_R_11"
+0x882D = "DEC_R_11"
+0x884B = "TOG_B_11"
+0x8869 = "T_ABIT_11"
+0x8878 = "TOGG_11"
+0x8887 = "RSVD_11"
