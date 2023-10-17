@@ -69,7 +69,7 @@ Here is an example
 |---------|----------|----------|---------------|--------------|
 |FW2A_FW2B | 42 2B | 0100 0010 - 0010 1011 | 0100 0010 - 1101 0100 | 42 D4 |
 
-The protocol parameters seem to follow a multiplier format, with a timebase and all definitions as multiples of the base. In our case, we use 1/38,000Hz = 26 &nu;s. Then we can use the multipliers laid out in [LEGO_Power_Functions_RC_v120](docs/LEGO_Power_Functions_RC_v120.pdf).
+The protocol parameters seem to follow a multiplier format, with a timebase and all definitions as multiples of the base. In our case, we use 1/38,000Hz = 26 &mu;s. Then we can use the multipliers laid out in [LEGO_Power_Functions_RC_v120](docs/LEGO_Power_Functions_RC_v120.pdf).
 
 Here is a sample of the keymap file:
 
