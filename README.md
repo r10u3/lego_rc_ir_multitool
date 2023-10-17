@@ -1,9 +1,13 @@
 # Lego:tm: Power Functions & Raspberry Pi
-<em>Last updated: 10/9/2023</em>
+<em>Last updated: 10/17/2023</em>
+
+## Important
+**This project is not very practical and it is in its early development stage.** It mostly shows the tools available and my own journey through these tools. You don't need all four tools. You only need one. But the tools are available for you to pick the tool and mode you prefer and import only those.
+
 ## Introduction
 
 This project is part of using a Raspberry Pi as a [Lego:tm: PowerFunctions](docs/Lego_Protocol.md) controller. In my case, I use a headless Raspberry Pi 1 version 2, with Raspbian Bullseye. I also use a simple transmitter using an IR LED and a simple circuit (see [rc_transmitter](docs/rc_transmitter.md) for more details).
-> **Note:** Technically, the app can use any remote. Except for the pigpio which is only coded for pulse distance encoding.
+> **Note:** Technically, the app can use any remote configuration, not just Lego. Except for the pigpio which is only coded for pulse distance encoding.
 
 There are four IR tools that I found that work with Python and I use in this project:
 * LIRC:
@@ -127,7 +131,7 @@ sudo reboot
 ```
 
 ### 7. Install sshkeyboard
-The app (lego.py) uses sshkeyboard for input capture over SSH. I am using a headless RPi over SSH. If you use a different configuration or create your own app, you can skip this step. You will need to install the appropriate capture tool for your platform configuration.
+The example app (sshkeyboard.py) uses sshkeyboard for input capture over SSH. I am using a headless RPi over SSH. If you use a different configuration or create your own app, you can skip this step. You will need to install the appropriate capture tool for your platform configuration.
 
 ### 8. Copy/extract project
 #### a. Download and extract
@@ -262,14 +266,14 @@ The common parameters in the header include (the names and format might change f
 You can find more detailed descriptions of each file format in each tool's setup file in the <code>docs</code> folder.
 
 ## Multitool API
-If you want to use parts of this project as an API, you can do without the <code>lego.py</code> file and access the objects directly. Here is a description of each object and their methods
+If you want to use parts of this project as an API, you can do without the <code>lego.py</code> file and access the objects directly. Here is a description of each object and their Members
 
 ### 1. Keypad
 #### a. Features
 * The <code>keypad</code> maps buttons to actions.
 * Note that the <code>keypad</code> does not match buttons to keycodes; the <code>power_functions</code> (or encoders) do that while keeping track of state. The reason is that we can have keys that don't map to codes. For example, in the Combo PWM <code>button_map</code> (where the mappings are configured) there is a button map for 'INC' (increment), but there is no such code in the Lego protocol for the Combo PWM mode. The <code>Combo_PWM</code> object creates the corresponding code by calculating the speed = current speed + 1.
 
-#### b. Methods
+#### b. Members
 ##### &#x25B6; New Object: <code>Keypad(mapped_keys_file_name: str) -> Keypad</code>
 The required parameters are:
 * **<code>mapped_keys_file_name</code>:** from <code>maps/maps_config.json</code>.
@@ -294,16 +298,16 @@ Returns the action associated to a particular key. The action is an array with [
   * PiIR
   * RPiGPIO
 
-* All have the same methods and attributes with the same signatures
+* All have the same functions and attributes (i.e., members) with the same signatures
 * Send code to tool to be transmitted
 
-#### b. Methods
+#### b. Members
 ##### &#x25B6; New Object: <code>Tool(keymap_file_name: str, keymap_folder_name: str,  gpio_pin: str) -> Tool</code>
 Require the following arguments:
 * **keymap_file_name:** from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code> and PiIR to locate the keymap. <code>LIRC</code> uses remote names instead of keymap files. The remote name inside the keymap file should match the name of the keymap file minus the extension.
 * **keymap_folder_name:** from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code> and PiIR to locate the keymap. <code>LIRC</code> keymaps are all located at <code>/etc/lirc/lircd.conf.d</code>
 * **gpio_pin:** from <code>config.json</code>. Used by PiIR. <code>LIRC</code> and <code>ir-ctl</code> use the pin configured in the <code>/boot/config.txt</code> file.
-The methods to create each type of object are:
+The function calls to create each type of object are:
 ```
 import ir_tools.ir_ctl as irt
 remote_tx = irt.IR_ir_ctl(REMOTE_KEYMAP_FILE_NAME , REMOTE_KEYMAP_FOLDER_NAME , GPIO_PIN)
@@ -327,13 +331,13 @@ Arguments:
 * **data:** this is the keycode. For example 'FW2_FW2'
 
 ##### &#x25B6; send_x(data_bytes: str) -> None:
-This method is unique to PiIR and RPiGPIO. It takes a scancode in hexadecimal string format (e.g., '42 2B') and sends it.
+This function is unique to PiIR and RPiGPIO. It takes a scancode in hexadecimal string format (e.g., '42 2B') and sends it.
 > **Note:** PiIR reverses the bits in each byte, so you need to pre-process the data to be sent. This is not the case with RPiGPIO, which was custom coded for this application.
 Arguments:
 * **data_bytes:** the scancode as an hexadecimal string.
 
 ##### &#x25B6; send_scancode(data: int) -> None:
-This method is unique to RPiGPIO. It takes a scancode in integer format (e.g., 16939 or 0x422B), and sends it. The code must be a valid code. The method does not check for validity. The code is sent anyway and the receiver will reject it without any error.
+This function is unique to RPiGPIO. It takes a scancode in integer format (e.g., 16939 or 0x422B), and sends it. The code must be a valid code. The function does not check for validity. The code is sent anyway and the receiver will reject it without any error.
 Arguments:
 * **data_bytes:** the scancode as an integer.
 
@@ -345,7 +349,7 @@ Arguments:
   * Single_PWM
   * Extended
   * Single_Other (doesn't work)
-* All have the same methods and attributes with the same signatures
+* All have the same functions and attributes (i.e., members) with the same signatures
 * Keep track of current speeds for red and blue outputs. Only red is functional though, except for <em>Extended</em> mode.
 * Perform actions:
   * set speed
@@ -353,9 +357,9 @@ Arguments:
   * in some cases toggle between full forward and float
 * Provide keycode corresponding to self reported speeds
 
-#### b. Methods
+#### b. Members
 ##### &#x25B6; New Object
-Does not require any parameters. The methods to create each type of object are:
+Does not require any parameters. The function calls to create each type of object are:
 ```
 import power_functions.combo_pwm as pf
 rc_encoder = pf.Combo_PWM()
