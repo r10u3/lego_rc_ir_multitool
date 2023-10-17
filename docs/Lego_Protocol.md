@@ -6,32 +6,33 @@ A code in the Lego:tm: protocol consists of (a) a start pulse/space, (b) sixteen
 A cycle is 1/carrier frequency = 1 / 38,000 Hz = 26&mu;s. 
 
 All pulses are the same length in the Lego:tm: protocol (6 cycles). Start, stop, high and low bits are distinguished by the pause length.
-The following table shows the timings for each of the intervals.
+The following table shows the timings for each of the intervals and their use in the remote configuration files for each tool:
 
-| Element          | Cycles @ 38000 Hz | Duration                 | Parameter  |
-| ---------------- | ----------------- | ------------------------ | --------------- |
-| Cycle            | 1 cycle           | 1 / 38,000  =  26 &mu;s  | "timebase" = 26 |
-| Pulse            | 6 cycles          | 6 / 38,000  = 158 &mu;s  |  |
-| Start/Stop Space | 39 cycles         | 39 / 38,000 =1,026 &mu;s | "preamble" = [6 , 39] <br /> "postamble" = [6] <br /> "gap" = 1026 |
-| Low Bit Space    | 10 cycles         | 10 / 38,000 = 263 &mu;s  | "zero" = [6 , 10] |
-| High Bit Space   | 21 cycles         | 21 / 38,000 = 553 &mu;s  | "one" = [6 , 21] |
+| Element          | Value in Cycles   | Value in Units           | Parameter<br /> LIRC | Parameter<br /> ir-ctl | Parameter<br /> PiIR | Parameter<br /> RPiGPIO |
+| ---------------- | ----------------- | ------------------------ | --------------- | --------------- | --------------- | --------------- |
+| Frequency        |                   | 38,000 Hz                | 38000<br />&bull;frequency      | 38000<br />&bull;carrier        |    <sub>(uses timebase<br />instead of frequency)</sub>          | 38000<br />&bull;frequency       |
+| Cycle            | 1                 | 1 / 38,000  =  26 &mu;s  |       n/a       |       n/a       |    26<br />&bull;timebase     |    n/a          |
+| Pulse            | 6                 | 6 / 38,000  = 158 &mu;s  | 158<br />&bull;ptrail   | 158<br />&bull;header_pulse<br />&bull;bit_pulse<br />&bull;trailer_pulse | 158<br />&bull;postamble<br /><sub>see below for start, one and zero</sub> | 158<br />&bull;pulse |
+| Start/Stop Space | 39                | 39 / 38,000 =1,026 &mu;s | 1026<br />&bull;gap | 1026<br />&bull;header_space<br />&bull;gap | <sub>see next table</sub>| 39<br />&bull;heading_space<br />&bull;trailing_space |
+| Low Bit Space    | 10                | 10 / 38,000 = 263 &mu;s  | <sub>see next table</sub>| 263<br />&bull;bit_0_space | <sub>see next table</sub>| 10<br />&bull;zero_space |
+| High Bit Space   | 21                | 21 / 38,000 = 553 &mu;s  | <sub>see next table</sub>| 553<br />&bull;bit_1_space | <sub>see next table</sub>| 21<br />&bull;one_space |
 
 The resulting bits are then:
-| Bit              | Pulse             | Space             | Total Duration    |
-| ---------------- | ----------------- | ----------------- | ----------------- |
-| Start/Stop       | 158  &mu;s        | 1,026 &mu;s       | 1,184 &mu;s       |
-| Zero/Low Bit     | 158  &mu;s        | 263 &mu;s         | 421 &mu;s         |
-| Start/Stop       | 158  &mu;s        | 553 &mu;s         | 711 &mu;s         |
+| Bit              | Pulse             | Space             | Total Duration    |Parameter<br /> LIRC | Parameter<br /> ir-ctl | Parameter<br /> PiIR | Parameter<br /> RPiGPIO |
+| ---------------- | ----------------- | ----------------- | ----------------- |--------------------------- | --- | --------------------------- | --- |
+| Start/Stop       | 158  &mu;s        | 1,026 &mu;s       | 1,184 &mu;s       | 158 1026<br />&bull;header | n/a | [6, 39]<br />&bull;preamble | n/a |
+| Zero/Low Bit     | 158  &mu;s        | 263 &mu;s         | 421 &mu;s         | 158 263<br />&bull;zero    | n/a | [6, 10]<br />&bull;zero     | n/a |
+| One/High Bit     | 158  &mu;s        | 553 &mu;s         | 711 &mu;s         | 158 553<br />&bull;one     | n/a | [6, 21]<br />&bull;one      | n/a |
 
 The sixteen bits are grouped into four groups of four bits or <em>nibbles</em>. The first two nibbles are configuration, except for Combo PWM where the second nibble is data. The third nibble is data. And the fourth nibble is Longitudinal Redundancy Check (a !XOR of the respective bits of the first three nibbles).
 
 As an example, the code we used for tests is <em>Combo PWM mode - Channel 1 - Forward Step 2 / Forward Step 2</em> with the hexadecimal code 422B (each digit is a nibble). The first nibble (4) indicates the mode and channel. The second (2) and third (2) nibbles are the speeds for red and blue outputs respectively. The fourth one (B) is the LRC. The following table shows the conversion from key to pulse timings. For the timings (in &mu;s), + is a pulse, while - is a space; the first row is the start bit, the next four rows are a nibble each, and the last one is the stop bit.
 
-| Action |Scancode<br />(Hexadecimal) | Scancode Timings |
-| ------ | -------  | ---------------------------------- |
-| Mode: Combo PWM<br />Channel 1<br />Output A: Forward Step 2<br />Output B: Forward Step 2 | 42 2B | +158 -1026 <br />+158 -263 +158 -553 +158 -263 +158 -263 <br />+158 -263 +158 -263 +158 -553 +158 -263 <br />+158 -263 +158 -263 +158 -553 +158 -263 <br />+158 -553 +158 -263 +158 -553 +158 -553<br />+158 -1026|
+| Action |Scancode<br />(Hexadecimal) | Scancode<br />(Binary) | Scancode Timings |
+| ------ | -------  | ---------------- | ----------------- |
+| Mode: Combo PWM<br />Channel 1<br />Output A: Forward Step 2<br />Output B: Forward Step 2 | 42 2B | Start<br />0100 (4)<br />0010 (2)<br />0010 (2)<br />1011 (B)<br />Stop |  +158 -1026 <br />+158 -263 +158 -553 +158 -263 +158 -263 <br />+158 -263 +158 -263 +158 -553 +158 -263 <br />+158 -263 +158 -263 +158 -553 +158 -263 <br />+158 -553 +158 -263 +158 -553 +158 -553<br />+158 -1026|
 
-> **Note:** Mode and channel are not included in the keycode because we created configuration files unique to each mode and channel 1. I create different files for different mode/channel pairs. Otherwise each file would be too large.
+> **Note:** Mode and channel are not included in the keycode files because we created configuration files unique to each mode and channel 1. I create different files for different mode/channel pairs. Otherwise each file would be too large.
 
 ## RC Modes
 The protocol allows for different modes of operation:
@@ -53,7 +54,7 @@ The Lego:tm: receiver has two outputs (Red and Blue). Some of the modes control 
     </tr>
     <tr>
       <td>Combo Direct</td>
-      <td>• Both outputs simultaneously<br />• Speeds Full Forward, Full Backward,<br />Float, Break only<br />• Only one second</td>
+      <td>• Both outputs simultaneously<br />• Speeds Full Forward, Full Backward, Float, Break only<br />• Only one second</td>
     </tr>
     <tr>
       <td>Single Output: PWM</td>
@@ -84,18 +85,18 @@ The Lego:tm: receiver has two outputs (Red and Blue). Some of the modes control 
     <tr>
       <th rowspan=2>RC Mode</th>
       <th colspan=4>Nibble 1</th>
-      <th colspan=4>Nibble 1</th>
-      <th colspan=4>Nibble 1</th>
-      <th colspan=4>Nibble 1</th>
+      <th colspan=4>Nibble 2</th>
+      <th colspan=4>Nibble 3</th>
+      <th colspan=4>Nibble 4</th>
     </tr>
     <tr>
-      <th><sub>T</sub></th>
-      <th><sub>E</sub></th>
-      <th colspan=2><sub>Ch</sub></th>
-      <th><sub>a</sub></th>
-      <th colspan=3><sub>Mode</sub></th>
-      <th colspan=4><sub>Data</sub></th>
-      <th colspan=4><sub>LRC</sub></th>
+      <th><em>T</em></th>
+      <th><em>E</em></th>
+      <th colspan=2><em>Ch</em></th>
+      <th><em>a</em></th>
+      <th colspan=3><em>Mode</em></th>
+      <th colspan=4><em>Data</em></th>
+      <th colspan=4><em>LRC</em></th>
     </tr>
   </thead>
   <tbody>
