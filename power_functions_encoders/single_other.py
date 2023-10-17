@@ -1,9 +1,9 @@
-class Single_Other:
+class SingleOther:
     
     def __init__(self) -> None:
         pass
 
-    NAME = 'Single_Other'
+    NAME = 'SingleOther'
 
     COLORS = {
         'red': 'R',
@@ -12,39 +12,38 @@ class Single_Other:
 
     # holds speeds
     state = {
-                'red'  : 0 , 
-                'blue' : 0
-            }
+        'red'  : 0, 
+        'blue' : 0
+    }
 
-    def get_keycode(self , color: str , action: str) -> str:
+    def get_keycode(self, color: str, action: str) -> str:
         keycode = self.COLORS[color] + '_' + action
         return keycode
 
-    def speed_change(self , color: str , increment: int) -> None:
-        if (abs(self.state[color] + increment) <= 7):
+    def speed_change(self, color: str, increment: int) -> None:
+        if abs(self.state[color] + increment) <= 7:
             self.state[color] += increment
-            #print (f'Color: {color} | self.state[{color}]: {self.state[color]} | increment: {increment}')
 
-    def set_speed(self , color: str , speed: int) -> None:
-        if (speed == -99):
+    def set_speed(self, color: str, speed: int) -> None:
+        if speed == -99:
             self.state[color] = -99
             self.state[color] = 0
         else:
             self.state[color] = speed
 
-    def action(self , color , action) -> str:
+    def action(self, color: str, action: str) -> str:
         if action in ['INC_NUM','INC_PWM']:
-            self.speed_change(color , +1)
+            self.speed_change(color, +1)
         elif action in ['DEC_NUM','DEC_PWM']:
-            self.speed_change(color , -1)
+            self.speed_change(color, -1)
         elif action in ['FUL_FWD']:
-            self.set_speed(color , +7)
+            self.set_speed(color, +7)
         elif action in ['FUL_BCK']:
-            self.set_speed(color , -7)
+            self.set_speed(color, -7)
         elif action in ['TOG_DIR','TOG_0000','TOG_1000','TOG_1111','CLR_C1','SET_C1','TOG_C1','CLR_C2','SET_C2','TOG_C2']:
-            self.set_speed(color , 0)
+            self.set_speed(color, 0)
         else:
             error = f'SGL_EXT_010: Action {action} not recognized'
             raise Exception(error)
-        data = self.get_keycode(color , action)
+        data = self.get_keycode(color, action)
         return data

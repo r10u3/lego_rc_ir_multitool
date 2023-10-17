@@ -30,9 +30,9 @@ class Extended:
     }
 
     state = {
-                'red'  : 0 , 
-                'blue' : 0
-            }
+        'red'  : 0,
+        'blue' : 0
+    }
     
     toggle_bit = '1'
     addres_bit = '0'
@@ -40,7 +40,7 @@ class Extended:
     def __init__(self) -> None:
         pass
 
-    def get_keycode(self , color: str , action: str) -> str:
+    def get_keycode(self, color: str, action: str) -> str:
         if color == '':
             keycode =  action + '_' + self.toggle_bit + self.addres_bit
         else:
@@ -59,8 +59,8 @@ class Extended:
         else:
             self.toggle_bit = '0'
 
-    def speed_change(self , color: str , increment: int) -> str:
-        if (abs(self.state[color] + increment) <= 7):
+    def speed_change(self, color: str, increment: int) -> str:
+        if abs(self.state[color] + increment) <= 7:
             self.state[color] += increment
         if increment == +1:
             keycode = 'INC_R' + '_' + self.toggle_bit + '0'
@@ -71,8 +71,8 @@ class Extended:
             raise Exception(error)
         return keycode
 
-    def set_speed(self , color: str , speed: int) -> str:
-        if (speed == -99):
+    def set_speed(self, color: str, speed: int) -> str:
+        if speed == -99:
             if color != 'red':
                 error = f'Sorry, color {color} is not valid or does not have BRK command'
                 raise Exception(error)
@@ -89,18 +89,18 @@ class Extended:
             raise Exception(error)
         return keycode
 
-    def action(self , color: str , action: str) -> str:
+    def action(self, color: str, action: str) -> str:
         if action == 'BRK':
             self.state[color] = 0
             data = 'BRK_R' + '_' + self.toggle_bit + '0'
         elif action == 'INC':
-            data = self.speed_change('red' , +1 )
+            data = self.speed_change('red', +1 )
         elif action == 'DEC':
-            data = self.speed_change('red' , -1 )
+            data = self.speed_change('red', -1 )
         elif action == 'TOG':
-            if (self.state['blue'] == 7):
+            if self.state['blue'] == 7:
                 self.state['blue'] = 0
-            elif (self.state['blue'] == 0):
+            elif self.state['blue'] == 0:
                 self.state['blue'] = 7
             else:
                 error = f'ERR_EXT_030: Sorry, there is a problem with the speed of the Blue output'

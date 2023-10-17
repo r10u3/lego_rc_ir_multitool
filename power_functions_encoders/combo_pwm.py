@@ -1,10 +1,10 @@
-class Combo_PWM:
+class ComboPWM:
     
     def __init__(self) -> None:
         pass
 
 
-    NAME = 'Combo_PWM'
+    NAME = 'ComboPWM'
 
     SPEEDS = {
         0 : 'FLT',
@@ -25,47 +25,47 @@ class Combo_PWM:
         -1 : 'RV1'
     }
 
-    # holds speeds
     state = {
-                'red'  : 0 , 
-                'blue' : 0
-            }
+        'red'  : 0,
+        'blue' : 0
+        }
 
-    def get_keycode(self , speed_red: int , speed_blue: int) -> str:
-        if (speed_red not in self.SPEEDS or speed_blue not in self.SPEEDS):
+    def get_keycode(self, speed_red: int, speed_blue: int) -> str:
+        if (speed_red not in self.SPEEDS
+                or speed_blue not in self.SPEEDS):
             error = 'ERR_PWM_010: one of the speeds not in range'
             raise Exception (error)
         keycode = self.SPEEDS[speed_red]+'_'+self.SPEEDS[speed_blue]
         return keycode
 
-    def speed_change(self , color: str , increment: int) -> str:
-        if (abs(self.state[color] + increment) <= 7):
+    def speed_change(self, color: str, increment: int) -> str:
+        if abs(self.state[color] + increment) <= 7:
             self.state[color] += increment
             #print (f'Color: {color} | State[{color}]: {state[color]} | increment: {increment}')
-        keycode = self.get_keycode(self.state['red'] , self.state['blue'])
+        keycode = self.get_keycode(self.state['red'], self.state['blue'])
         return keycode
 
-    def set_speed(self , color: str , speed: int) -> str:
-        if (speed == -99):
+    def set_speed(self, color: str, speed: int) -> str:
+        if speed == -99:
             self.state[color] = -99
-            keycode = self.get_keycode(self.state['red'] , self.state['blue'])
+            keycode = self.get_keycode(self.state['red'], self.state['blue'])
             self.state[color] = 0
         else:
             self.state[color] = speed
-            keycode = self.get_keycode(self.state['red'] , self.state['blue'])
+            keycode = self.get_keycode(self.state['red'], self.state['blue'])
         return keycode
 
-    def action(self , color , action) -> str:
+    def action(self, color: str, action: str) -> str:
         if action == 'BRK':
-            data = self.set_speed(color , -99)
+            data = self.set_speed(color, -99)
         elif action == 'INC':
-            data = self.speed_change(color , +1)
+            data = self.speed_change(color, +1)
         elif action == 'DEC':
-            data = self.speed_change(color , -1)
+            data = self.speed_change(color, -1)
         elif action == 'FLT':
-            data = self.set_speed(color , 0)
-        elif (type(action) is int and abs(action)<= 7):
-            data = self.set_speed(color , action)
+            data = self.set_speed(color, 0)
+        elif type(action) is int and abs(action)<= 7:
+            data = self.set_speed(color, action)
         else:
             error = f'ERR_PWM_30: Action {action} not recognized'
             raise Exception(error)

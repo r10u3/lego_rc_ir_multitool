@@ -1,5 +1,5 @@
 [[protocols]]
-name = "combo_direct_ch1_26ns"
+name = "combo_direct_ch1"
 protocol = "pulse_distance"
 margin = 200
 header_pulse = 158
@@ -9,6 +9,12 @@ bit_0_space = 263
 bit_1_space = 553
 trailer_pulse = 158
 bits = 16
+
+[protocols.information]
+brand = "LEGO"
+name = "LEGO_combo_direct_ch1"
+contributed by = "Rique_Checchi"
+devices controlled = "8884_Power_Functions_IR_Receiver"
 
 [protocols.scancodes]
 0x010E = "FLT_FLT"

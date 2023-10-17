@@ -1,6 +1,12 @@
 {
+  "_information": {
+    "brand": "LEGO",
+    "name" : "LEGO_combo_direct_ch1",
+    "contributed by" : "Rique Checchi",
+    "devices controlled" : "8884 Power Functions IR Receiver"
+  },
   "parameters": {
-    "pulse"    :  6,
+    "pulse"          :  6,
     "heading_space"  : 39,
     "zero_space"     : 10,
     "one_space"      : 21,

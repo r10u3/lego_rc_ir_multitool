@@ -1,5 +1,5 @@
 [[protocols]]
-name = "single_pwm_ch1_26ns"
+name = "extended_ch1"
 protocol = "pulse_distance"
 margin = 200
 header_pulse = 158
