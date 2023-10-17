@@ -139,6 +139,25 @@ The Lego:tm: receiver has two outputs (Red and Blue). Some of the modes control 
       <td>L</td>
     </tr>
     <tr>
+      <td>Reserved</td>
+      <td>T</td>
+      <td>0</td>
+      <td>C</td>
+      <td>C</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>x</td>
+      <td>x</td>
+      <td>x</td>
+      <td>x</td>
+      <td>x</td>
+      <td>L</td>
+      <td>L</td>
+      <td>L</td>
+      <td>L</td>
+    </tr>
+    <tr>
       <td>Single Output: PWM</td>
       <td>T</td>
       <td>0</td>
