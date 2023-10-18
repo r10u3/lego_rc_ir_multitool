@@ -234,9 +234,9 @@ The keys are configured in the <code>maps/button_maps</code> folder. One file pe
 
 |  Key         |  Combo PWM   | Combo Direct |  Single PWM  |   Extended   |
 | ------------ | ------------ | ------------ | ------------ | ------------ |
-| &uarr;  | INC       | FWD | INC | INC |
-| &darr;  | DEC       | REV | DEC | DEC |
-| SPACE BAR | BRK     | BRK | BRK | BRK |
+| &uarr;  | INC       | FWD | INC | INC | INC_NUM
+| &darr;  | DEC       | REV | DEC | DEC | DEC_NUM
+| SPACE   | BRK       | BRK | BRK | BRK | TOG_
 | 'l'     | FLT       | FLT | FLT | n/a |
 | '1'     | FW1       | n/a | FW1 | n/a |
 | '2'     | FW2       | n/a | FW2 | n/a |
@@ -246,7 +246,7 @@ The keys are configured in the <code>maps/button_maps</code> folder. One file pe
 | 'b'     | RV2       | n/a | RV2 | TOG_B |
 | ...     | ...       | ... | ... | ... |
 | 'g'     | RV7       | n/a | RV7 | n/a |
-| Noteworthy |<p>&bull; Both outputs simultaneously</p><p>&bull; Speeds -7&#183;&#183;+7</p><p>&bull; Only one second</p>|<p>&bull; Both outputs simultaneously</p><p>&bull; Speeds Full Forward, Full Backward, Float, Break only</p><p>&bull; Only one second</p> | <p>&bull; One output at a time</p><p>&bull; Speeds -7&#183;&#183;+7</p><p>&bull; Permanent state until new key changes it</p> | <p>&bull; One output at a time</p><p>&bull; Red speeds -7&#183;&#183;+7, blue speeds Full Forward/Float</p><p>&bull; Permanent state until new key changes it</p><p>&bull; Toggle address bit, but doesn't accept <em>extended</em> commands with <code>address bit = 1</code> |
+| Noteworthy |<sub>&bull; Both outputs simultaneously<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; Only one second</sub>|<sub>&bull; Both outputs simultaneously<br />&bull; Speeds Full Forward, Full Backward, Float, Break only<br />&bull; Only one second</sub> | <sub>&bull; One output at a time<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; Permanent state until new key changes it</sub> | <sub>&bull; One output at a time&bull; Red speeds -7&#183;&#183;+7, blue speeds Full Forward/Float<br />&bull; Permanent state until new key changes it<br />&bull; Toggle address bit, but doesn't accept <em>extended</em> commands with <code>address bit = 1</code></sub> |
 
 One important difference between the Single PWM, Extended and both Combo modes is that with Single and Extended, the state is permanent. When you press a key, the motor starts and keeps going. With the combo modes, the motor moves only for about a second and stops. You need to keep sending keycodes to keep the motor going.
 
