@@ -15,7 +15,7 @@ def test_send(config_file_name_and_path, GPIO, keycode):
 
 class RPiGPIO:
 
-    def __init__(self,  GPIO: str, keymap_file_name: str, keymap_folder_name: str = '/maps/keymaps/lirc') -> None:
+    def __init__(self,  GPIO: int, keymap_file_name: str, keymap_folder_name: str = '/maps/keymaps/rpigpio') -> None:
         keymap_file = keymap_folder_name + '/' + keymap_file_name
         with open(keymap_file, 'r') as config_file:
             config = json.loads(config_file.read())
@@ -44,13 +44,13 @@ class RPiGPIO:
 
         self.pi.wave_clear() # clear any existing waveforms
 
-        start_wave_generic = self.append_pulse(GPIO, frequency, pulse_length)
+        start_wave_generic = self._append_pulse(GPIO, frequency, pulse_length)
         start_wave_generic.append(START_SPACE)
-        zero_wave_generic = self.append_pulse(GPIO, frequency, pulse_length)
+        zero_wave_generic = self._append_pulse(GPIO, frequency, pulse_length)
         zero_wave_generic.append(ZERO_SPACE)
-        one_wave_generic = self.append_pulse(GPIO, frequency, pulse_length)
+        one_wave_generic = self._append_pulse(GPIO, frequency, pulse_length)
         one_wave_generic.append(ONE_SPACE)
-        stop_wave_generic = self.append_pulse(GPIO, frequency, pulse_length)
+        stop_wave_generic = self._append_pulse(GPIO, frequency, pulse_length)
         stop_wave_generic.append(STOP_SPACE)
 
         self.pi.wave_add_generic(start_wave_generic)
@@ -64,7 +64,7 @@ class RPiGPIO:
 
         print(f'Remote: rpigpio: {keymap_file_name}')
     
-    def append_pulse(self, GPIO: int, carrier: int, cycles: int) -> [pigpio.pulse]:
+    def _append_pulse(self, GPIO: int, carrier: int, cycles: int) -> [pigpio.pulse]:
         half_cycle = int(1000000  / carrier / 2)
         #                            ON       OFF      DELAY
         cycle_on    = pigpio.pulse(1<<GPIO,    0 , half_cycle )
@@ -75,7 +75,7 @@ class RPiGPIO:
             pulse.append(cycle_off)
         return pulse
 
-    def append_scancode(self, wave_chain, scancode: str):
+    def _append_scancode(self, wave_chain, scancode: str):
         for bit in scancode:
             if bit == '0':
                 wave_chain.append(self.zero_wave)
@@ -92,15 +92,14 @@ class RPiGPIO:
         print(f'Binary data: {bin_data}')
         wave_chain = []
         wave_chain.append(self.start_wave)
-        wave_chain = self.append_scancode(wave_chain, bin_data)
+        wave_chain = self._append_scancode(wave_chain, bin_data)
         wave_chain.append(self.stop_wave)
         print(f'Wave Chain: {wave_chain}')
         self.pi.wave_chain(wave_chain)
     
-    def send_x(self, data: str) -> None:
+    def send_hex(self, data: str) -> None:
         scancode = int(data, 16)
         self.send_scancode(scancode)
-
 
     def send(self, keycode: str) -> None:
         scancode_str = self.keymap[keycode]

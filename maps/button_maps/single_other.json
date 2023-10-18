@@ -1,11 +1,11 @@
 {
-    "space" : ["red" , "TOG_DIR"],
+    "space" : ["red" , "TOG_0001"],
     "up" : ["red" , "INC_NUM"],
     "down" : ["red" , "DEC_NUM"],
     "right" : ["red" , "INC_PWM"],
     "left" : ["red" , "DEC_PWM"],
     "f" : ["red" , "FUL_FWD"],
-    "b" : ["red" , "FUL_BCK"],
+    "b" : ["red" , "FUL_REV"],
     "a" : ["red" , "TOG_0000"],
     "s" : ["red" , "TOG_1000"],
     "d" : ["red" , "TOG_1111"],
@@ -14,5 +14,11 @@
     "7" : ["red" , "TOG_C1"],
     "3" : ["red" , "CLR_C2"],
     "6" : ["red" , "SET_C2"],
-    "9" : ["red" , "TOG_C2"]
+    "9" : ["red" , "TOG_C2"],
+    "u" : ["blue" , "CLR_C1"],
+    "i" : ["blue" , "SET_C1"],
+    "o" : ["blue" , "TOG_C1"],
+    "j" : ["blue" , "CLR_C2"],
+    "k" : ["blue" , "SET_C2"],
+    "l" : ["blue" , "TOG_C2"]
 }

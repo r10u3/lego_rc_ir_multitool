@@ -47,13 +47,13 @@ class Extended:
             keycode =  action + '_' + self.COLORS[color] + '_' + self.toggle_bit + self.addres_bit            
         return keycode
 
-    def toggle_address_bit(self):
+    def toggle_address_bit(self) -> None:
         if self.addres_bit == '0':
             self.addres_bit = '1'
         else:
             self.addres_bit = '0'
 
-    def toggle_toggle_bit(self):
+    def toggle_toggle_bit(self) -> None:
         if self.toggle_bit == '0':
             self.toggle_bit = '1'
         else:

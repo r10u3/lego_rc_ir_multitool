@@ -1,7 +1,7 @@
 import piir
 
 class IR_PiIR:
-    def __init__(self,  GPIO: str, keymap_file_name: str, keymap_folder_name: str = '/maps/keymaps/piir') -> None:
+    def __init__(self,  GPIO: int, keymap_file_name: str, keymap_folder_name: str = '/maps/keymaps/piir') -> None:
         keymap_file_with_path = (keymap_folder_name 
                                  + '/' 
                                  + keymap_file_name)

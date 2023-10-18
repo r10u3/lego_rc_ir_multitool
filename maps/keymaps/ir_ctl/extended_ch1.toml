@@ -10,6 +10,12 @@ bit_1_space = 553
 trailer_pulse = 158
 bits = 16
 
+[protocols.information]
+brand = "LEGO"
+name = "LEGO_combo_direct_ch1"
+contributed_by = "Rique_Checchi"
+devices_controlled = "8884_Power_Functions_IR_Receiver"
+
 [protocols.scancodes]
 0x000F = "BRK_R_00"
 0x001E = "INC_R_00"

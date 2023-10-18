@@ -39,7 +39,7 @@ elif CONFIG['rc_mode'] == 'SGL':
     rc_encoder = pf.SinglePWM()
 elif CONFIG['rc_mode'] == 'OTH':
     import power_functions_encoders.single_other as pf
-    rc_encoder = pf.Single_Other()
+    rc_encoder = pf.SingleOther()
 elif CONFIG['rc_mode'] == 'EXT':
     import power_functions_encoders.extended as pf
     rc_encoder = pf.Extended()
@@ -88,8 +88,12 @@ def on_press(key: str) -> bool:
     if kb.is_mapped_key(key):
         mapped_key = kb.get_action(key)
         print(f'Mapped Key: {mapped_key}')
-        data = rc_encoder.action(*mapped_key)
-        remote_tx.send(data)
+        if rc_encoder.NAME == 'SingleOther':
+            data = rc_encoder.get_data(*mapped_key)
+            remote_tx.send_scancode(data)
+        else:
+            data = rc_encoder.action(*mapped_key)
+            remote_tx.send(data)
         print(f'keycode sent: {data}')
         return True
     else:

@@ -13,8 +13,8 @@ bits = 16
 [protocols.information]
 brand = "LEGO"
 name = "LEGO_combo_direct_ch1"
-contributed by = "Rique_Checchi"
-devices controlled = "8884_Power_Functions_IR_Receiver"
+contributed_by = "Rique_Checchi"
+devices_controlled = "8884_Power_Functions_IR_Receiver"
 
 [protocols.scancodes]
 0x010E = "FLT_FLT"
