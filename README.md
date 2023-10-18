@@ -217,7 +217,7 @@ The available modes are:
    - DIR: Combo Direct
    - SGL: Single PWM
    - EXT: Extended
-   - OTH: Single Clear/Set/Toggle/Inc/Dec (doesn't work)
+   - OTH: Single Clear/Set/Toggle/Inc/Dec
 
 #### d. <code>ir_tool</code>
 The available tools (as used in the config files) are:
@@ -230,25 +230,25 @@ The available tools (as used in the config files) are:
 PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using writePWMFrequency(mypi, 12, 8000)."[^2] Lego uses 38KHz.
 
 ### 2. Button Maps
-The keys are configured in the <code>maps/button_maps</code> folder. One file per rc mode. Each mode has its own set of key mappings. I only coded for the red output in most cases. Here are some comparative examples:
+The keys are configured in the <code>maps/button_maps</code> folder. One file per rc mode. Each mode has its own set of key mappings. I only coded for the red output in most cases. Here are some **comparative examples**:
 
-|  Key         |  Combo PWM   | Combo Direct |  Single PWM  |   Extended   |
-| ------------ | ------------ | ------------ | ------------ | ------------ |
-| &uarr;  | INC       | FWD | INC | INC | INC_NUM
-| &darr;  | DEC       | REV | DEC | DEC | DEC_NUM
-| SPACE   | BRK       | BRK | BRK | BRK | TOG_
-| 'l'     | FLT       | FLT | FLT | n/a |
-| '1'     | FW1       | n/a | FW1 | n/a |
-| '2'     | FW2       | n/a | FW2 | n/a |
-| ...     | ...       | ... | ... | ... |
-| '7'     | FW7       | n/a | FW7 | n/a |
-| 'a'     | RV1       | n/a | RV1 | TOG_ADDR |
-| 'b'     | RV2       | n/a | RV2 | TOG_B |
-| ...     | ...       | ... | ... | ... |
-| 'g'     | RV7       | n/a | RV7 | n/a |
-| Noteworthy |<sub>&bull; Both outputs simultaneously<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; Only one second</sub>|<sub>&bull; Both outputs simultaneously<br />&bull; Speeds Full Forward, Full Backward, Float, Break only<br />&bull; Only one second</sub> | <sub>&bull; One output at a time<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; Permanent state until new key changes it</sub> | <sub>&bull; One output at a time&bull; Red speeds -7&#183;&#183;+7, blue speeds Full Forward/Float<br />&bull; Permanent state until new key changes it<br />&bull; Toggle address bit, but doesn't accept <em>extended</em> commands with <code>address bit = 1</code></sub> |
+|  Key         |  Combo PWM   | Combo Direct |  Single PWM  |   Extended   | Single Other |
+| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
+| &uarr;  | INC       | FWD | INC | INC | INC_NUM |
+| &darr;  | DEC       | REV | DEC | DEC | DEC_NUM |
+| SPACE   | BRK       | BRK | BRK | BRK | TOG_DIR |
+| 'l'     | FLT       | FLT | FLT | n/a | TOG_DIR(B) |
+| '1'     | FW1       | n/a | FW1 | n/a | CLR_C1 |
+| '2'     | FW2       | n/a | FW2 | n/a | n/a |
+| ...     | ...       | ... | ... | ... | ... |
+| '7'     | FW7       | n/a | FW7 | n/a | TOG_C1 |
+| 'a'     | RV1       | n/a | RV1 | TOG_ADDR | TOG_FWD |
+| 'b'     | RV2       | n/a | RV2 | TOG_B | FUL_REV |
+| ...     | ...       | ... | ... | ... | ... |
+| 'g'     | RV7       | n/a | RV7 | n/a | n/a |
+| Noteworthy |<sub>&bull; Both outputs simultaneously<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; Only one second</sub>|<sub>&bull; Both outputs simultaneously<br />&bull; Speeds Full Forward, Full Backward, Float, Break only<br />&bull; Only one second</sub> |<sub>&bull; One output at a time<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; Permanent state until new key changes it</sub> |<sub>&bull; One output at a time&bull; Red speeds -7&#183;&#183;+7, blue speeds Full Forward/Float<br />&bull; Permanent state until new key changes it<br />&bull; Toggle address bit, but doesn't accept <em>extended</em> commands with <code>address bit = 1</code></sub> |<sub>&bull; Code uses <em>button map</em> but not <em>keymaps</em></sub><br /><sub>&bull; One output at a time&bull; speeds -7&#183;&#183;+7<br />&bull; Permanent state until new key changes it<br />&bull; C1 & C2 work as opposite directions. I haven't tested actual voltages to assess differences<br />&bull; Multiple different toggles<br />&bull; Increment/decrement numerical PWM changes speed but not direction</sub> |
 
-One important difference between the Single PWM, Extended and both Combo modes is that with Single and Extended, the state is permanent. When you press a key, the motor starts and keeps going. With the combo modes, the motor moves only for about a second and stops. You need to keep sending keycodes to keep the motor going.
+One important difference between the combo (direct and PWM) and not combo modes (single PWM, extended and single other) is that with not combo modes, the state is permanent. When you press a key, the motor starts and keeps going. With the combo modes, the motor moves only for about a second and stops. You need to keep sending keycodes to keep the motor going.
 
 ### 3. Keymaps
 Every tool has its own different keymap format. They all have a header with basic protocol parameters followed by keycode-scancode pairs. But each has a different format:
@@ -358,7 +358,7 @@ Arguments:
   * ComboDirect
   * SinglePWM
   * Extended
-  * SingleOther (doesn't work)
+  * SingleOther
 * All have the same functions and variables (i.e., members) with the same signatures.
 * Keep track of current speeds for red and blue outputs. Only red is functional though, except for <em>Extended</em> mode.
 * Perform actions:
