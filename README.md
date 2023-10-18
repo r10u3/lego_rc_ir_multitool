@@ -107,8 +107,8 @@ sudo systemctl status pigpiod
 sudo pip3 install PiIR
 ```
 
-### 5. Setup RPiGPIO
-This tool also uses pigpio, so you should have already performed these steps. If you pick and choose your tools, these steps would required to use RPiGPIO. But only if you didn't do it already.
+### 5. Setup PiGPIO
+I created a custom object that uses PiGPIO directly. You should have already performed these steps. If you pick and choose your tools, these steps would required to use RPiGPIO (the object I created). But only if you didn't do it already.
 #### a. Install pigpio
 ```
 sudo apt-get install pigpio python-pigpio python3-pigpio
