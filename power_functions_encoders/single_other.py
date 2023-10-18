@@ -48,7 +48,7 @@ class SingleOther:
         print(f'nibble1: {type(self.nibble1)} | togglebit: {type(self.toggle_bit)}')
         return self.nibble1 | (self.toggle_bit * 8) | channel
     
-    def get_nibble2(self, output: int) -> int:
+    def get_nibble2(self, output: int = 0) -> int:
         return self.nibble2 | output
     
     def get_nibble4(self, nibble1: int, nibble2: int, nibble3: int) -> int:
@@ -70,13 +70,8 @@ class SingleOther:
         nibble4 = self.get_nibble4(nibble1, nibble2, nibble3)
         return self.get_scancode(nibble1, nibble2, nibble3, nibble4)
 
-
-
-
-
-
     def get_keycode(self, color: str, action: str) -> str:
-        keycode = self.COLORS[color] + '_' + action
+        keycode = self.COLORS[color] + '_' + action + '_' + str(self.toggle_bit)
         return keycode
 
     def speed_change(self, color: str, increment: int) -> None:
@@ -91,6 +86,7 @@ class SingleOther:
             self.state[color] = speed
 
     def action(self, color: str, action: str) -> str:
+        # this whole function needs to be corrected to reflect actual speeds
         if action in ['INC_NUM','INC_PWM']:
             self.speed_change(color, +1)
         elif action in ['DEC_NUM','DEC_PWM']:
@@ -102,7 +98,7 @@ class SingleOther:
         elif action in ['TOG_0000','TOG_0001','TOG_1000','TOG_1111','CLR_C1','SET_C1','TOG_C1','CLR_C2','SET_C2','TOG_C2']:
             self.set_speed(color, 0)
         else:
-            error = f'SGL_EXT_010: Action {action} not recognized'
+            error = f'OTH_010: Action {action} not recognized'
             raise Exception(error)
         data = self.get_keycode(color, action)
         self.toggle_toggle_bit()

@@ -88,12 +88,8 @@ def on_press(key: str) -> bool:
     if kb.is_mapped_key(key):
         mapped_key = kb.get_action(key)
         print(f'Mapped Key: {mapped_key}')
-        if rc_encoder.NAME == 'SingleOther':
-            data = rc_encoder.get_data(*mapped_key)
-            remote_tx.send_scancode(data)
-        else:
-            data = rc_encoder.action(*mapped_key)
-            remote_tx.send(data)
+        data = rc_encoder.action(*mapped_key)
+        remote_tx.send(data)
         print(f'keycode sent: {data}')
         return True
     else:
