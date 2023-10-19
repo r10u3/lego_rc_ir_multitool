@@ -28,7 +28,6 @@ class SinglePWM:
         'blue': 'B'
     }
 
-    # holds speeds
     state = {
         'red'  : 0, 
         'blue' : 0

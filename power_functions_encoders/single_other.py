@@ -150,7 +150,7 @@ class SingleOther:
     }
 
     def get_nibble1(self, channel: int = 0) -> int:
-        print(f'nibble1: {type(self.nibble1)} | togglebit: {type(self.toggle_bit)}')
+        #print(f'nibble1: {type(self.nibble1)} | togglebit: {type(self.toggle_bit)}')
         return self.nibble1 | (self.toggle_bit * 8) | channel
     
     def get_nibble2(self, output: int = 0) -> int:
