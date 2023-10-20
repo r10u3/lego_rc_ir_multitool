@@ -50,23 +50,24 @@ The Lego:tm: receiver has two outputs (Red and Blue). Some of the modes control 
   <tbody>
     <tr>
       <td>Extended</td>
-      <td>• One output at a time (determined by data)<br />• Red speeds -7··+7 (set by INC/DEC), blue speeds Full Forward/Float (set by TOGGLE)<br />• Permanent state until new key changes it<br />• Toggle address bit, but doesn't accept extended commands with address bit = 1</td>
+      <td>• One output at a time (determined by data)<br />• Red speeds -7··+7 (set by INC/DEC), blue speeds Full Forward/Float (set by TOGGLE)<br />• No timeout. Keeps going until new key changes it<br />• Toggle address bit, but doesn't accept extended commands with address bit = 1<br />• Toggle bit is verified on receiver</td>
     </tr>
     <tr>
       <td>Combo Direct</td>
-      <td>• Both outputs simultaneously<br />• Speeds Full Forward, Full Backward, Float, Break only<br />• Only one second</td>
+      <td>• Both outputs simultaneously<br />• Speeds Full Forward/Full Backward/Float/Break<br />• Timeout for lost IR. Goes for one second and stops unless it keeps receiving IR<br />• Toggle bit is verified on receiver</td>
     </tr>
     <tr>
       <td>Single Output: PWM</td>
-      <td>• One output at a time<br />• Speeds -7··+7<br />• Permanent state until new key changes it</td>
+      <td>• One output at a time<br />• Speeds -7··+7<br />• This mode has no timeout for lost IR. Keeps going until new key changes it<br />• Toggle bit is verified on receiver.
+</td>
     </tr>
     <tr>
       <td>Single Output:<br />Clear/Set/Toggle/<br />Inc/Dec</td>
-      <td>• Couldn't make it work</td>
+      <td>• One output at a time<br />• Speeds -7··+7<br />• This mode has no timeout for lost IR. Keeps going until new key changes it. Except for "full forward" and "full backward"<br />• All speed in Increments/Decrements. Numerial PWM increases value, but keeps sign; no action for float<br />• C1 and C2 seem to drive motor in opposite directions<br />• Toggle bit is verified on receiver for increment/decrement/toggle 
     </tr>
     <tr>
       <td>Combo PWM</td>
-      <td>• Both outputs simultaneously<br />• Speeds -7··+7<br />• Only one second</td>
+      <td>• Both outputs simultaneously<br />• Speeds -7··+7<br />• Timeout for lost IR. Goes for one second and stops unless it keeps receiving IR<br />• Toggle bit is not verified on receiver</td>
     </tr>
   </tbody>
 </table>
@@ -242,11 +243,11 @@ The Lego:tm: receiver has two outputs (Red and Blue). Some of the modes control 
     </tr>
     <tr>
       <td rowspan = 4>Combo Direct<br /><em>D<sub>R</sub>D<sub>R</sub> or D<sub>B</sub>D<sub>B</sub></em></td>
-      <td>00</td><td>Float output B</td>
+      <td>00</td><td>Float</td>
     </tr>
-    <tr><td>01</td><td>Forward on output B</td></tr>
-    <tr><td>10</td><td>Backward on output B</td></tr>
-    <tr><td>11</td><td>Brake then float output B</td></tr>
+    <tr><td>01</td><td>Forward</td></tr>
+    <tr><td>10</td><td>Backward</td></tr>
+    <tr><td>11</td><td>Brake then float</td></tr>
     <tr>
       <td rowspan = 16>Single Output: PWM<br /><em>DDDD</em></td>
     </tr>
