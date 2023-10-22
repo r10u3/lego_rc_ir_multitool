@@ -234,19 +234,21 @@ The keys are configured in the <code>maps/button_maps</code> folder. One file pe
 
 |  Key         |  Combo PWM   | Combo Direct |  Single PWM  |   Extended   | Single Other |
 | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
-| &uarr;  | INC       | FWD | INC | INC | INC_NUM |
-| &darr;  | DEC       | REV | DEC | DEC | DEC_NUM |
-| SPACE   | BRK       | BRK | BRK | BRK | TOG_DIR |
-| 'l'     | FLT       | FLT | FLT | n/a | TOG_DIR(B) |
-| '1'     | FW1       | n/a | FW1 | n/a | CLR_C1 |
-| '2'     | FW2       | n/a | FW2 | n/a | n/a |
-| ...     | ...       | ... | ... | ... | ... |
-| '7'     | FW7       | n/a | FW7 | n/a | TOG_C1 |
-| 'a'     | RV1       | n/a | RV1 | TOG_ADDR | TOG_FWD |
-| 'b'     | RV2       | n/a | RV2 | TOG_B | FUL_REV |
-| ...     | ...       | ... | ... | ... | ... |
-| 'g'     | RV7       | n/a | RV7 | n/a | n/a |
-| Noteworthy |<sub>&bull; Both outputs simultaneously<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; Only one second</sub>|<sub>&bull; Both outputs simultaneously<br />&bull; Speeds Full Forward, Full Backward, Float, Break only<br />&bull; Only one second</sub> |<sub>&bull; One output at a time<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; Permanent state until new key changes it</sub> |<sub>&bull; One output at a time&bull; Red speeds -7&#183;&#183;+7, blue speeds Full Forward/Float<br />&bull; Permanent state until new key changes it<br />&bull; Toggle address bit, but doesn't accept <em>extended</em> commands with <code>address bit = 1</code></sub> |<sub>&bull; Code uses <em>button map</em> but not <em>keymaps</em></sub><br /><sub>&bull; One output at a time&bull; speeds -7&#183;&#183;+7<br />&bull; Permanent state until new key changes it<br />&bull; C1 & C2 work as opposite directions. I haven't tested actual voltages to assess differences<br />&bull; Multiple different toggles<br />&bull; Increment/decrement numerical PWM changes speed but not direction</sub> |
+| &uarr;       | FW7_FW7      | FW7_FLT      | B_FW7        | A_INC        | A_INC_NUM    |
+| &darr;       | RV7_FLT      | RV7_FLT      | B_RV7        | A_DEC        | A_DEC_NUM    |
+| &rarr;       | FLT_FW7      | FLT_FW7      | B_FLT        | n/a          | A_DEC_PWM    |
+| &larr;       | FLT_RV7      | FLT_RV7      | B_BRK        | n/a          | A_DEC_PWM    |
+| SPACE        | BRK_BRK      | BRK_BRK      | A_BRK        | A_BRK        | A_TOG_DIR    |
+| 'l'          | FLT_FLT      | n/a          | A_FLT        | n/a          | B_TOG_C2     |
+| '1'          | FW1_FLT      | n/a          | A_FW1        | n/a          | CLR_C1       |
+| '2'          | FW2_FLT      | n/a          | A_FW2        | n/a          | n/a          |
+| ...          | ...          | ...          |  ...         | ...          | ...          |
+| '7'          | FW7_FLT      | n/a          | A_FW7        | n/a          | TOG_C1       |
+| 'a'          | RV1_FLT      | n/a          | A_RV1        | ADD_TOG      | TOG_FWD      |
+| 'b'          | RV2_FLT      | n/a          | A_RV2        | B_TOG        | FUL_REV      |
+| ...          | ...          | ...          |  ...         | ...          | ...          |
+| 'g'          | RV7_FLT      | n/a          | A_RV7        | n/a          | n/a          |
+| Noteworthy |<sub>&bull; Both outputs simultaneously<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; Timeout with loss of IR (needs constant IR to keep going)</sub>|<sub>&bull; Both outputs simultaneously<br />&bull; Speeds Full Forward, Full Backward, Float, Break only<br />&bull; Timeout with loss of IR (needs constant IR to keep going)</sub> |<sub>&bull; One output at a time<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; No timeout for IR loss; keeps going until new key changes it</sub> |<sub>&bull; One output at a time<br />&bull; Red speeds -7&#183;&#183;+7, blue speeds Full Forward/Float<br />&bull; No timeout for IR loss; keeps going until new key changes it<br />&bull; Toggle address bit, but doesn't accept <em>extended</em> commands with <code>address bit = 1</code></sub> |<sub>&bull; One output at a time<br /> &bull; Speeds -7&#183;&#183;+7<br />&bull; No timeout for IR loss; keeps going until new key changes it<br />&bull; C1 & C2 work as opposite directions. I haven't tested actual voltages to assess differences |
 
 One important difference between the combo (direct and PWM) and not combo modes (single PWM, extended and single other) is that with not combo modes, the state is permanent. When you press a key, the motor starts and keeps going. With the combo modes, the motor moves only for about a second and stops. You need to keep sending keycodes to keep the motor going.
 
@@ -360,19 +362,13 @@ Arguments:
   * Extended
   * SingleOther
 * All have the same functions and variables (i.e., members) with the same signatures.
-* Keep track of current speeds for red and blue outputs. Only red is functional though, except for <em>Extended</em> mode.
-* Perform actions:
-  * set speed
-  * change speed in increments
-  * in some cases toggle between full forward and float
-* Provide keycode corresponding to self reported speeds.
-* They keep track of speeds
-  * For *PWM modes,
-    - the range of speeds is -7&#183;&#183;+7.
-    - Float is 0. Break is -99
-  * Other modes have varying types of increments.
-    - For example, the Combo Direct mode only supports full forward and full backward; it does not support intermediate speeds.
-    - While the Extended mode allows increments for <em>red</em> but toggle between float and full forward for <em>blue</em>.
+* Keep track of:
+  * Toggle bit (changes with each request for keycode or scancode except for combo PWM)
+  * Address bit (defaults to 0 and only changes in extended mode)
+* Provide keycode corresponding to button codes
+  * e.g., in single PWM &uarr; corresponds to full reverse on output B which corresponds to the keycode B_FW7.
+* Provide the scancode corresponding to button codes
+  * e.g., in the previous case, the scancode is 0x057D with toggle 0 or 0x8575 with toggle 1
 
 
 #### b. Members
@@ -395,8 +391,9 @@ import power_functions.single_other as pf
 rc_encoder = pf.SingleOther()
 ```
 
-##### &#x25B6; <code>action(color: str, action: str) -> keycode: str</code>
-Returns <code>keycode</code>. Not available for single_other encoders.
+##### &#x25B6; <code>action(output: str, action: str) -> keycode: str</code> for non-combo modes
+##### &#x25B6; <code>action(action A: str, action B: str) -> keycode: str</code> for non-combo modes
+Returns <code>keycode</code>.
 
 Colors are:
 * 'red'
