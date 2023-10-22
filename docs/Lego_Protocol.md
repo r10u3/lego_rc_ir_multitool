@@ -49,24 +49,24 @@ The Lego:tm: receiver has two outputs (Red and Blue). Some of the modes control 
   </thead>
   <tbody>
     <tr>
-      <td>Extended</td>
-      <td>• One output at a time (determined by data)<br />• Red speeds -7··+7 (set by INC/DEC), blue speeds Full Forward/Float (set by TOGGLE)<br />• Permanent state until new key changes it<br />• Toggle address bit, but doesn't accept extended commands with address bit = 1</td>
+      <th>Extended</th>
+      <td>• One output at a time (determined by data)<br />• Red speeds -7··+7 (set by INC/DEC), blue speeds Full Forward/Float (set by TOGGLE)<br />• No timeout. Keeps going until new key changes it<br />• Toggle address bit, but doesn't accept extended commands with address bit = 1<br />• Toggle bit is verified on receiver</td>
     </tr>
     <tr>
-      <td>Combo Direct</td>
-      <td>• Both outputs simultaneously<br />• Speeds Full Forward, Full Backward, Float, Break only<br />• Only one second</td>
+      <th>Combo Direct</th>
+      <td>• Both outputs simultaneously<br />• Speeds Full Forward/Full Backward/Float/Break<br />• Timeout for lost IR. Goes for one second and stops unless it keeps receiving IR<br />• Toggle bit is verified on receiver</td>
     </tr>
     <tr>
-      <td>Single Output: PWM</td>
-      <td>• One output at a time<br />• Speeds -7··+7<br />• Permanent state until new key changes it</td>
+      <th>Single Output: PWM</th>
+      <td>• One output at a time<br />• Speeds -7··+7<br />• This mode has no timeout for lost IR. Keeps going until new key changes it<br />• Toggle bit is verified on receiver.</td>
     </tr>
     <tr>
-      <td>Single Output:<br />Clear/Set/Toggle/<br />Inc/Dec</td>
-      <td>• Couldn't make it work</td>
+      <th>Single Output (Other):<br />Clear/Set/Toggle/<br />Inc/Dec</th>
+      <td>• One output at a time<br />• Speeds -7··+7<br />• This mode has no timeout for lost IR. Keeps going until new key changes it. Except for "full forward" and "full backward"<br />• All speed in Increments/Decrements. Numerical PWM increases value, but keeps sign; no action for float<br />• C1 and C2 seem to drive motor in opposite directions<br />• Toggle bit is verified on receiver for increment/decrement/toggle</td>
     </tr>
     <tr>
-      <td>Combo PWM</td>
-      <td>• Both outputs simultaneously<br />• Speeds -7··+7<br />• Only one second</td>
+      <th>Combo PWM</th>
+      <td>• Both outputs simultaneously<br />• Speeds -7··+7<br />• Timeout for lost IR. Goes for one second and stops unless it keeps receiving IR<br />• Toggle bit is not verified on receiver</td>
     </tr>
   </tbody>
 </table>
