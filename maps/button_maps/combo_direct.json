@@ -1,6 +1,7 @@
 {
-    "space" : ["red" , "BRK"],
-    "up"    : ["red" , "FWD"],
-    "down"  : ["red" , "REV"],
-    "l"     : ["red" , "FLT"]
+    "up"    : ["FW7", "FLT"],
+    "down"  : ["RV7", "FLT"],
+    "right" : ["FLT", "FW7"],
+    "left"  : ["FLT", "RV7"],
+    "space" : ["BRK", "BRK"]
 }

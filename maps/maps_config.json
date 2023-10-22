@@ -23,7 +23,7 @@
             "combo_direct" : "combo_direct_ch1.toml",
             "combo_pwm"    : "combo_pwm_ch1.toml",
             "single_pwm"   : "single_pwm_ch1.toml",
-            "single_other" : "single_other_ch1_red.toml",
+            "single_other" : "single_other_ch1.toml",
             "extended"     : "extended_ch1.toml"
         },
         "rpigpio" : {
@@ -31,7 +31,7 @@
             "combo_direct" : "combo_direct_ch1.json",
             "combo_pwm"    : "combo_pwm_ch1.json",
             "single_pwm"   : "single_pwm_ch1.json",
-            "single_other" : "single_other_ch1_red.json",
+            "single_other" : "single_other_ch1.json",
             "extended"     : "extended_ch1.json"
         }
     },
