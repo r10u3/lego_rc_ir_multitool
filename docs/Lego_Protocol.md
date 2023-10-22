@@ -131,8 +131,8 @@ The Lego:tm: receiver has two outputs (Red and Blue). Some of the modes control 
       <td>1</td>
       <td>D<sub>B</sub></td>
       <td>D<sub>B</sub></td>
-      <td>D<sub>R</sub></td>
-      <td>D<sub>R</sub></td>
+      <td>D<sub>A</sub></td>
+      <td>D<sub>A</sub></td>
       <td>L</td>
       <td>L</td>
       <td>L</td>
@@ -205,10 +205,10 @@ The Lego:tm: receiver has two outputs (Red and Blue). Some of the modes control 
       <td>D<sub>B</sub></td>
       <td>D<sub>B</sub></td>
       <td>D<sub>B</sub></td>
-      <td>D<sub>R</sub></td>
-      <td>D<sub>R</sub></td>
-      <td>D<sub>R</sub></td>
-      <td>D<sub>R</sub></td>
+      <td>D<sub>A</sub></td>
+      <td>D<sub>A</sub></td>
+      <td>D<sub>A</sub></td>
+      <td>D<sub>A</sub></td>
       <td>L</td>
       <td>L</td>
       <td>L</td>
@@ -241,12 +241,12 @@ The Lego:tm: receiver has two outputs (Red and Blue). Some of the modes control 
     <tr><td>1000</td><td>Reserved</td>
     </tr>
     <tr>
-      <td rowspan = 4>Combo Direct<br /><em>D<sub>R</sub>D<sub>R</sub> or D<sub>B</sub>D<sub>B</sub></em></td>
-      <td>00</td><td>Float output B</td>
+      <td rowspan = 4>Combo Direct<br /><em>D<sub>A</sub>D<sub>A</sub> or D<sub>B</sub>D<sub>B</sub></em></td>
+      <td>00</td><td>Float</td>
     </tr>
-    <tr><td>01</td><td>Forward on output B</td></tr>
-    <tr><td>10</td><td>Backward on output B</td></tr>
-    <tr><td>11</td><td>Brake then float output B</td></tr>
+    <tr><td>01</td><td>Forward</td></tr>
+    <tr><td>10</td><td>Backward</td></tr>
+    <tr><td>11</td><td>Brake then float</td></tr>
     <tr>
       <td rowspan = 16>Single Output: PWM<br /><em>DDDD</em></td>
     </tr>
@@ -284,7 +284,7 @@ The Lego:tm: receiver has two outputs (Red and Blue). Some of the modes control 
     <tr><td>1110</td><td>Toggle C2</td></tr>
     <tr><td>1111</td><td>Toggle full backward (Stop → Bw, Bw → Stop, Fwd → Bw)</td></tr>
     <tr>
-      <td rowspan = 16>Combo PWM<br /><em>D<sub>R</sub>D<sub>R</sub>D<sub>R</sub>D<sub>R</sub> or D<sub>B</sub>D<sub>B</sub>D<sub>B</sub>D<sub>B</sub></em></td>
+      <td rowspan = 16>Combo PWM<br /><em>D<sub>A</sub>D<sub>A</sub>D<sub>A</sub>D<sub>A</sub> or D<sub>B</sub>D<sub>B</sub>D<sub>B</sub>D<sub>B</sub></em></td>
       <td>0000</td><td>Float</td>
     </tr>
     <tr><td>0001</td><td>PWM forward step 1</td></tr>
