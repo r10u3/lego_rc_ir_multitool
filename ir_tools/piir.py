@@ -11,6 +11,6 @@ class IR_PiIR:
     def send(self, data: str) -> None:
         self.REMOTE_TX.send(data)
 
-    def send_x(self, data_bytes: hex) -> None:
+    def send_hex(self, data_bytes: str) -> None:
         self.REMOTE_TX.send_data(data_bytes)
 

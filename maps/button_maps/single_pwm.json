@@ -1,8 +1,8 @@
 {
     "up"    : ["B", "FW7"],
     "down"  : ["B", "RV7"],
-    "left"  : ["B", "BRK"],
     "right" : ["B", "FLT"],
+    "left"  : ["B", "BRK"],
     "space" : ["A", "BRK"],
     "0"  : ["A", "FLT"],
     "1"  : ["A", "FW1"],

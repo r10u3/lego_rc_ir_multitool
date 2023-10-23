@@ -1,7 +1,7 @@
 {
-    "space" : ["A" , "BRK"],
     "up"    : ["A" , "INC"],
     "down"  : ["A" , "DEC"],
+    "space" : ["A" , "BRK"],
     "b"     : ["B" , "TOG"],
     "a"     : ["" , "ADD_TOG"],
     "t"     : ["" , "TOG_AGN"]
