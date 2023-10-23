@@ -6,12 +6,13 @@
     "devices controlled" : "8884 Power Functions IR Receiver"
   },
   "parameters": {
-    "pulse"    :  6,
+    "pulse"          :  6,
     "heading_space"  : 39,
     "zero_space"     : 10,
     "one_space"      : 21,
     "trailing_space" : 39,
     "frequency"      : 38000,
     "bits"           : 16
-  }
+  },
+  "keycodes":{}
 }

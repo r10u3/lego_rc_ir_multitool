@@ -34,7 +34,6 @@ def get_maps_config(maps_config_file_name):
 
 CONFIG = get_config('config.json')
 MAPS_CONFIG = get_maps_config(CONFIG['maps_config_file'])
-SYSTEM_MODE = CONFIG['system_mode']
 
 ## Set up RC Mode
 RC_MODE = CONFIG['rc_mode']
@@ -60,10 +59,14 @@ else:
 
 ## Set up IR Tool
 ## Set up Remote TX Object
-IR_TOOL = CONFIG['ir_tool']
 GPIO = CONFIG['GPIO']
+SYSTEM_MODE = CONFIG['system_mode']
+IR_TOOL = 'rpigpio' if SYSTEM_MODE == 'SCAN' else CONFIG['ir_tool']
+if SYSTEM_MODE == 'SCAN': print(f'SCAN mode -> IR_TOOL set to {IR_TOOL}')
 REMOTE_KEYMAP_FOLDER_NAME = MAPS_CONFIG['keymaps'][IR_TOOL]['folder']
-REMOTE_KEYMAP_FILE_NAME = MAPS_CONFIG['keymaps'][CONFIG['ir_tool']][RC_MODES[RC_MODE]]
+tool_rc_mode = 'base' if SYSTEM_MODE == 'SCAN' else RC_MODES[RC_MODE]
+REMOTE_KEYMAP_FILE_NAME = MAPS_CONFIG['keymaps'][CONFIG['ir_tool']][tool_rc_mode]
+
 if IR_TOOL == 'piir':
     import ir_tools.piir as irt
     remote_tx = irt.IR_PiIR(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
