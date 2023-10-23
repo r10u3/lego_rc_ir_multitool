@@ -25,8 +25,13 @@ class LegoPF:
     def get_nibble4(self, nibble1: int, nibble2: int, nibble3: int) -> int:
         return 0xf ^ nibble1 ^ nibble2 ^ nibble3
 
-    def get_scancode(self, output: str, action: str) -> int:
+    def get_scancode(self, arg_1: str, arg_2: str) -> int:
         pass
 
-    def get_keycode(self, output: str, action: str) -> str:
+    def get_keycode(self, arg_1: str, arg_2: str) -> str:
         pass
+        
+    def get_hexcode(self, arg_1: str, arg_2: str) -> int:
+        hex_int = self.get_scancode(arg_1, arg_2)
+        hex_str = '%0*X' % (4, hex_int)
+        print(f'Int: {hex_int} | Hex: {hex_str}')
