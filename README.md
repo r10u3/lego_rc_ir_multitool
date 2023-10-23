@@ -1,15 +1,17 @@
 # Lego:tm: Power Functions & Raspberry Pi
-<em>Last updated: 10/22/2023</em>
+<em>Last updated: 10/23/2023</em>
 
 ## Important
-**This project is not very practical and it is in its early development stage.** It mostly shows the tools available and my own journey through these tools. You don't need all four tools. You only need one. But the tools are available for you to pick the tool and mode you prefer and import only those.
+**This project is not very practical.** It mostly shows the tools available and my own journey through these tools. You don't need all four tools. You only need one. But the tools are available for you to pick the tool and mode you prefer and import only those.
+
+**This project is complete.** I will maintain it if bugs appear, but it has been tested successfully and is finished. I am open to ideas for new features, but do not guarantee them.
 
 ## Introduction
 
 This project is part of using a Raspberry Pi as a [Lego:tm: PowerFunctions](docs/Lego_Protocol.md) controller. In my case, I use a headless Raspberry Pi 1 version 2, with Raspbian Bullseye. I also use a simple transmitter using an IR LED and a simple circuit (see [rc_transmitter](docs/rc_transmitter.md) for more details).
-> **Note:** Technically, the app can use any remote configuration, not just Lego. Except for the pigpio which is only coded for pulse distance encoding.
+> **Note:** Technically, the app can use any remote configuration, not just Lego. Except for the RPiGPIO which is coded for pulse distance encoding ([see pulse distance modulation](https://www.phidgets.com/docs/IR_Remote_Control_Guide)). Although it should be open to any pulse distance encoding.
 
-There are four IR tools that I found that work with Python and I use in this project:
+There are four IR tools that I found that work with Python and I use in this project (in the order I learnt them):
 * LIRC:
   - LIRC is a package that allows you to decode and send infra-red signals of many (but not all) commonly used remote controls.
   - Recent linux kernels makes it possible to use some IR remote controls as regular input devices. Sometimes this makes LIRC redundant. However, LIRC offers more flexibility and functionality and is still the right tool in a lot of scenarios.
@@ -17,16 +19,14 @@ There are four IR tools that I found that work with Python and I use in this pro
   - [lirc.org](https://www.lirc.org/)
 * <code>ir-ctl</code>
   - ir-ctl is a tool that allows one to list the features of a lirc device, set its options, receive raw IR, and send IR.
-  - IR can be sent as the keycode of a keymap, or using a scancode, or using raw IR.
+  - IR can be sent as the keycode of a keymap, or using a scancode, or using a raw IR file.
   - [<code>ir-ctl</code> - Man Page](https://www.mankier.com/1/ir-ctl)
 * PiIR
    - PiIR is a client program for pigpio, a hardware-timed GPIO library. Some code are taken from its sample program irrp.py.
    - It records and plays IR remote control code.
-   - It decodes and encodes NEC, Sony, RC5, RC6, AEHA, Mitsubishi, Sharp and Nokia formats.
-   - It dumps decoded and prettified data to help you analyze your air conditioner's remote.
    - It provides both command-line and programmatic control.
    - [PiIR 0.2.5](https://pypi.org/project/PiIR/) by Takeshi Sone
-* pigpio
+* PiGPIO
    - "pigpio is a library for the Raspberry which allows control of the General Purpose Input Outputs (GPIO).  pigpio works on all versions of the Pi." [^1]
    - Among other things, it allows waveforms to generate GPIO level changes (time accurate to a few &mu;s)
    - I developed a custom object to handle the codes.
@@ -35,12 +35,22 @@ There are four IR tools that I found that work with Python and I use in this pro
 In comparing speeds roughly by eye, there is no noticeable difference between the tools. New keys are almost instantaneous, while repeated keys seem limited by sshkeyboard. This poses a limitation for increment/decrement where it takes multiple keystrokes of the same key to reach a particular speed.
 
 ## Multitool API
+> **Definitions:**
+>
+> **Mapping:** Keys are mapped to the code sent in the following progression: **button (or key) &rarr; keycode &rarr; scancode**
+> 
+> **Button:** The actual key pressed (or whatever the app receives as a key). Examples of buttons/keys are: 'space', '&rarr;', '&larr;', '&uarr;', 'a', '4'
+>
+> **Keycode:** The tool's interpretation of a key. It does not have to be a real key. Normally, remote apps link remote buttons to system keys that are used to create events. We are using a custom app and the keys are not system keys. Examples of keycodes are: 'FW2_RV3', 'A_FLT'
+>
+> **Scancode:** The actual code being sent. Could be an hexadecimal string or an integer in hexadecimal, binary or decimal form, depending on the function that receives it. The map files, however, take the scancodes in hexadecimal format, each with its own syntax.
+
 If you want to use parts of this project as an API, you can do without the <code>sshkeyboard_.py</code> file and access the objects directly. Here is a description of each object and their Members
 
 ### 1. Keypad
 #### a. Features
 * The <code>keypad</code> maps buttons to actions.
-* Note that the <code>keypad</code> does not match buttons to keycodes; the <code>power_functions</code> (or encoders) do that. The reason is that when creating scancodes for the **combo** modes, it is useful to have both outputs separate.
+* Note that the <code>keypad</code> does not match buttons to keycodes. The reason is that when creating scancodes for the **combo** modes, it is useful to have both outputs separate.
 
 #### b. Members
 ##### &#x25B6; New Object: <code>Keypad(mapped_keys_file_name: str) -> Keypad</code>
@@ -62,10 +72,10 @@ Returns the action associated to a particular key. The action is an array with [
 ### 2. IR Tools
 #### a. Features
 * There are four types (classes):
-  * LIRC
-  * ir-ctl
-  * PiIR
-  * RPiGPIO
+  * IR_LIRC
+  * IR_ir_ctl
+  * IR_PiIR
+  * IR_RPiGPIO
 
 * All have the same basic functions and attributes (i.e., members) with the same signatures.
 * Send code to tool to be transmitted.
@@ -76,7 +86,7 @@ Require the following arguments:
 * **gpio_pin:** from <code>config.json</code>. Used by PiIR and RPiGPIO. <code>LIRC</code> and <code>ir-ctl</code> use the pin configured in the <code>/boot/config.txt</code> file.
 The function calls to create each type of object are:
 * **keymap_file_name:** from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code>, PiIR, and RPiGPIO to locate the keymap. <code>LIRC</code> uses remote names instead of keymap files. The remote name is inside the keymap file. As a matter of practice, the remote name should match the name of the keymap file minus the extension, but is not required by LIRC.
-* **keymap_folder_name:** from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code> and PiIR to locate the keymap. <code>LIRC</code> keymaps are all located at <code>/etc/lirc/lircd.conf.d</code>
+* **keymap_folder_name:** from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code>, PiIR and RPiGPIO to locate the keymap. <code>LIRC</code> keymaps are all located at <code>/etc/lirc/lircd.conf.d</code> (you copy these as part of the setup).
 ```
 import ir_tools.ir_ctl as irt
 remote_tx = irt.IR_ir_ctl(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
@@ -122,8 +132,8 @@ Arguments:
 * Keep track of:
   * Toggle bit (changes with each request for keycode or scancode except for combo PWM)
   * Address bit (defaults to 0 and only changes in extended mode)
-* Provide keycode corresponding to button codes
-  * e.g., in single PWM &uarr; corresponds to full reverse on output B which corresponds to the keycode B_FW7.
+* Provide keycode corresponding to action codes
+  * e.g., in single PWM &uarr; -which corresponds to full forward on output B- is mapped to ["B", "FW7"] by keyboard, and ["B", "FW7"] is mapped to the keycode B_FW7 by the encoder.
 * Provide the scancode corresponding to button codes
   * e.g., in the previous case, the scancode is 0x057D with toggle 0 or 0x8575 with toggle 1
 
@@ -176,39 +186,38 @@ Actions programmed include:
     </tr>
     <tr>
       <th rowspan=2>Code</th>
-      <td><pre>rc_encoder.get_keycode(output , action)</pre></td>
-      <td><pre>rc_encoder.action(action_A, action_B)</pre></td>
+      <td>
+        <pre>rc_encoder.get_keycode(output , action)</pre>
+        For example:
+        <pre>rc_encoder.get_keycode("A" , "FW4")</pre>
+      </td>
+      <td>
+        <pre>rc_encoder.action(action_A, action_B)</pre>
+        For example:
+        <pre>rc_encoder.get_keycode("RV3" , "FW4")</pre>
+      </td>
     </tr>
     <tr>
-      <td colspan=2><pre>rc_encoder.action(*key)</pre><br />Where:</td>
+      <td colspan=2><pre>rc_encoder.action(*key)</pre></td>
     </tr>
     <tr>
       <td></td>
-      <td>key is a [output, action] pair</td>
-      <td>key is a [action A, action B] pair</td>
+      <td>Where:<br />key is a [output, action] pair<br />such as ["A" , "FW4"]</td>
+      <td>Or:<br />key is a [action A, action B] pair<br />such as ["RV3" , "FW4"]</td>
     </tr>
   </tbody>
 </table>
 
 ## IR Multitool Configuration
 
-> **Definitions:**
->
-> **Mapping:** Keys are mapped to the code sent in the following progression: **button (or key) &rarr; keycode &rarr; scancode**
-> 
-> **Button:** The actual key pressed (or whatever the app receives as a key). Examples of buttons/keys are: 'space', '&rarr;', '&larr;', '&uarr;', 'a', '4'
->
-> **Keycode:** The tool's interpretation of a key. It does not have to be a real key. Normally, remote apps link remote buttons to system keys that are used to create events. We are using a custom app and the keys are not system keys. Examples of keycodes are: 'FW2_RV3', 'A_FLT'
->
-> **Scancode:** The actual code being sent. Could be an hexadecimal string or an integer in hexadecimal, binary or decimal form, depending on the function that receives it. The map files, however, take the scancodes in hexadecimal format, each with its own syntax.
-
 ### 1. Config file
 <code>config.json</code>
 ```
 {
+    "system_mode" : "SCAN",
     "project_folder" : "/home/pi/Projects/lego_rc",
-    "maps_config_file" : "maps/maps_config.json",
     "rc_mode" : "SGL",
+    "maps_config_file" : "maps/maps_config.json",
     "ir_tool" : "rpigpio",
     "GPIO" : 18
 }
