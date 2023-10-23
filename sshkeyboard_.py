@@ -62,10 +62,10 @@ else:
 GPIO = CONFIG['GPIO']
 SYSTEM_MODE = CONFIG['system_mode']
 IR_TOOL = 'rpigpio' if SYSTEM_MODE == 'SCAN' else CONFIG['ir_tool']
-if SYSTEM_MODE == 'SCAN': print(f'SCAN mode -> IR_TOOL set to {IR_TOOL}')
+if SYSTEM_MODE == 'SCAN':
+    print(f'SCAN mode -> IR_TOOL set to {IR_TOOL}')
 REMOTE_KEYMAP_FOLDER_NAME = MAPS_CONFIG['keymaps'][IR_TOOL]['folder']
-tool_rc_mode = 'base' if SYSTEM_MODE == 'SCAN' else RC_MODES[RC_MODE]
-REMOTE_KEYMAP_FILE_NAME = MAPS_CONFIG['keymaps'][CONFIG['ir_tool']][tool_rc_mode]
+REMOTE_KEYMAP_FILE_NAME = MAPS_CONFIG['keymaps'][CONFIG['ir_tool']][RC_MODES[RC_MODE]]
 
 if IR_TOOL == 'piir':
     import ir_tools.piir as irt
@@ -101,12 +101,9 @@ def on_press(key: str) -> bool:
     if kb.is_mapped_key(key):
         mapped_key = kb.get_action(key)
         print(f'Mapped Key: {mapped_key}')
-        if SYSTEM_MODE == "INT":
+        if SYSTEM_MODE == "SCAN":
             data = rc_encoder.get_scancode(*mapped_key)
             remote_tx.send_scancode(data)
-        elif SYSTEM_MODE == "HEX":
-            hex_string = rc_encoder.get_hexcode(*mapped_key)
-            remote_tx.send_scancode(hex_string)
         elif SYSTEM_MODE == "KEY":
             data = rc_encoder.get_keycode(*mapped_key)
             remote_tx.send(data)
