@@ -98,10 +98,10 @@ def on_press(key: str) -> bool:
     if kb.is_mapped_key(key):
         mapped_key = kb.get_action(key)
         print(f'Mapped Key: {mapped_key}')
-        if SYSTEM_MODE == "scan":
+        if SYSTEM_MODE == "SCAN":
             data = rc_encoder.get_scancode(*mapped_key)
             remote_tx.send_scancode(data)
-        elif SYSTEM_MODE == "key":
+        elif SYSTEM_MODE == "KEY":
             data = rc_encoder.get_keycode(*mapped_key)
             remote_tx.send(data)
         else:
