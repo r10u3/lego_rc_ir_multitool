@@ -1,6 +1,7 @@
 {
-    "project_folder" : "/home/pi/Projects/lego_rc_0_0_2",
-    "rc_mode" : "OTH",
+    "system_mode" : "SCAN",
+    "project_folder" : "/home/pi/Projects/lego_rc",
+    "rc_mode" : "SGL",
     "maps_config_file" : "maps/maps_config.json",
     "ir_tool" : "rpigpio",
     "GPIO" : 18

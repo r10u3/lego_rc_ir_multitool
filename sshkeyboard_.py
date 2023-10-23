@@ -1,6 +1,15 @@
 from sshkeyboard import listen_keyboard, stop_listening
 import json
 
+# SYSTEM MODES:
+# * SCAN = scancodes
+# * KEY  = keycodes
+
+# IR TOOLS:
+# * piir = PiIR
+# * rpigpio = RPiGPIO
+# * lirc = LIRC
+# * ir_ctl = ir-ctl
 
 RC_MODES = {
     'DIR' : 'combo_direct',
@@ -25,6 +34,7 @@ def get_maps_config(maps_config_file_name):
 
 CONFIG = get_config('config.json')
 MAPS_CONFIG = get_maps_config(CONFIG['maps_config_file'])
+SYSTEM_MODE = CONFIG['system_mode']
 
 ## Set up RC Mode
 RC_MODE = CONFIG['rc_mode']
@@ -48,26 +58,26 @@ else:
     raise Exception(error)
 
 
-## Set up System Mode
+## Set up IR Tool
 ## Set up Remote TX Object
-ir_tool = CONFIG['ir_tool']
+IR_TOOL = CONFIG['ir_tool']
 GPIO = CONFIG['GPIO']
-REMOTE_KEYMAP_FOLDER_NAME = MAPS_CONFIG['keymaps'][ir_tool]['folder']
+REMOTE_KEYMAP_FOLDER_NAME = MAPS_CONFIG['keymaps'][IR_TOOL]['folder']
 REMOTE_KEYMAP_FILE_NAME = MAPS_CONFIG['keymaps'][CONFIG['ir_tool']][RC_MODES[RC_MODE]]
-if ir_tool == 'piir':
+if IR_TOOL == 'piir':
     import ir_tools.piir as irt
     remote_tx = irt.IR_PiIR(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
-elif ir_tool == 'rpigpio':
+elif IR_TOOL == 'rpigpio':
     import ir_tools.rpigpio as irt
     remote_tx = irt.RPiGPIO(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
-elif ir_tool == 'lirc':
+elif IR_TOOL == 'lirc':
     import ir_tools.lirc as irt
     remote_tx = irt.IR_LIRC(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
-elif ir_tool == 'ir_ctl':
+elif IR_TOOL == 'ir_ctl':
     import ir_tools.ir_ctl as irt
     remote_tx = irt.IR_ir_ctl(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
 else:
-    error = f'ERR_Lego_020: No IR Tool'
+    error = f'ERR_SSHKeyboard_020: No IR Tool'
     raise Exception(error)
 
 
@@ -88,10 +98,15 @@ def on_press(key: str) -> bool:
     if kb.is_mapped_key(key):
         mapped_key = kb.get_action(key)
         print(f'Mapped Key: {mapped_key}')
-        data = rc_encoder.get_keycode(*mapped_key)
-        remote_tx.send(data)
-#        data = rc_encoder.get_scancode(*mapped_key)
-#        remote_tx.send_scancode(data)
+        if SYSTEM_MODE == "scan":
+            data = rc_encoder.get_scancode(*mapped_key)
+            remote_tx.send_scancode(data)
+        elif SYSTEM_MODE == "key":
+            data = rc_encoder.get_keycode(*mapped_key)
+            remote_tx.send(data)
+        else:
+            error = f'ERR_SSHKeyboard_025: No SYSTEM MODE'
+            raise Exception(error)
         print(f'keycode sent: {data}')
         return True
     else:
