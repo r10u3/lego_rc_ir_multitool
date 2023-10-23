@@ -1,5 +1,5 @@
 # Lego:tm: Power Functions & Raspberry Pi
-<em>Last updated: 10/17/2023</em>
+<em>Last updated: 10/22/2023</em>
 
 ## Important
 **This project is not very practical and it is in its early development stage.** It mostly shows the tools available and my own journey through these tools. You don't need all four tools. You only need one. But the tools are available for you to pick the tool and mode you prefer and import only those.
@@ -33,6 +33,259 @@ There are four IR tools that I found that work with Python and I use in this pro
    - With almost direct access to the GPIO.
  
 In comparing speeds roughly by eye, there is no noticeable difference between the tools. New keys are almost instantaneous, while repeated keys seem limited by sshkeyboard. This poses a limitation for increment/decrement where it takes multiple keystrokes of the same key to reach a particular speed.
+
+## Multitool API
+If you want to use parts of this project as an API, you can do without the <code>sshkeyboard_.py</code> file and access the objects directly. Here is a description of each object and their Members
+
+### 1. Keypad
+#### a. Features
+* The <code>keypad</code> maps buttons to actions.
+* Note that the <code>keypad</code> does not match buttons to keycodes; the <code>power_functions</code> (or encoders) do that. The reason is that when creating scancodes for the **combo** modes, it is useful to have both outputs separate.
+
+#### b. Members
+##### &#x25B6; New Object: <code>Keypad(mapped_keys_file_name: str) -> Keypad</code>
+The required parameters are:
+* **<code>mapped_keys_file_name</code>:** from <code>maps/maps_config.json</code>.
+```
+import keypad
+
+kb = keypad.Keypad(mapped_keys_file_name)
+```
+
+##### &#x25B6; <code>is_mapped_key(self , key: str) -> bool</code>
+Checks whether a particular key (e.g., &uarr;) is in the button map. Returns a boolean.
+
+##### &#x25B6; <code>get_action(self , key: str) -> [str , str]</code>
+Returns the action associated to a particular key. The action is an array with [color , action] pairs for the single output modes (single PWM, single other and extended) or with [action A, action B] pairs for the combo modes (combo PWM and combo direct).
+
+
+### 2. IR Tools
+#### a. Features
+* There are four types (classes):
+  * LIRC
+  * ir-ctl
+  * PiIR
+  * RPiGPIO
+
+* All have the same basic functions and attributes (i.e., members) with the same signatures.
+* Send code to tool to be transmitted.
+
+#### b. Members
+##### &#x25B6; New Object: <code>[Tool](GPIO: int, keymap_file_name: str, keymap_folder_name: str = '/maps/keymaps/[tool]') -> [Tool]</code>
+Require the following arguments:
+* **gpio_pin:** from <code>config.json</code>. Used by PiIR and RPiGPIO. <code>LIRC</code> and <code>ir-ctl</code> use the pin configured in the <code>/boot/config.txt</code> file.
+The function calls to create each type of object are:
+* **keymap_file_name:** from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code>, PiIR, and RPiGPIO to locate the keymap. <code>LIRC</code> uses remote names instead of keymap files. The remote name is inside the keymap file. As a matter of practice, the remote name should match the name of the keymap file minus the extension, but is not required by LIRC.
+* **keymap_folder_name:** from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code> and PiIR to locate the keymap. <code>LIRC</code> keymaps are all located at <code>/etc/lirc/lircd.conf.d</code>
+```
+import ir_tools.ir_ctl as irt
+remote_tx = irt.IR_ir_ctl(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
+```
+```
+import ir_tools.lirc as irt
+remote_tx = irt.IR_LIRC(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
+```
+```
+import ir_tools.piir as irt
+remote_tx = irt.IR_PiIR(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
+```
+```
+import ir_tools.rpigpio as irt
+remote_tx = irt.RPiGPIO(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
+```
+
+##### &#x25B6; send(keycode: str) -> None:
+It converts a keycode (e.g., 'FW2_FW2') to scancode (e.g., 0x422B) and sends it.
+Arguments:
+* **keycode:** this is the keycode. For example 'FW2_FW2'
+
+##### &#x25B6; send_hex(data_bytes: str) -> None:
+This function is unique to PiIR and RPiGPIO. It takes a scancode in hexadecimal string format (e.g., '42 2B') and sends it.
+> **Note:** PiIR reverses the bits in each byte, so you need to pre-process the data to be sent. This is not the case with RPiGPIO, which was custom coded for this application.
+Arguments:
+* **data_bytes:** the scancode as an hexadecimal string.
+
+##### &#x25B6; send_scancode(data: int) -> None:
+This function is unique to RPiGPIO. It takes a scancode in integer format (e.g., 16939 or 0x422B), and sends it. The code must be a valid code. The function does not check for validity. The code is sent anyway and the receiver will reject it without any error.
+Arguments:
+* **data:** the scancode as an integer. Could be binary (0b...), hexadecimal (0x...) or plain decimal.
+
+### 3. Power Functions (Encoders)
+#### a. Features
+* There are four types (classes):
+  * ComboPWM
+  * ComboDirect
+  * SinglePWM
+  * Extended
+  * SingleOther
+* All have the same functions and variables (i.e., members) with the same signatures.
+* Keep track of:
+  * Toggle bit (changes with each request for keycode or scancode except for combo PWM)
+  * Address bit (defaults to 0 and only changes in extended mode)
+* Provide keycode corresponding to button codes
+  * e.g., in single PWM &uarr; corresponds to full reverse on output B which corresponds to the keycode B_FW7.
+* Provide the scancode corresponding to button codes
+  * e.g., in the previous case, the scancode is 0x057D with toggle 0 or 0x8575 with toggle 1
+
+
+#### b. Members
+##### &#x25B6; New Object: [encoder]&#40;&#41; -> [encoder]
+Does not require any parameters. The function calls to create each type of object are:
+```
+import power_functions.combo_pwm as pf
+rc_encoder = pf.ComboPWM()
+```
+```
+import power_functions.combo_direct as pf
+rc_encoder = pf.ComboDirect()
+```
+```
+import power_functions.single_pwm as pf
+rc_encoder = pf.SinglePWM()
+```
+```
+import power_functions.single_other as pf
+rc_encoder = pf.SingleOther()
+```
+
+##### &#x25B6; <code>get_keycode(str, str) -> keycode: str</code>
+Get keycode for output/action or actions A/B pairs. Returns <code>keycode</code>
+Actions programmed include:
+* break then float='BRK'
+* increment speed='INC'
+* forward speeds='FW1' through 'FW7'
+* decrement speed= 'DEC'
+* reverse speeds ='RV1' through 'RV7'
+* float= 'FLT'
+* toggle bit= 'TOG'
+* <em>et cetera</em>
+
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Single Modes</th>
+      <th>Combo Modes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Pairs</th>
+      <td>[output, action]</td>
+      <td>[action A, action B]</td>
+    </tr>
+    <tr>
+      <th rowspan=2>Code</th>
+      <td><pre>rc_encoder.get_keycode(output , action)</pre></td>
+      <td><pre>rc_encoder.action(action_A, action_B)</pre></td>
+    </tr>
+    <tr>
+      <td colspan=2><pre>rc_encoder.action(*key)</pre><br />Where:</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>key is a [output, action] pair</td>
+      <td>key is a [action A, action B] pair</td>
+    </tr>
+  </tbody>
+</table>
+
+## IR Multitool Configuration
+
+> **Definitions:**
+>
+> **Mapping:** Keys are mapped to the code sent in the following progression: **button (or key) &rarr; keycode &rarr; scancode**
+> 
+> **Button:** The actual key pressed (or whatever the app receives as a key). Examples of buttons/keys are: 'space', '&rarr;', '&larr;', '&uarr;', 'a', '4'
+>
+> **Keycode:** The tool's interpretation of a key. It does not have to be a real key. Normally, remote apps link remote buttons to system keys that are used to create events. We are using a custom app and the keys are not system keys. Examples of keycodes are: 'FW2_RV3', 'A_FLT'
+>
+> **Scancode:** The actual code being sent. Could be an hexadecimal string or an integer in hexadecimal, binary or decimal form, depending on the function that receives it. The map files, however, take the scancodes in hexadecimal format, each with its own syntax.
+
+### 1. Config file
+<code>config.json</code>
+```
+{
+    "project_folder" : "/home/pi/Projects/lego_rc",
+    "maps_config_file" : "maps/maps_config.json",
+    "rc_mode" : "SGL",
+    "ir_tool" : "rpigpio",
+    "GPIO" : 18
+}
+```
+#### a. <code>project_folder</code>
+This is the absolute path to the project. It is not really used anywhere
+
+#### b. <code>maps_config_file</code>
+This is quite important. If you move the config file, make sure to modify here. I recommend you leave it where it is.
+
+The <code>maps_config_file</code> file has links to keymaps and button maps. If you change the names of the keymaps or use different ones, make sure to update the <code>maps_config_file</code>.
+
+#### c. <code>rc_mode</code>
+The available modes are:
+   - PWM: Combo PWM
+   - DIR: Combo Direct
+   - SGL: Single PWM
+   - EXT: Extended
+   - OTH: Single Clear/Set/Toggle/Inc/Dec
+
+#### d. <code>ir_tool</code>
+The available tools (as used in the config files) are:
+   - lirc
+   - ir_ctl
+   - piir
+   - rpigpio (the 'r' prefix is there to distinguish it from the pigpio library when it's imported)
+
+#### e. <code>gpio_pin</code>
+PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using writePWMFrequency(mypi, 12, 8000)."[^2] Lego uses 38KHz.
+
+### 2. Button Maps
+The keys are configured in the <code>maps/button_maps</code> folder. One file per rc mode. Each mode has its own set of key mappings. I only coded for the A output in most cases. Here are some **comparative examples**:
+
+|  Key         |  Combo PWM   | Combo Direct |  Single PWM  |   Extended   | Single Other |
+| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
+| &uarr;       | FW7_FW7      | FW7_FLT      | B_FW7        | A_INC        | A_INC_NUM    |
+| &darr;       | RV7_FLT      | RV7_FLT      | B_RV7        | A_DEC        | A_DEC_NUM    |
+| &rarr;       | FLT_FW7      | FLT_FW7      | B_FLT        | n/a          | A_DEC_PWM    |
+| &larr;       | FLT_RV7      | FLT_RV7      | B_BRK        | n/a          | A_DEC_PWM    |
+| SPACE        | BRK_BRK      | BRK_BRK      | A_BRK        | A_BRK        | A_TOG_DIR    |
+| 'l'          | FLT_FLT      | n/a          | A_FLT        | n/a          | B_TOG_C2     |
+| '1'          | FW1_FLT      | n/a          | A_FW1        | n/a          | CLR_C1       |
+| '2'          | FW2_FLT      | n/a          | A_FW2        | n/a          | n/a          |
+| ...          | ...          | ...          |  ...         | ...          | ...          |
+| '7'          | FW7_FLT      | n/a          | A_FW7        | n/a          | TOG_C1       |
+| 'a'          | RV1_FLT      | n/a          | A_RV1        | ADD_TOG      | TOG_FWD      |
+| 'b'          | RV2_FLT      | n/a          | A_RV2        | B_TOG        | FUL_REV      |
+| ...          | ...          | ...          |  ...         | ...          | ...          |
+| 'g'          | RV7_FLT      | n/a          | A_RV7        | n/a          | n/a          |
+| Noteworthy |<sub>&bull; Both outputs simultaneously<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; Timeout with loss of IR (needs constant IR to keep going)</sub>|<sub>&bull; Both outputs simultaneously<br />&bull; Speeds Full Forward, Full Backward, Float, Break only<br />&bull; Timeout with loss of IR (needs constant IR to keep going)</sub> |<sub>&bull; One output at a time<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; No timeout for IR loss; keeps going until new key changes it</sub> |<sub>&bull; One output at a time<br />&bull; A speeds -7&#183;&#183;+7, B speeds Full Forward/Float<br />&bull; No timeout for IR loss; keeps going until new key changes it<br />&bull; Toggle address bit, but doesn't accept <em>extended</em> commands with <code>address bit = 1</code></sub> |<sub>&bull; One output at a time<br /> &bull; Speeds -7&#183;&#183;+7<br />&bull; No timeout for IR loss; keeps going until new key changes it<br />&bull; C1 & C2 work as opposite directions. I haven't tested actual voltages to assess differences |
+
+One important difference between the combo (direct and PWM) and not combo modes (single PWM, extended and single other) is that with not combo modes, the state is permanent. When you press a key, the motor starts and keeps going. With the combo modes, the motor moves only for about a second and stops. You need to keep sending keycodes to keep the motor going.
+
+### 3. Keymaps
+Every tool has its own different keymap format. They all have a header with basic protocol parameters followed by keycode-scancode pairs. But each has a different format:
+* LIRC: lirc keymaps have a <code>[.conf](https://www.lirc.org/html/lircd.conf.html)</code> extension and follow the basic rules of configuration files. Example for [Combo PWM](maps/keymaps/lirc/combo_pwm_ch1.conf).
+* ir-ctl: uses the <code>[.toml](https://www.mankier.com/5/rc_keymap)</code> format. Example for [Combo PWM](maps/keymaps/ir_ctl/combo_pwm_ch1.toml).
+* PiIR: uses json files. Example for [Combo PWM](maps/keymaps/piir/combo_pwm_ch1.json).
+* PiGPIO: uses json files. Example for [Combo PWM](maps/keymaps/rpigpio/combo_pwm_ch1.json).
+
+The common parameters in the header include (the names and format might change from one format to another but the meaning and values remain):
+
+| Parameter | Value[^3] | Unit | Cycles[^4] | Notes |
+|-----------|-------|------|--------|-------|
+| frequency | 38000 | Hz | n/a | |
+| cycle length | 26 | &mu;s | 1 | 1/carrier |
+| header_pulse | 158 | &mu;s | 6 | 6 x cycle length |
+| header_space | 1026 | &mu;s | 39 | 39 x cycle length |
+| bit_pulse | 158 | &mu;s | 6 | 6 x cycle length |
+| bit_0_space | 263 | &mu;s | 10 | 10 x cycle length |
+| bit_1_space | 553 | &mu;s | 21 | 21 x cycle length |
+| trailer_pulse | 158 | &mu;s | 6 | 6 x cycle length |
+| bits | 16 | n/a | | |
+[^3]: Used by LIRC and <code>ir-ctl</code>
+[^4]: Used by PiIR and RPiGPIO
+
+You can find more detailed descriptions of each file format in each tool's setup file in the <code>docs</code> folder.
 
 ## Setup
 > **Notes:**
@@ -178,274 +431,6 @@ piir play --gpio 18 --file maps/keymaps/piir/combo_pwm_ch1.json FW2_FW2
 Send a sample code. Again, first navigate to the project's directory.
 ```
 python -c 'import ir_tools.rpigpio as irt; irt.test_send("maps/keymaps/rpigpio/combo_pwm_ch1.json" , 18 , "FW2_FW2")'
-```
-
-## IR Multitool Configuration
-
-> **Definitions:**
->
-> **Mapping:** Keys are mapped to the code sent in the following progression: **button (or key) &rarr; keycode &rarr; scancode**
-> 
-> **Button:** The actual key pressed (or whatever the app receives as a key). Examples of buttons/keys are: 'space', '&rarr;', '&larr;', '&uarr;', 'a', '4'
->
-> **Keycode:** The tool's interpretation of a key. It does not have to be a real key. Normally, remote apps link remote buttons to system keys that are used to create events. We are using a custom app and the keys are not system keys. Examples of keycodes are: 'FW2_RV3', 'R_FLT', 'INC_R_00'
->
-> **Scancode:** The actual code being sent. Could be an hexadecimal string or an integer in hexadecimal, binary or decimal form, depending on the function that receives it. The map files, however, take the scancodes in hexadecimal format, each with its own syntax.
-
-### 1. Config file
-<code>config.json</code>
-```
-{
-    "project_folder" : "/home/pi/Projects/lego_rc_0_0_2",
-    "maps_config_file" : "maps/maps_config.json",
-    "rc_mode" : "SGL",
-    "ir_tool" : "rpigpio",
-    "GPIO" : 18
-}
-```
-#### a. <code>project_folder</code>
-This is the absolute path to the project. It is not really used anywhere
-
-#### b. <code>maps_config_file</code>
-This is quite important. If you move the config file, make sure to modify here. I recommend you leave it where it is.
-
-The <code>maps_config_file</code> file has links to keymaps and button maps. If you change the names of the keymaps or use different ones, make sure to update the <code>maps_config_file</code>.
-
-#### c. <code>rc_mode</code>
-The available modes are:
-   - PWM: Combo PWM
-   - DIR: Combo Direct
-   - SGL: Single PWM
-   - EXT: Extended
-   - OTH: Single Clear/Set/Toggle/Inc/Dec
-
-#### d. <code>ir_tool</code>
-The available tools (as used in the config files) are:
-   - lirc
-   - ir_ctl
-   - piir
-   - rpigpio (the 'r' prefix is there to distinguish it from the pigpio library when it's imported)
-
-#### e. <code>gpio_pin</code>
-PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using writePWMFrequency(mypi, 12, 8000)."[^2] Lego uses 38KHz.
-
-### 2. Button Maps
-The keys are configured in the <code>maps/button_maps</code> folder. One file per rc mode. Each mode has its own set of key mappings. I only coded for the red output in most cases. Here are some **comparative examples**:
-
-|  Key         |  Combo PWM   | Combo Direct |  Single PWM  |   Extended   | Single Other |
-| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
-| &uarr;  | INC       | FWD | INC | INC | INC_NUM |
-| &darr;  | DEC       | REV | DEC | DEC | DEC_NUM |
-| SPACE   | BRK       | BRK | BRK | BRK | TOG_DIR |
-| 'l'     | FLT       | FLT | FLT | n/a | TOG_DIR(B) |
-| '1'     | FW1       | n/a | FW1 | n/a | CLR_C1 |
-| '2'     | FW2       | n/a | FW2 | n/a | n/a |
-| ...     | ...       | ... | ... | ... | ... |
-| '7'     | FW7       | n/a | FW7 | n/a | TOG_C1 |
-| 'a'     | RV1       | n/a | RV1 | TOG_ADDR | TOG_FWD |
-| 'b'     | RV2       | n/a | RV2 | TOG_B | FUL_REV |
-| ...     | ...       | ... | ... | ... | ... |
-| 'g'     | RV7       | n/a | RV7 | n/a | n/a |
-| Noteworthy |<sub>&bull; Both outputs simultaneously<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; Only one second</sub>|<sub>&bull; Both outputs simultaneously<br />&bull; Speeds Full Forward, Full Backward, Float, Break only<br />&bull; Only one second</sub> |<sub>&bull; One output at a time<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; Permanent state until new key changes it</sub> |<sub>&bull; One output at a time&bull; Red speeds -7&#183;&#183;+7, blue speeds Full Forward/Float<br />&bull; Permanent state until new key changes it<br />&bull; Toggle address bit, but doesn't accept <em>extended</em> commands with <code>address bit = 1</code></sub> |<sub>&bull; Code uses <em>button map</em> but not <em>keymaps</em></sub><br /><sub>&bull; One output at a time&bull; speeds -7&#183;&#183;+7<br />&bull; Permanent state until new key changes it<br />&bull; C1 & C2 work as opposite directions. I haven't tested actual voltages to assess differences<br />&bull; Multiple different toggles<br />&bull; Increment/decrement numerical PWM changes speed but not direction</sub> |
-
-One important difference between the combo (direct and PWM) and not combo modes (single PWM, extended and single other) is that with not combo modes, the state is permanent. When you press a key, the motor starts and keeps going. With the combo modes, the motor moves only for about a second and stops. You need to keep sending keycodes to keep the motor going.
-
-### 3. Keymaps
-Every tool has its own different keymap format. They all have a header with basic protocol parameters followed by keycode-scancode pairs. But each has a different format:
-* LIRC: lirc keymaps have a <code>[.conf](https://www.lirc.org/html/lircd.conf.html)</code> extension and follow the basic rules of configuration files. Example for [Combo PWM](maps/keymaps/lirc/combo_pwm_ch1.conf).
-* ir-ctl: uses the <code>[.toml](https://www.mankier.com/5/rc_keymap)</code> format. Example for [Combo PWM](maps/keymaps/ir_ctl/combo_pwm_ch1.toml).
-* PiIR: uses json files. Example for [Combo PWM](maps/keymaps/piir/combo_pwm_ch1.json).
-* PiGPIO: uses json files. Example for [Combo PWM](maps/keymaps/rpigpio/combo_pwm_ch1.json).
-
-The common parameters in the header include (the names and format might change from one format to another but the meaning and values remain):
-
-| Parameter | Value[^3] | Unit | Cycles[^4] | Notes |
-|-----------|-------|------|--------|-------|
-| frequency | 38000 | Hz | n/a | |
-| cycle length | 26 | &mu;s | 1 | 1/carrier |
-| header_pulse | 158 | &mu;s | 6 | 6 x cycle length |
-| header_space | 1026 | &mu;s | 39 | 39 x cycle length |
-| bit_pulse | 158 | &mu;s | 6 | 6 x cycle length |
-| bit_0_space | 263 | &mu;s | 10 | 10 x cycle length |
-| bit_1_space | 553 | &mu;s | 21 | 21 x cycle length |
-| trailer_pulse | 158 | &mu;s | 6 | 6 x cycle length |
-| bits | 16 | n/a | | |
-[^3]: Used by LIRC and <code>ir-ctl</code>
-[^4]: Used by PiIR and RPiGPIO
-
-You can find more detailed descriptions of each file format in each tool's setup file in the <code>docs</code> folder.
-
-## Multitool API
-If you want to use parts of this project as an API, you can do without the <code>sshkeyboard_.py</code> file and access the objects directly. Here is a description of each object and their Members
-
-### 1. Keypad
-#### a. Features
-* The <code>keypad</code> maps buttons to actions.
-* Note that the <code>keypad</code> does not match buttons to keycodes; the <code>power_functions</code> (or encoders) do that while keeping track of state. The reason is that we can have keys that don't map to codes. For example, in the Combo PWM <code>button_map</code> (where the mappings are configured) there is a button map for 'INC' (increment), but there is no such code in the Lego protocol for the Combo PWM mode. The <code>Combo_PWM</code> object creates the corresponding code by calculating the speed = current speed + 1.
-
-#### b. Members
-##### &#x25B6; New Object: <code>Keypad(mapped_keys_file_name: str) -> Keypad</code>
-The required parameters are:
-* **<code>mapped_keys_file_name</code>:** from <code>maps/maps_config.json</code>.
-```
-import keypad
-
-kb = keypad.Keypad(mapped_keys_file_name)
-```
-
-##### &#x25B6; <code>is_mapped_key(self , key: str) -> bool</code>
-Checks whether a particular key (e.g., &uarr;) is in the button map. Returns a boolean.
-
-##### &#x25B6; <code>get_action(self , key: str) -> [str , str]</code>
-Returns the action associated to a particular key. The action is an array with [color , action] pairs.
-
-
-### 2. IR Tools
-#### a. Features
-* There are four types (classes):
-  * LIRC
-  * ir-ctl
-  * PiIR
-  * RPiGPIO
-
-* All have the same basic functions and attributes (i.e., members) with the same signatures.
-* Send code to tool to be transmitted.
-
-#### b. Members
-##### &#x25B6; New Object: <code>[Tool](GPIO: int, keymap_file_name: str, keymap_folder_name: str = '/maps/keymaps/[tool]') -> [Tool]</code>
-Require the following arguments:
-* **gpio_pin:** from <code>config.json</code>. Used by PiIR and RPiGPIO. <code>LIRC</code> and <code>ir-ctl</code> use the pin configured in the <code>/boot/config.txt</code> file.
-The function calls to create each type of object are:
-* **keymap_file_name:** from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code>, PiIR, and RPiGPIO to locate the keymap. <code>LIRC</code> uses remote names instead of keymap files. The remote name is inside the keymap file. As a matter of practice, the remote name should match the name of the keymap file minus the extension, but is not required by LIRC.
-* **keymap_folder_name:** from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code> and PiIR to locate the keymap. <code>LIRC</code> keymaps are all located at <code>/etc/lirc/lircd.conf.d</code>
-```
-import ir_tools.ir_ctl as irt
-remote_tx = irt.IR_ir_ctl(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
-```
-```
-import ir_tools.lirc as irt
-remote_tx = irt.IR_LIRC(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
-```
-```
-import ir_tools.piir as irt
-remote_tx = irt.IR_PiIR(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
-```
-```
-import ir_tools.rpigpio as irt
-remote_tx = irt.RPiGPIO(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
-```
-
-##### &#x25B6; send(keycode: str) -> None:
-It converts a keycode (e.g., 'FW2_FW2') to scancode (e.g., 0x422B) and sends it.
-Arguments:
-* **keycode:** this is the keycode. For example 'FW2_FW2'
-
-##### &#x25B6; send_hex(data_bytes: str) -> None:
-This function is unique to PiIR and RPiGPIO. It takes a scancode in hexadecimal string format (e.g., '42 2B') and sends it.
-> **Note:** PiIR reverses the bits in each byte, so you need to pre-process the data to be sent. This is not the case with RPiGPIO, which was custom coded for this application.
-Arguments:
-* **data_bytes:** the scancode as an hexadecimal string.
-
-##### &#x25B6; send_scancode(data: int) -> None:
-This function is unique to RPiGPIO. It takes a scancode in integer format (e.g., 16939 or 0x422B), and sends it. The code must be a valid code. The function does not check for validity. The code is sent anyway and the receiver will reject it without any error.
-Arguments:
-* **data:** the scancode as an integer. Could be binary (0b...), hexadecimal (0x...) or plain integer.
-
-### 3. Power Functions (Encoders)
-#### a. Features
-* There are four types (classes):
-  * ComboPWM
-  * ComboDirect
-  * SinglePWM
-  * Extended
-  * SingleOther
-* All have the same functions and variables (i.e., members) with the same signatures.
-* Keep track of current speeds for red and blue outputs. Only red is functional though, except for <em>Extended</em> mode.
-* Perform actions:
-  * set speed
-  * change speed in increments
-  * in some cases toggle between full forward and float
-* Provide keycode corresponding to self reported speeds.
-* They keep track of speeds
-  * For *PWM modes,
-    - the range of speeds is -7&#183;&#183;+7.
-    - Float is 0. Break is -99
-  * Other modes have varying types of increments.
-    - For example, the Combo Direct mode only supports full forward and full backward; it does not support intermediate speeds.
-    - While the Extended mode allows increments for <em>red</em> but toggle between float and full forward for <em>blue</em>.
-
-
-#### b. Members
-##### &#x25B6; New Object: [encoder]&#40;&#41; -> [encoder]
-Does not require any parameters. The function calls to create each type of object are:
-```
-import power_functions.combo_pwm as pf
-rc_encoder = pf.ComboPWM()
-```
-```
-import power_functions.combo_direct as pf
-rc_encoder = pf.ComboDirect()
-```
-```
-import power_functions.single_pwm as pf
-rc_encoder = pf.SinglePWM()
-```
-```
-import power_functions.single_other as pf
-rc_encoder = pf.SingleOther()
-```
-
-##### &#x25B6; <code>action(color: str, action: str) -> keycode: str</code>
-Returns <code>keycode</code>. Not available for single_other encoders.
-
-Colors are:
-* 'red'
-* 'blue'
-
-Actions programmed are:
-* break then float=‘BRK’
-* increment speed=‘INC’ or full forward='FWD'
-* decrement speed= ‘DEC’ or full revers='REV'
-* float= ‘FLT’
-* set speed (-7&#183;&#183;+7) for *PWM modes only.
-```
-rc_encoder.action(*key)
-```
-(where key is a [color, action] pair)
-
-**or**
-```
-rc_encoder.action(color, action)
-```
-
-
-##### &#x25B6; <code>speed_change(color: str , increment: int) -> keycode: str</code>
-Change speed by increments. Returns <code>keycode</code>.
-* If <code>abs(state[color] + increment) > 7</code> it will not change speed and return the keycode for the current speed.
-```
-rc_encoder.speed_change(color, increment)
-```
-
-##### &#x25B6; <code>set_speed(color: str , speed: int) -> keycode: str</code>
-Sets speed. Returns <code>keycode</code>.
-* The range of speeds is -7&#183;&#183;+7 (for *PWM)
-* 0 is float
-* -99: break then float
-```
-rc_encoder.set_speed(color , speed)
-```
-
-##### &#x25B6; <code>get_keycode(speed_red: int , speed_blue: int) -> keycode: str</code>
-Get keycode for red-blue combo speeds. Returns <code>keycode</code>
-* For combo modes
-```
-rc_encoder.get_keycode(speed_red , speed_blue)
-```
-##### &#x25B6; <code>get_keycode(color: str, speed: int) -> keycode: str</code>
-Get keycode for single color speeds. Returns <code>keycode</code>
-* For single PWM and extended modes
-```
-rc_encoder.get_keycode(speed_red , speed_blue)
 ```
 
 [^1]: [The pigpio library](https://abyz.me.uk/rpi/pigpio/), joan@abyz.me.uk
