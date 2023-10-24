@@ -1,7 +1,8 @@
 import subprocess
 
 class IR_ir_ctl:
-    def __init__(self,  GPIO: int, keymap_file_name: str, keymap_folder_name: str = '/maps/keymaps/ir_ctl') -> None:
+    def __init__(self,  GPIO: int, keymap_file_name: str, 
+                 keymap_folder_name: str = '/maps/keymaps/ir_ctl') -> None:
         self.keymap_file_name = (keymap_folder_name 
                                  + '/' 
                                  + keymap_file_name)

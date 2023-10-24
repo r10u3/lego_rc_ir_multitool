@@ -15,7 +15,8 @@ def test_send(config_file_name_and_path, GPIO, keycode):
 
 class RPiGPIO:
 
-    def __init__(self,  GPIO: int, keymap_file_name: str, keymap_folder_name: str = '/maps/keymaps/rpigpio') -> None:
+    def __init__(self,  GPIO: int, keymap_file_name: str,
+                 keymap_folder_name: str = '/maps/keymaps/rpigpio') -> None:
         keymap_file = keymap_folder_name + '/' + keymap_file_name
         with open(keymap_file, 'r') as config_file:
             config = json.loads(config_file.read())
@@ -62,10 +63,13 @@ class RPiGPIO:
         self.pi.wave_add_generic(one_wave_generic)
         self.stop_wave = self.pi.wave_create()
     
-    def _append_pulse(self, GPIO: int, carrier: int, cycles: int) -> [pigpio.pulse]:
+    def _append_pulse(self, 
+                      GPIO: int,
+                      carrier: int,
+                      cycles: int) -> [pigpio.pulse]:
         half_cycle = int(1000000  / carrier / 2)
-        #                            ON       OFF      DELAY
-        cycle_on    = pigpio.pulse(1<<GPIO,    0 , half_cycle )
+        #                            ON      OFF      DELAY
+        cycle_on    = pigpio.pulse(1<<GPIO,   0  , half_cycle )
         cycle_off   = pigpio.pulse(   0 , 1<<GPIO, half_cycle )
         pulse = []
         for i in range(cycles):
@@ -95,7 +99,7 @@ class RPiGPIO:
     
     def send_hex(self, data: str) -> None:
         scancode = int(data, 16)
-        self.send_scancode(scancode)
+        self.send_raw(scancode)
 
     def send(self, keycode: str) -> None:
         scancode_str = self.keymap[keycode]

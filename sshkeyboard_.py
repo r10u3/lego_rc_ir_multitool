@@ -63,20 +63,25 @@ GPIO = CONFIG['GPIO']
 SYSTEM_MODE = CONFIG['system_mode']
 IR_TOOL = CONFIG['ir_tool']
 REMOTE_KEYMAP_FOLDER_NAME = MAPS_CONFIG['keymaps'][IR_TOOL]['folder']
-REMOTE_KEYMAP_FILE_NAME = MAPS_CONFIG['keymaps'][CONFIG['ir_tool']][RC_MODES[RC_MODE]]
+REMOTE_KEYMAP_FILE_NAME = \
+    MAPS_CONFIG['keymaps'][IR_TOOL][RC_MODES[RC_MODE]]
 
 if IR_TOOL == 'piir':
     import ir_tools.piir as irt
-    remote_tx = irt.IR_PiIR(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
+    remote_tx = irt.IR_PiIR(GPIO, REMOTE_KEYMAP_FILE_NAME,
+                            REMOTE_KEYMAP_FOLDER_NAME)
 elif IR_TOOL == 'rpigpio':
     import ir_tools.rpigpio as irt
-    remote_tx = irt.RPiGPIO(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
+    remote_tx = irt.RPiGPIO(GPIO, REMOTE_KEYMAP_FILE_NAME,
+                            REMOTE_KEYMAP_FOLDER_NAME)
 elif IR_TOOL == 'lirc':
     import ir_tools.lirc as irt
-    remote_tx = irt.IR_LIRC(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
+    remote_tx = irt.IR_LIRC(GPIO, REMOTE_KEYMAP_FILE_NAME,
+                            REMOTE_KEYMAP_FOLDER_NAME)
 elif IR_TOOL == 'ir_ctl':
     import ir_tools.ir_ctl as irt
-    remote_tx = irt.IR_ir_ctl(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
+    remote_tx = irt.IR_ir_ctl(GPIO, REMOTE_KEYMAP_FILE_NAME,
+                              REMOTE_KEYMAP_FOLDER_NAME)
 else:
     error = f'ERR_SSHKeyboard_020: No IR Tool'
     raise Exception(error)

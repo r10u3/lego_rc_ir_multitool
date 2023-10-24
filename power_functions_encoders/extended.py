@@ -33,7 +33,7 @@ class Extended(pf.LegoPF):
 
     def get_keycode(self, output: str, action: str) -> str:
         self.toggle_toggle_bit()
-        keycode = action + '_' + str(self.toggle_bit) + str(self.address_bit) \
-            if output == '' \
-                else output + '_' + action + '_' + str(self.toggle_bit) + str(self.address_bit)
+        keycode = action + '_' + str(self.toggle_bit) + str(self.address_bit)\
+                if output == '' else\
+                output + '_' + action + '_' + str(self.toggle_bit) + str(self.address_bit)
         return keycode
