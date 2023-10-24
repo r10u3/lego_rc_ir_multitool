@@ -21,10 +21,8 @@ class IR_PiIR:
 
     def hex_pre_processor(self, input: str) -> str:
         raw_chars = [input[i:i+2] for i in range(0, len(input), 2)]
-        reversed_bytes = [
-            f'{int(f"{int(char, 16):08b}"[::-1], 2):02X}'
-            for char in raw_chars
-        ]
+        reversed_bytes = [f'{int(f"{int(char, 16):08b}"[::-1], 2):02X}'
+                          for char in raw_chars]
         return ' '.join(reversed_bytes)
 
 
