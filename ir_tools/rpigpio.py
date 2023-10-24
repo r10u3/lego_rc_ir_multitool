@@ -61,8 +61,6 @@ class RPiGPIO:
         self.one_wave = self.pi.wave_create()
         self.pi.wave_add_generic(one_wave_generic)
         self.stop_wave = self.pi.wave_create()
-
-        print(f'Remote: rpigpio: {keymap_file_name}')
     
     def _append_pulse(self, GPIO: int, carrier: int, cycles: int) -> [pigpio.pulse]:
         half_cycle = int(1000000  / carrier / 2)
@@ -89,12 +87,10 @@ class RPiGPIO:
     def send_raw(self, data: int) -> None:
         self.pi.wave_tx_stop()
         bin_data = bin(data)[2:].zfill(self.bits)
-        print(f'Binary data: {bin_data}')
         wave_chain = []
         wave_chain.append(self.start_wave)
         wave_chain = self._append_scancode(wave_chain, bin_data)
         wave_chain.append(self.stop_wave)
-        print(f'Wave Chain: {wave_chain}')
         self.pi.wave_chain(wave_chain)
     
     def send_hex(self, data: str) -> None:

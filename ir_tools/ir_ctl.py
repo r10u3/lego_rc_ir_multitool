@@ -5,7 +5,6 @@ class IR_ir_ctl:
         self.keymap_file_name = (keymap_folder_name 
                                  + '/' 
                                  + keymap_file_name)
-        print(f'IR_Transmitter: ir-ctl: {self.keymap_file_name}')
         # gpio pin is useless here. we are bound by the system configuration
 
     def send(self, data: str) -> None:

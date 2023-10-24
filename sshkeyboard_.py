@@ -61,9 +61,7 @@ else:
 ## Set up Remote TX Object
 GPIO = CONFIG['GPIO']
 SYSTEM_MODE = CONFIG['system_mode']
-IR_TOOL = 'rpigpio' if SYSTEM_MODE == 'SCAN' else CONFIG['ir_tool']
-if SYSTEM_MODE == 'SCAN':
-    print(f'SCAN mode -> IR_TOOL set to {IR_TOOL}')
+IR_TOOL = CONFIG['ir_tool']
 REMOTE_KEYMAP_FOLDER_NAME = MAPS_CONFIG['keymaps'][IR_TOOL]['folder']
 REMOTE_KEYMAP_FILE_NAME = MAPS_CONFIG['keymaps'][CONFIG['ir_tool']][RC_MODES[RC_MODE]]
 
@@ -91,7 +89,6 @@ button_maps_file_name = (MAPS_CONFIG['button_maps']['folder']
                          + MAPS_CONFIG['button_maps'][RC_MODES[RC_MODE]])
 kb = keypad.Keypad(button_maps_file_name)
 
-
 def on_press(key: str) -> bool:
     print(f'--------------------\nKey {key} pressed')
     if key == 'q' or key == 'Key.esc':
@@ -103,7 +100,7 @@ def on_press(key: str) -> bool:
         print(f'Mapped Key: {mapped_key}')
         if SYSTEM_MODE == 'RAW':
             data = rc_encoder.get_scancode(*mapped_key)
-            print(f'Raw code: {data}')
+            print(f'Raw code: {data:04X}')
             remote_tx.send_raw(data)
         elif SYSTEM_MODE == 'KEY':
             data = rc_encoder.get_keycode(*mapped_key)
@@ -116,7 +113,6 @@ def on_press(key: str) -> bool:
         else:
             error = f'ERR_SSHKeyboard_025: No SYSTEM MODE'
             raise Exception(error)
-        print(f'keycode sent: {data}')
         return True
     else:
         print(f'Unknown Key: {key}')
@@ -143,4 +139,5 @@ def start_listen() -> None:
 
 
 # Main
+print(f'Tool: {IR_TOOL} | Tool Mode: {SYSTEM_MODE} | RC Mode: {RC_MODE}')
 start_listen()
