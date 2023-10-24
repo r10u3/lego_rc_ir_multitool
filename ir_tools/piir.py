@@ -12,8 +12,8 @@ class IR_PiIR:
         self.REMOTE_TX.send(data)
 
     def send_hex(self, data_bytes: str) -> None:
-        data = self.pre_process_bit_string(data_bytes)
-        self.REMOTE_TX.send_data(data)
+        modified_data = self.hex_pre_processor(data_bytes)
+        self.REMOTE_TX.send_data(modified_data)
 
     def send_raw(self, data: int) -> None:
         modified_data = self.hex_pre_processor(f'{data:04X}')
