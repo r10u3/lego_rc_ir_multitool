@@ -124,7 +124,7 @@ def on_press(key: str) -> bool:
 
 
 def on_release(key: str) -> bool:
-    print(f'Key {key} released\n--------------------')
+    print(f'Key {key} released')
     if key == 'q' or key == 'Key.esc':
         print('Good Bye')
         stop_listening()
