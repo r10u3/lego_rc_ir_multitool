@@ -6,13 +6,32 @@
 >
 > **Features**
 > * Records and plays IR remote control code.
-> * Decodes and encodes NEC, Sony, RC5, RC6, AEHA, Mitsubishi, Sharp and Nokia formats.
-> * Dumps decoded and prettified data to help you analyze your air conditioner's remote.
+> * Both scancode (hexadecimal) and keymap modes
 > * Both command-line and programmatic control.
 >
 > [PiIR 0.2.5](https://pypi.org/project/PiIR/) by Takeshi Sone
 
 In our case, we will play IR remote control code.
+
+## Python Usage
+> **Notes:** For more info: [PiIR project home](https://pypi.org/project/PiIR/)
+
+### 1. PiIR API: 
+#### a. Sending IR keycode
+```
+import piir
+
+remote_tx = piir.Remote('/etc/rc_keymaps/lego_26ns', 18)
+remote_tx.send('FW2A_FW2B')
+```
+#### b. Sending arbritrary data
+```
+remote_tx.send_data('42 D4')
+```
+Or
+```
+remote_tx.send_data(bytes([0x42D4]))
+```
 
 ## Setup <code>pigpio</code>
 > **Note:**
@@ -96,23 +115,4 @@ Here is a sample of the keymap file:
     "FW7A_FLTB" : "02 3E"
   }
 }
-```
-## Python Usage
-> **Notes:** For more info: [LIRC man pages](https://www.lirc.org/html/)
-
-### 1. PiIR API: 
-#### a. Sending IR keycode
-```
-import piir
-
-remote_tx = piir.Remote('/etc/rc_keymaps/lego_26ns', 18)
-remote_tx.send('FW2A_FW2B')
-```
-#### b. Sending arbritrary data
-```
-remote_tx.send_data('42 2B')
-```
-Or
-```
-remote_tx.send_data(bytes([0x422B]))
 ```
