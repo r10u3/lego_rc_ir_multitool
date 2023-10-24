@@ -32,6 +32,4 @@ class LegoPF:
         pass
         
     def get_hexcode(self, arg_1: str, arg_2: str) -> int:
-        hex_int = self.get_scancode(arg_1, arg_2)
-        hex_str = '%0*X' % (4, hex_int)
-        print(f'Int: {hex_int} | Hex: {hex_str}')
+        return f'{self.get_scancode(arg_1, arg_2):04X}'

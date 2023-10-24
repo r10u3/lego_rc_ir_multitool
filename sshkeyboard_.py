@@ -93,7 +93,7 @@ kb = keypad.Keypad(button_maps_file_name)
 
 
 def on_press(key: str) -> bool:
-    print(f'Key {key} pressed')
+    print(f'--------------------\nKey {key} pressed')
     if key == 'q' or key == 'Key.esc':
         print('Good Bye')
         stop_listening()
@@ -101,12 +101,18 @@ def on_press(key: str) -> bool:
     if kb.is_mapped_key(key):
         mapped_key = kb.get_action(key)
         print(f'Mapped Key: {mapped_key}')
-        if SYSTEM_MODE == "SCAN":
+        if SYSTEM_MODE == 'RAW':
             data = rc_encoder.get_scancode(*mapped_key)
-            remote_tx.send_scancode(data)
-        elif SYSTEM_MODE == "KEY":
+            print(f'Raw code: {data}')
+            remote_tx.send_raw(data)
+        elif SYSTEM_MODE == 'KEY':
             data = rc_encoder.get_keycode(*mapped_key)
+            print(f'Key code: {data}')
             remote_tx.send(data)
+        elif SYSTEM_MODE == 'HEX':
+            data = rc_encoder.get_scancode(*mapped_key)
+            print(f'Hex code: {data:04X}')
+            remote_tx.send_hex(f'{data:04X}')
         else:
             error = f'ERR_SSHKeyboard_025: No SYSTEM MODE'
             raise Exception(error)
@@ -118,7 +124,7 @@ def on_press(key: str) -> bool:
 
 
 def on_release(key: str) -> bool:
-    print(f'Key {key} released')
+    print(f'Key {key} released\n--------------------')
     if key == 'q' or key == 'Key.esc':
         print('Good Bye')
         stop_listening()

@@ -86,7 +86,7 @@ class RPiGPIO:
                 raise Exception(error)
         return wave_chain
 
-    def send_scancode(self, data: int) -> None:
+    def send_raw(self, data: int) -> None:
         self.pi.wave_tx_stop()
         bin_data = bin(data)[2:].zfill(self.bits)
         print(f'Binary data: {bin_data}')
@@ -104,4 +104,4 @@ class RPiGPIO:
     def send(self, keycode: str) -> None:
         scancode_str = self.keymap[keycode]
         scancode = int(scancode_str, 16)
-        self.send_scancode(scancode)
+        self.send_raw(scancode)

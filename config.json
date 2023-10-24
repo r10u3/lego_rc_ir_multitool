@@ -1,8 +1,8 @@
 {
-    "system_mode" : "SCAN",
+    "system_mode" : "HEX",
     "project_folder" : "/home/pi/Projects/lego_rc",
     "rc_mode" : "SGL",
     "maps_config_file" : "maps/maps_config.json",
-    "ir_tool" : "rpigpio",
+    "ir_tool" : "piir",
     "GPIO" : 18
 }
