@@ -214,7 +214,7 @@ Actions programmed include:
 <code>config.json</code>
 ```
 {
-    "system_mode" : "SCAN",
+    "system_mode" : "KEY",
     "project_folder" : "/home/pi/Projects/lego_rc",
     "rc_mode" : "SGL",
     "maps_config_file" : "maps/maps_config.json",
@@ -222,15 +222,21 @@ Actions programmed include:
     "GPIO" : 18
 }
 ```
-#### a. <code>project_folder</code>
+#### A. <code>system_mode</code>
+This determines the **send** command to be used. There are three possible modes:
+* KEY: sends keycode from keymap. Keycodes are preset in the keymaps. This is the easiest mode to use.
+* RAW: sends the scancode as **int**. Only available for PiIR and RPiGPIO. The scancode is produced from the [*key] pairs in the button maps.
+* HEX: sends the scancode as hexadecimal string. Only available for PiIR and RPiGPIO. The scancode is produced from the [*key] pairs in the button maps.
+
+#### b. <code>project_folder</code>
 This is the absolute path to the project. It is not really used anywhere
 
-#### b. <code>maps_config_file</code>
+#### c. <code>maps_config_file</code>
 This is quite important. If you move the config file, make sure to modify here. I recommend you leave it where it is.
 
 The <code>maps_config_file</code> file has links to keymaps and button maps. If you change the names of the keymaps or use different ones, make sure to update the <code>maps_config_file</code>.
 
-#### c. <code>rc_mode</code>
+#### d. <code>rc_mode</code>
 The available modes are:
    - PWM: Combo PWM
    - DIR: Combo Direct
@@ -238,14 +244,14 @@ The available modes are:
    - EXT: Extended
    - OTH: Single Clear/Set/Toggle/Inc/Dec
 
-#### d. <code>ir_tool</code>
+#### e. <code>ir_tool</code>
 The available tools (as used in the config files) are:
    - lirc
    - ir_ctl
    - piir
    - rpigpio (the 'r' prefix is there to distinguish it from the pigpio library when it's imported)
 
-#### e. <code>gpio_pin</code>
+#### f. <code>gpio_pin</code>
 PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using writePWMFrequency(mypi, 12, 8000)."[^2] Lego uses 38KHz.
 
 ### 2. Button Maps
