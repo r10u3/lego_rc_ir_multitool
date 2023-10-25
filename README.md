@@ -63,7 +63,7 @@ kb = keypad.Keypad(mapped_keys_file_name)
 ```
 
 ##### &#x25B6; <code>is_mapped_key(self , key: str) -> bool</code>
-Checks whether a particular key (e.g., &uarr;) is in the button map. Returns a boolean.
+Checks whether a particular key (e.g., &uarr;) is in the button map. Returns a boolean: <code>True</code> if the key exists, <code>False</code> otherwise.
 
 ##### &#x25B6; <code>get_action(self , key: str) -> [str , str]</code>
 Returns the action associated to a particular key. The action is an array with [color , action] pairs for the single output modes (single PWM, single other and extended) or with [action A, action B] pairs for the combo modes (combo PWM and combo direct).

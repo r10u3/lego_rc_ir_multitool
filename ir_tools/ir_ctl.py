@@ -2,7 +2,18 @@ import subprocess
 
 class IR_ir_ctl:
     def __init__(self,  GPIO: int, keymap_file_name: str, 
-                 keymap_folder_name: str = '/maps/keymaps/ir_ctl') -> None:
+                 keymap_folder_name: str = 'maps/keymaps/ir_ctl') -> None:
+        """Uses ir-ctl system command to send IR codes
+
+        Args:
+            GPIO (int): not used. Left in for consistency 
+                with other tools. ir-ctl uses the pin configured 
+                in the /boot/config.txt file.
+            keymap_file_name (str): the name of the file 
+                containing the keymap.
+            keymap_folder_name (str): the folder where the keymap is.
+                Default = 'maps/keymaps/ir_ctl'.
+        """
         self.keymap_file_name = (keymap_folder_name 
                                  + '/' 
                                  + keymap_file_name)
