@@ -16,14 +16,43 @@ class Extended(pf.LegoPF):
         'RSVD'       # Reserved
     ]
 
-    def __init__(self, channel : int = 0) -> None:
-        self.nibble1 = 0x0 | channel
+    def __init__(self, channel : int = 1) -> None:
+        """Encodes input into Lego PF codes using Extended mode.
+
+        This class subclasses LegoPF. The main differences are:
+        - get_nibble2() is implemented.
+        - get_scancode() is implemented.
+        - get_keycode() is implemented.
+
+        Args:
+            channel (int): the Lego PF channel to be used (1 to 4)
+                Default = 1
+        """
+        self.nibble1 = 0x0 | (channel - 1)
         self.nibble2 = 0x0
 
     def get_nibble2(self) -> int:
+        """Return <nibble 2> for the Extended mode.
+        
+        Overrides method from pr.LegoPF.
+        Returns:
+            nibble2 (int): the second nibble in the scancode
+                for this PowerFunction mode.
+        """
         return self.nibble2 | (self.address_bit  << 3)
 
     def get_scancode(self, output: str, action: str) -> int:
+        """Assemble the <scancode> for output/action in Extended mode.
+        
+        Args:
+            output: not used in this mode; left for consistency. 
+                Keys mapped as [output, action] are included as
+                ['', <action>]
+            action: the 'action' to be encoded.
+        Returns:
+            scancode (int): the entire scancode for the given actions
+                for this PowerFunction mode.
+        """
         self.toggle_toggle_bit()
         nibble1 = self.get_nibble1()
         nibble2 = self.get_nibble2()
@@ -32,6 +61,17 @@ class Extended(pf.LegoPF):
         return (nibble1 << 12) | (nibble2 << 8) | (nibble3 << 4) | (nibble4)
 
     def get_keycode(self, output: str, action: str) -> str:
+        """Return <scancode> for output/action in Extended mode.
+        
+        Args:
+            output: not used in this mode; left for consistency. 
+                Keys mapped as [output, action] are included as
+                ['', <action>]
+            action: the 'action' to be encoded.
+        Returns:
+            scancode (int): the entire scancode for the given actions
+                for this PowerFunction mode.
+        """
         self.toggle_toggle_bit()
         keycode = action + '_' + str(self.toggle_bit) + str(self.address_bit)\
                 if output == '' else\

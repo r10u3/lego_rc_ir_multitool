@@ -15,8 +15,20 @@ def test_send(config_file_name_and_path, GPIO, keycode):
 
 class RPiGPIO:
 
-    def __init__(self,  GPIO: int, keymap_file_name: str,
-                 keymap_folder_name: str = '/maps/keymaps/rpigpio') -> None:
+    def __init__(self,  GPIO: int = 18, keymap_file_name: str = 'single_pwm.json',
+                 keymap_folder_name: str = 'maps/keymaps/rpigpio') -> None:
+        """Uses pigpio library to format and send IR codes.
+
+        Args:
+            GPIO (int): PIN must be Hardware PWM.
+                Default = 18.
+            keymap_file_name (str): the name of the file 
+                containing the keymap.
+                Default = 'single_pwm.json'.
+            keymap_folder_name (str): the name of the file 
+                containing the keymap. Can be absolute or relative.
+                Default = 'maps/keymaps/rpigpio'.
+        """
         keymap_file = keymap_folder_name + '/' + keymap_file_name
         with open(keymap_file, 'r') as config_file:
             config = json.loads(config_file.read())
@@ -89,6 +101,12 @@ class RPiGPIO:
         return wave_chain
 
     def send_raw(self, data: int) -> None:
+        """Send IR using pigpio.
+        
+        Args:
+            data_int (int): the scancode to be sent in int format.
+                Can be int, hexadecimal (0x) or binary (0b).
+        """
         self.pi.wave_tx_stop()
         bin_data = bin(data)[2:].zfill(self.bits)
         wave_chain = []
@@ -98,10 +116,21 @@ class RPiGPIO:
         self.pi.wave_chain(wave_chain)
     
     def send_hex(self, data: str) -> None:
+        """Send IR using pigpio.
+        
+        Args:
+            data_bytes (str): the scancode to be sent 
+                in hexadecimal string format.
+        """
         scancode = int(data, 16)
         self.send_raw(scancode)
 
     def send(self, keycode: str) -> None:
+        """Send IR using pigpio.
+        
+        Args:
+            keycode (str): the keycode to be sent.
+        """
         scancode_str = self.keymap[keycode]
         scancode = int(scancode_str, 16)
         self.send_raw(scancode)

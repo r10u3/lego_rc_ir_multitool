@@ -1,8 +1,8 @@
-class LegoPF:
+class LegoPF(object):
 
     def __init__(self, extended : int = 0,
-                 channel : int = 0, mode : int = 0x4) -> None:
-        self.nibble1 = (extended << 2) | channel
+                 channel : int = 1, mode : int = 0x4) -> None:
+        self.nibble1 = (extended << 2) | (channel - 1)
         self.nibble2 = mode
 
     address_bit = 0

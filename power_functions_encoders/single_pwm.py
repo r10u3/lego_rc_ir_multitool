@@ -7,8 +7,8 @@ class SinglePWM(pf.LegoPF):
     ACTIONS = ['FLT', 'FW1', 'FW2', 'FW3', 'FW4', 'FW5', 'FW6', 'FW7',
                'BRK', 'RV7', 'RV6', 'RV5', 'RV4', 'RV3', 'RV2', 'RV1']
 
-    def __init__(self, channel : int = 0) -> None:
-        self.nibble1 = 0x0 | channel
+    def __init__(self, channel : int = 1) -> None:
+        self.nibble1 = 0x0 | (channel - 1)
         self.nibble2 = 0x4
 
     def get_nibble2(self, output: int) -> int:

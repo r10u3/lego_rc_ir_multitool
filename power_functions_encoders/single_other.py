@@ -23,8 +23,8 @@ class SingleOther(pf.LegoPF):
         'TOG_1111'  # Toggle full backward (Stop → Bw, Bw → Stop, Fwd → Bw)
     ]
 
-    def __init__(self, channel : int = 0) -> None:
-        self.nibble1 = 0x0 | channel
+    def __init__(self, channel : int = 1) -> None:
+        self.nibble1 = 0x0 | (channel - 1)
         self.nibble2 = 0x6
 
     def get_nibble2(self, output: int) -> int:

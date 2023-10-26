@@ -83,7 +83,8 @@ Returns the action associated to a particular key. The action is an array with [
 #### b. Members
 ##### &#x25B6; New Object: <code>[Tool](GPIO: int, keymap_file_name: str, keymap_folder_name: str = '/maps/keymaps/[tool]') -> [Tool]</code>
 Require the following arguments:
-* **gpio_pin:** from <code>config.json</code>. Used by PiIR and RPiGPIO. <code>LIRC</code> and <code>ir-ctl</code> use the pin configured in the <code>/boot/config.txt</code> file.
+* **gpio_pin:** from <code>config.json</code>. Used by PiIR and RPiGPIO only. <code>LIRC</code> and <code>ir-ctl</code> use the pin configured in the <code>/boot/config.txt</code> file. PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using writePWMFrequency(mypi, 12, 8000)."[^2] Lego uses 38KHz.
+
 The function calls to create each type of object are:
 * **keymap_file_name:** from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code>, PiIR, and RPiGPIO to locate the keymap. <code>LIRC</code> uses remote names instead of keymap files. The remote name is inside the keymap file. As a matter of practice, the remote name should match the name of the keymap file minus the extension, but is not required by LIRC.
 * **keymap_folder_name:** from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code>, PiIR and RPiGPIO to locate the keymap. <code>LIRC</code> keymaps are all located at <code>/etc/lirc/lircd.conf.d</code> (you copy these as part of the setup).
