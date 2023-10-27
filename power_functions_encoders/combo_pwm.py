@@ -11,21 +11,26 @@ class ComboPWM(pf.LegoPF):
         """Encodes input into Lego PF codes using Combo PWM mode.
 
         This class subclasses LegoPF. The main differences are:
+        - signature is different. Super class uses args for <escape>
+            and <mode>. In Combo PWM those are fixed as 
+            <escape> = 0 <self.nibble1 = 0x4> and <mode> is not used.
         - get_nibble1() is overriden to account for the address 
             instead of toggle bit.
-        - get_nibble2() is not implemented.
+        - get_nibble2() is not implemented. Nibble 2 is a data nibble
+            in Combo PWM.
         - get_scancode() is implemented.
         - get_keycode() is implemented.
         Args:
-            channel (int): the Lego PF channel to be used (1 to 4)
-                Default = 1
+            channel (int): the Lego PF channel to be used (0 to 3)
+                Default = 0
         """
-        self.nibble1 = 0x4 | (channel - 1)
+        self.nibble1 = 0x4 | channel
 
     def get_nibble1(self) -> int:
-        """Return nibble 1 for the Combo PWM mode.
+        """Assemble nibble 1 for the Combo PWM mode.
         
-        Overrides method from pr.LegoPF.
+        Overrides method from pr.LegoPF to replace <address_bit> 
+            for <toggle_bit>
         Returns:
             nibble2 (int): the second nibble in the scancode
                 for this PowerFunction mode.

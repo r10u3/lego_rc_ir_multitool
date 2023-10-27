@@ -20,21 +20,25 @@ class Extended(pf.LegoPF):
         """Encodes input into Lego PF codes using Extended mode.
 
         This class subclasses LegoPF. The main differences are:
+        - signature is different. Super class uses args for <escape>
+            and <mode>. In Combo Direct those are fixed as 
+            0 <self.nibble1 = 0x0> and 0 <self.nibble2 = 0x0>
+            respectively.
         - get_nibble2() is implemented.
         - get_scancode() is implemented.
         - get_keycode() is implemented.
 
         Args:
-            channel (int): the Lego PF channel to be used (1 to 4)
-                Default = 1
+            channel (int): the Lego PF channel to be used (0 to 3)
+                Default = 0
         """
-        self.nibble1 = 0x0 | (channel - 1)
+        self.nibble1 = 0x0 | channel
         self.nibble2 = 0x0
 
     def get_nibble2(self) -> int:
-        """Return <nibble 2> for the Extended mode.
+        """Assemble <nibble 2> for the Extended mode.
         
-        Overrides method from pr.LegoPF.
+        Implements method from pr.LegoPF.
         Returns:
             nibble2 (int): the second nibble in the scancode
                 for this PowerFunction mode.

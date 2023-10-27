@@ -6,10 +6,14 @@ class ComboDirect(pf.LegoPF):
 
     ACTIONS = ['FLT', 'FW7', 'RV7', 'BRK']
 
-    def __init__(self, channel : int = 1) -> None:
+    def __init__(self, channel : int = 0) -> None:
         """Encodes input into Lego PF codes using Combo Direct mode.
 
         This class subclasses LegoPF. The main differences are:
+        - signature is different. Super class uses args for <escape>
+            and <mode>. In Combo Direct those are fixed as 
+            0 <self.nibble1 = 0x0> and 1 <self.nibble2 = 0x1>
+            respectively.
         - get_nibble2() is implemented.
         - get_nibble3() extends get_data_nibble() by combining data
             for output A and output B in one.
@@ -17,16 +21,16 @@ class ComboDirect(pf.LegoPF):
         - get_keycode() is implemented.
 
         Args:
-            channel (int): the Lego PF channel to be used (1 to 4)
-                Default = 1
+            channel (int): the Lego PF channel to be used (0 to 3)
+                Default = 0
         """
-        self.nibble1 = 0x0 | (channel - 1)
+        self.nibble1 = 0x0 | channel
         self.nibble2 = 0x1
 
     def get_nibble2(self) -> int:
-        """Return <nibble 2> for the Combo Direct mode.
+        """Assemble <nibble 2> for the Combo Direct mode.
         
-        Overrides method from pr.LegoPF.
+        Implements method from pr.LegoPF.
         Returns:
             nibble2 (int): the second nibble in the scancode
                 for this PowerFunction mode.
@@ -34,7 +38,7 @@ class ComboDirect(pf.LegoPF):
         return self.nibble2 | (self.address_bit  << 3)
 
     def get_nibble3(self, action_A: str, action_B: str) -> int:
-        """Return <data nibble> for combo action in Combo Direct mode.
+        """Assemble <data nibble> for combo action in Combo Direct mode.
         
         Args:
             action_A: the 'action' on output A to be encoded.
