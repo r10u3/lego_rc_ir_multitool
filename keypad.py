@@ -13,7 +13,7 @@ class Keypad:
 
 
     def is_mapped_key(self, key: str) -> bool:
-        """Assess whether a key (e.g., ↑) is in the button map or not.
+        """Check whether a key (e.g., ↑) is in the button map or not.
             
         Args:
             key (str): The key to be considered (e.g., 'up' for ↑).

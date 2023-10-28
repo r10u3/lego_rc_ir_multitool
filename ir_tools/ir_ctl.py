@@ -1,14 +1,16 @@
 import subprocess
 
 class IR_ir_ctl:
-    def __init__(self,  GPIO: int = '', keymap_file_name: str = 'single_pwm.toml', 
+    def __init__(self,  
+                 GPIO: int = '', 
+                 keymap_file_name: str = 'single_pwm.toml',
                  keymap_folder_name: str = 'maps/keymaps/ir_ctl') -> None:
         """Uses ir-ctl system command to send IR codes.
 
         Args:
-            GPIO (int): not used. Left in for consistency 
-                with other tools. ir-ctl uses the pin configured 
-                in the /boot/config.txt file.
+            GPIO (int): not used. Left in for consistency with other
+                tools. ir-ctl uses the pin configured in the 
+                /boot/config.txt file.
             keymap_file_name (str): the name of the file 
                 containing the keymap.
                 Default = 'single_pwm.toml'.
@@ -24,7 +26,7 @@ class IR_ir_ctl:
         """Send IR using system ir-ctl.
         
         Args:
-            keycode (str): the keycode to be sent.
+            keycode (str): the keycode to be sent (e.g., 'FW2_RV3')
         """
         params = []
         params.append('ir-ctl')
