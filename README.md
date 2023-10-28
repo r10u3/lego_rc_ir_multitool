@@ -43,7 +43,7 @@ In comparing speeds roughly by eye, there is no noticeable difference between th
 >
 > **Keycode:** The tool's interpretation of a key. It does not have to be a real key. Normally, remote apps link remote buttons to system keys that are used to create events. We are using a custom app and the keys are not system keys. Examples of keycodes are: 'FW2_RV3', 'A_FLT'
 >
-> **Scancode:** The actual code being sent. Could be an hexadecimal string or an integer in hexadecimal, binary or decimal form, depending on the function that receives it. The map files, however, take the scancodes in hexadecimal format, each with its own syntax.
+> **Scancode:** The actual code being sent. Could be an hexadecimal string or an integer in hexadecimal, binary or decimal form, depending on the function that produces it. The keymap files, however, take the scancodes in hexadecimal format, each with its own syntax. The code is converted to binary by the ir tool (PiIR or RPiGPIO).
 
 If you want to use parts of this project as an API, you can do without the <code>sshkeyboard_.py</code> file and access the objects directly. Here is a description of each object and their Members
 

@@ -244,11 +244,12 @@ The Lego:tm: receiver has two outputs (Red and Blue). Some of the modes control 
       <td rowspan = 4>Combo Direct<br /><em>D<sub>A</sub>D<sub>A</sub> or D<sub>B</sub>D<sub>B</sub></em></td>
       <td>00</td><td>Float</td>
     </tr>
-    <tr><td>01</td><td>Forward</td></tr>
-    <tr><td>10</td><td>Backward</td></tr>
+    <tr><td>01</td><td>Full Forward</td></tr>
+    <tr><td>10</td><td>Full Backward</td></tr>
     <tr><td>11</td><td>Brake then float</td></tr>
     <tr>
-      <td rowspan = 16>Single Output: PWM<br /><em>DDDD</em></td>
+      <td rowspan = 16>Single Output: PWM<br /><em>DDDD</em><br /><br />Combo PWM<br /><em>D<sub>A</sub>D<sub>A</sub>D<sub>A</sub>D<sub>A</sub> or D<sub>B</sub>D<sub>B</sub>D<sub>B</sub>D<sub>B</sub></em></td>
+    <td>0000</td><td>Float</td>
     </tr>
     <tr><td>0001</td><td>PWM forward step 1</td></tr>
     <tr><td>0010</td><td>PWM forward step 2</td></tr>
@@ -283,25 +284,6 @@ The Lego:tm: receiver has two outputs (Red and Blue). Some of the modes control 
     <tr><td>1101</td><td>Set C2 (negative logic – C2 low)</td></tr>
     <tr><td>1110</td><td>Toggle C2</td></tr>
     <tr><td>1111</td><td>Toggle full backward (Stop → Bw, Bw → Stop, Fwd → Bw)</td></tr>
-    <tr>
-      <td rowspan = 16>Combo PWM<br /><em>D<sub>A</sub>D<sub>A</sub>D<sub>A</sub>D<sub>A</sub> or D<sub>B</sub>D<sub>B</sub>D<sub>B</sub>D<sub>B</sub></em></td>
-      <td>0000</td><td>Float</td>
-    </tr>
-    <tr><td>0001</td><td>PWM forward step 1</td></tr>
-    <tr><td>0010</td><td>PWM forward step 2</td></tr>
-    <tr><td>0011</td><td>PWM forward step 3</td></tr>
-    <tr><td>0100</td><td>PWM forward step 4</td></tr>
-    <tr><td>0101</td><td>PWM forward step 5</td></tr>
-    <tr><td>0110</td><td>PWM forward step 6</td></tr>
-    <tr><td>0111</td><td>PWM forward step 7</td></tr>
-    <tr><td>1000</td><td>Brake then float</td></tr>
-    <tr><td>1001</td><td>PWM backward step 7</td></tr>
-    <tr><td>1010</td><td>PWM backward step 6</td></tr>
-    <tr><td>1011</td><td>PWM backward step 5</td></tr>
-    <tr><td>1100</td><td>PWM backward step 4</td></tr>
-    <tr><td>1101</td><td>PWM backward step 3</td></tr>
-    <tr><td>1110</td><td>PWM backward step 2</td></tr>
-    <tr><td>1111</td><td>PWM backward step 1</td></tr>
   </tbody>
 </table>
 
