@@ -9,7 +9,7 @@
 ## Introduction
 
 This project is part of using a Raspberry Pi as a [Lego:tm: PowerFunctions](docs/Lego_Protocol.md) controller. In my case, I use a headless Raspberry Pi 1 version 2, with Raspbian Bullseye. I also use a simple transmitter using an IR LED and a simple circuit (see [rc_transmitter](docs/rc_transmitter.md) for more details).
-> **Note:** Technically, the app can use any remote configuration, not just Lego. Except for the RPiGPIO which is coded for pulse distance encoding ([see pulse distance modulation](https://www.phidgets.com/docs/IR_Remote_Control_Guide)). Although it should be open to any pulse distance encoding.
+> **Note:** Technically, the app can use any remote configuration, not just Lego. Except for the IR_RPiGPIO which is coded for pulse distance encoding ([see pulse distance modulation](https://www.phidgets.com/docs/IR_Remote_Control_Guide)). Although it should be open to any pulse distance encoding. The IR_PiIR tool, on the other hand, is hardcoded for 16 bits for the HEX and RAW modes.
 
 There are four IR tools that I found that work with Python and I use in this project (in the order I learnt them):
 * LIRC:
@@ -78,16 +78,20 @@ Returns the action associated to a particular key. The action is an array with [
   * IR_RPiGPIO
 
 * All have the same basic functions and attributes (i.e., members) with the same signatures.
-* Send code to tool to be transmitted.
+* They send codes to the respective IR tool to be transmitted.
 
 #### b. Members
 ##### &#x25B6; New Object: <code>[Tool](GPIO: int, keymap_file_name: str, keymap_folder_name: str = '/maps/keymaps/[tool]') -> [Tool]</code>
-Require the following arguments:
-* **gpio_pin:** from <code>config.json</code>. Used by PiIR and RPiGPIO only. <code>LIRC</code> and <code>ir-ctl</code> use the pin configured in the <code>/boot/config.txt</code> file. PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using writePWMFrequency(mypi, 12, 8000)."[^2] Lego uses 38KHz.
+Args:
+    **GPIO (int):**  The GPIO pin used to transmit IR. Used by PiIR and RPiGPIO only. <code>LIRC</code> and <code>ir-ctl</code> use the pin configured in the <code>/boot/config.txt</code> file.  Loaded from <code>config.json</code>. PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using writePWMFrequency(mypi, 12, 8000)."[^2] Lego uses 38KHz.
+
+    **keymap_file_name (str):** The name of the file containing the keymap.  Loaded from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code>, PiIR, and RPiGPIO to locate the keymap. <code>LIRC</code> uses remote names instead of keymap files. The remote name is inside the keymap file. As a matter of practice, the remote name should match the name of the keymap file minus the extension, but is not required by LIRC.<br />
+    Default = 'single_pwm.toml'.
+
+    **keymap_folder_name (str):** The name of the folder where the keymap is. Loaded from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code>, PiIR and RPiGPIO to locate the keymap. <code>LIRC</code> keymaps are all located at <code>/etc/lirc/lircd.conf.d</code> (you copy these as part of the setup).<br />
+    Default = 'maps/keymaps/ir_ctl'.
 
 The function calls to create each type of object are:
-* **keymap_file_name:** from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code>, PiIR, and RPiGPIO to locate the keymap. <code>LIRC</code> uses remote names instead of keymap files. The remote name is inside the keymap file. As a matter of practice, the remote name should match the name of the keymap file minus the extension, but is not required by LIRC.
-* **keymap_folder_name:** from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code>, PiIR and RPiGPIO to locate the keymap. <code>LIRC</code> keymaps are all located at <code>/etc/lirc/lircd.conf.d</code> (you copy these as part of the setup).
 ```
 import ir_tools.ir_ctl as irt
 remote_tx = irt.IR_ir_ctl(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME)
@@ -106,15 +110,19 @@ remote_tx = irt.RPiGPIO(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME
 ```
 
 ##### &#x25B6; send(keycode: str) -> None:
-It converts a keycode (e.g., 'FW2_FW2') to scancode (e.g., 0x422B) and sends it.
-Arguments:
-* **keycode:** this is the keycode. For example 'FW2_FW2'
+Send IR keycode (e.g., 'FW2_RV3') using system the respective underlying IR tool. In the case of RPiGPIO, it will convert the keycode (e.g., 'FW2_FW2') to scancode (e.g., 0x422B), then to <em>pigpio</em> wave and send it.
+
+Args:
+* **keycode:** The keycode to be sent. For example 'FW2_RV3'
 
 ##### &#x25B6; send_hex(data_bytes: str) -> None:
-This function is unique to PiIR and RPiGPIO. It takes a scancode in hexadecimal string format (e.g., '42 2B') and sends it.
-> **Note:** PiIR reverses the bits in each byte, so you need to pre-process the data to be sent. This is not the case with RPiGPIO, which was custom coded for this application.
-Arguments:
-* **data_bytes:** the scancode as an hexadecimal string.
+Takes a scancode in hexadecimal string format (e.g., '42 2B') and send it. This function is unique to PiIR and RPiGPIO.
+> **Notes:**
+> 
+> PiIR reverses the bits in each byte, so the function pre-processes the data to be sent. This is not the case with RPiGPIO, which was custom coded for this application.
+> RPiGPIO converts the string to pigpio wave and sends it.
+Args:
+* **data_bytes:** the scancode to be sent as an hexadecimal string.
 
 ##### &#x25B6; send_scancode(data: int) -> None:
 This function is unique to RPiGPIO. It takes a scancode in integer format (e.g., 16939 or 0x422B), and sends it. The code must be a valid code. The function does not check for validity. The code is sent anyway and the receiver will reject it without any error.
@@ -225,9 +233,9 @@ Actions programmed include:
 ```
 #### A. <code>system_mode</code>
 This determines the **send** command to be used. There are three possible modes:
-* KEY: sends keycode from keymap. Keycodes are preset in the keymaps. This is the easiest mode to use.
-* RAW: sends the scancode as **int**. Only available for PiIR and RPiGPIO. The scancode is produced from the [*key] pairs in the button maps.
-* HEX: sends the scancode as hexadecimal string. Only available for PiIR and RPiGPIO. The scancode is produced from the [*key] pairs in the button maps.
+* **'KEY':** sends keycode from keymap. Keycodes are preset in the keymaps. This is the easiest mode to use.
+* **'RAW':** sends the scancode as **int**. Only available for PiIR and RPiGPIO. The scancode is produced from the [*key] pairs in the button maps.
+* **'HEX':** sends the scancode as hexadecimal string. Only available for PiIR and RPiGPIO. The scancode is produced from the [*key] pairs in the button maps.
 
 #### b. <code>project_folder</code>
 This is the absolute path to the project. It is not really used anywhere

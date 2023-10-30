@@ -101,7 +101,7 @@ class RPiGPIO:
         return wave_chain
 
     def send_raw(self, data: int) -> None:
-        """Send IR using pigpio.
+        """Convert scancode to wave and send IR using pigpio.
         
         Args:
             data_int (int): the scancode to be sent in int format.
@@ -115,18 +115,18 @@ class RPiGPIO:
         wave_chain.append(self.stop_wave)
         self.pi.wave_chain(wave_chain)
     
-    def send_hex(self, data: str) -> None:
-        """Send IR using pigpio.
+    def send_hex(self, data_bytes: str) -> None:
+        """Convert hex scancode to wave and send IR using pigpio.
         
         Args:
             data_bytes (str): the scancode to be sent 
                 in hexadecimal string format.
         """
-        scancode = int(data, 16)
+        scancode = int(data_bytes, 16)
         self.send_raw(scancode)
 
     def send(self, keycode: str) -> None:
-        """Send IR using pigpio.
+        """Convert IR keycode to scancode and send IR using pigpio.
         
         Args:
             keycode (str): the keycode to be sent.
