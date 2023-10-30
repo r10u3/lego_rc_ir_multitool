@@ -60,7 +60,7 @@ If you want to use parts of this project as an API, you can do without the <code
 #### b. Members
 ##### &#x25B6; New Object: <code>Keypad(mapped_keys_file_name: str) -> Keypad</code>
 The required parameters are:
-* **<code>mapped_keys_file_name</code>:** from <code>maps/maps_config.json</code>.
+* **<code>mapped_keys_file_name</code>:** loaded from <code>maps/maps_config.json</code>.
 ```
 import keypad
 
