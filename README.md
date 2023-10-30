@@ -9,33 +9,37 @@
 ## Introduction
 
 This project is part of using a Raspberry Pi as a [Lego:tm: PowerFunctions](docs/Lego_Protocol.md) controller. In my case, I use a headless Raspberry Pi 1 version 2, with Raspbian Bullseye. I also use a simple transmitter using an IR LED and a simple circuit (see [rc_transmitter](docs/rc_transmitter.md) for more details).
-> **Note:** Technically, the app can use any remote configuration, not just Lego. Except for the IR_RPiGPIO which is coded for pulse distance encoding ([see pulse distance modulation](https://www.phidgets.com/docs/IR_Remote_Control_Guide)). Although it should be open to any pulse distance encoding. The IR_PiIR tool, on the other hand, is hardcoded for 16 bits for the HEX and RAW modes.
+> **Note:** Technically, the app can use any remote configuration, not just Lego. Except for the IR_RPiGPIO which is coded for pulse distance encoding ([see pulse distance modulation](https://www.phidgets.com/docs/IR_Remote_Control_Guide)). Although it should be open to any pulse distance encoding. The IR_PiIR tool, on the other hand, is hardcoded for 16 bits for the RAW mode.
 
 There are four IR tools that I found that work with Python and I use in this project (in the order I learnt them):
 * LIRC:
   - LIRC is a package that allows you to decode and send infra-red signals of many (but not all) commonly used remote controls.
   - Recent linux kernels make it possible to use some IR remote controls as regular input devices. Sometimes this makes LIRC redundant. However, LIRC offers more flexibility and functionality and is still the right tool in a lot of scenarios.
-  - LIRC accepts commands for IR signals to be sent if the hardware supports this. Commands must match the keycode in the keymap file.
-  - Keymaps are provided and must be placed in /etc/lirc/lircd.conf.d/
+  - LIRC accepts commands for IR signals to be sent if the hardware supports this.
+  - Commands must match the keycode in the keymap file.
+    - Keymaps are provided
+    - Keymaps must be placed in /etc/lirc/lircd.conf.d/
   - [lirc.org](https://www.lirc.org/)
 * <code>ir-ctl</code>
   - ir-ctl is a tool that allows one to list the features of a lirc device, set its options, receive raw IR, and send IR.
   - IR can be sent as the keycode of a keymap, using a scancode, or using a raw IR file.
-  - In this app, we only coded for keycodes on keymaps. Keymaps are provided.
+    - In this app, we only coded for keycodes on keymaps.
+    - Keymaps are provided.
   - [<code>ir-ctl</code> - Man Page](https://www.mankier.com/1/ir-ctl)
 * PiIR
-  - PiIR is a client program for pigpio, a hardware-timed GPIO library. Some code are taken from its sample program irrp.py.
-  - It records and plays IR remote control code.
-  - It provides both command-line and programmatic control. The app uses python programmatic control.
+  - PiIR is a client program for pigpio, a hardware-timed GPIO library that records and plays IR remote control code.
+  - PiIR provides both command-line and programmatic control.
+    - We use python programmatic control.
   - IR can be sent as the keycode of a keymap, or using a scancode in hexadecimal format.
-  - In this app, we coded for keycodes on keymaps and 16 bit scancodes. Keymaps are provided.
+    - In this app, we coded for keycodes on keymaps and 16 bit scancodes.
+    - Keymaps are provided.
   - [PiIR 0.2.5](https://pypi.org/project/PiIR/) by Takeshi Sone
 * PiGPIO
   - "pigpio is a library for the Raspberry which allows control of the General Purpose Input Outputs (GPIO).  pigpio works on all versions of the Pi." [^1]
   - Among other things, it allows waveforms to generate GPIO level changes (time accurate to a few &mu;s)
   - I developed a custom object to handle the codes.
-  - IR can be sent as the keycode of a keymap, or using a scancode in hexadecimal or integer (decimal, binary or hexadecimal) format. Keymaps are provided.
-  - With almost direct access to the GPIO.
+  - IR can be sent as the keycode of a keymap, or using a scancode in hexadecimal or integer (decimal, binary or hexadecimal) format.
+    - Keymaps are provided.
  
 In comparing speeds roughly by eye, there is no noticeable difference between the tools. New keys are almost instantaneous, while repeated keys seem limited by sshkeyboard. This poses a limitation for increment/decrement where it takes multiple keystrokes of the same key to reach a particular speed.
 
@@ -48,53 +52,71 @@ In comparing speeds roughly by eye, there is no noticeable difference between th
 >
 > **Keycode:** The tool's interpretation of a key. It does not have to be a real key. Normally, remote apps link remote buttons to system keys that are used to create events. We are using a custom app and the keys are not system keys. Examples of keycodes are: 'FW2_RV3', 'A_FLT'
 >
-> **Scancode:** The actual code being sent. Could be an hexadecimal string or an integer in hexadecimal, binary or decimal form, depending on the function that produces it. The keymap files, however, take the scancodes in hexadecimal format, each with its own syntax. The code is converted to binary by the ir tool (PiIR or RPiGPIO).
+> **Scancode:** The actual code being sent. Could be an hexadecimal string  (e.g., 422B) or an integer in hexadecimal, binary or decimal form (e.g., 0x422B, 0b0100001000101011, or 16939). The keymap files, map keycodes to scancodes in hexadecimal format, each with its own syntax. The code is converted to binary by the ir tool.
 
 If you want to use parts of this project as an API, you can do without the <code>sshkeyboard_.py</code> file and access the objects directly. Here is a description of each object and their Members
 
 ### 1. Keypad
 #### a. Features
 * The <code>keypad</code> maps buttons to actions.
-* Note that the <code>keypad</code> does not match buttons to keycodes. The reason is that when creating scancodes for the **combo** modes, it is useful to have both outputs separate.
+* Note that the <code>keypad</code> does not match buttons to keycodes. The reason is that when creating scancodes for the **combo** modes, it is useful to have both outputs separate (e.g, ['FW2', 'RV3']), while a keycode combines them (e.g., 'FW2_RV3').
 
 #### b. Members
 ##### &#x25B6; New Object: <code>Keypad(mapped_keys_file_name: str) -> Keypad</code>
-The required parameters are:
-* **<code>mapped_keys_file_name</code>:** loaded from <code>maps/maps_config.json</code>.
 ```
 import keypad
 
 kb = keypad.Keypad(mapped_keys_file_name)
 ```
+**Args:**
 
-##### &#x25B6; <code>is_mapped_key(self , key: str) -> bool</code>
-Checks whether a particular key (e.g., &uarr;) is in the button map. Returns a boolean: <code>True</code> if the key exists, <code>False</code> otherwise.
+* **<code>mapped_keys_file_name</code>:** loaded from <code>maps/maps_config.json</code>.
+<br /><br />
 
-##### &#x25B6; <code>get_action(self , key: str) -> [str , str]</code>
-Returns the action associated to a particular key. The action is an array with [color , action] pairs for the single output modes (single PWM, single other and extended) or with [action A, action B] pairs for the combo modes (combo PWM and combo direct).
+##### &#x25B6; <code>is_mapped_key(key: str) -> bool</code>
+Checks whether a particular key (e.g., &uarr;) is in the button map.
+```
+is_mapped_key(key)
+```
+**Args:**
+* **<code>key (str)</code>:** The key to be considered (e.g., 'up' for ↑).
 
+**Returns:**
+* **<code>bool:</code>** <code>True</code> if the key exists, <code>False</code> otherwise.
+<br /><br />
+
+##### &#x25B6; <code>get_action(key: str) -> [str , str]</code>
+Returns the action associated to a particular key. 
+```
+get_action(key)
+```
+
+**Args:**
+* **<code>key (str)</code>:** The key to be considered (e.g., 'up' for ↑).
+
+**Returns:**
+* **<code>[str, str]</code>:** A <code>[color , action]</code> array for the single output modes (single PWM, single other and extended) or <code>[action_A, action_B]</code> for the combo modes (combo PWM and combo direct).
+<br /><br />
 
 ### 2. IR Tools
 #### a. Features
+* IR tools take keycodes or scancodes and send it to the respective tool
 * There are four types (classes):
-  * IR_LIRC
-  * IR_ir_ctl
-  * IR_PiIR
-  * IR_RPiGPIO
-
+  * <code>IR_LIRC</code>: sends keycodes using LIRC's python API.
+  * <code>IR_ir_ctl</code>: sends keycodes using ir-ctl via system calls.
+  * <code>IR_PiIR</code>: sends keycodes and scancodes using PiIR's library.
+  * <code>IR_RPiGPIO</code>: converts keycodes and scancodes to wave chains and sends them using pigpio's python API.
 * All have the same basic functions and attributes (i.e., members) with the same signatures.
 * They send codes to the respective IR tool to be transmitted.
 
 #### b. Members
 ##### &#x25B6; New Object: <code>[Tool](GPIO: int, keymap_file_name: str, keymap_folder_name: str = '/maps/keymaps/[tool]') -> [Tool]</code>
-Args:
-    **GPIO (int):**  The GPIO pin used to transmit IR. Used by PiIR and RPiGPIO only. <code>LIRC</code> and <code>ir-ctl</code> use the pin configured in the <code>/boot/config.txt</code> file.  Loaded from <code>config.json</code>. PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using writePWMFrequency(mypi, 12, 8000)."[^2] Lego uses 38KHz.
-
-    **keymap_file_name (str):** The name of the file containing the keymap.  Loaded from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code>, PiIR, and RPiGPIO to locate the keymap. <code>LIRC</code> uses remote names instead of keymap files. The remote name is inside the keymap file. As a matter of practice, the remote name should match the name of the keymap file minus the extension, but is not required by LIRC.<br />
-    Default = 'single_pwm.toml'.
-
-    **keymap_folder_name (str):** The name of the folder where the keymap is. Loaded from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code>, PiIR and RPiGPIO to locate the keymap. <code>LIRC</code> keymaps are all located at <code>/etc/lirc/lircd.conf.d</code> (you copy these as part of the setup).<br />
-    Default = 'maps/keymaps/ir_ctl'.
+**Args:**
+* **<code>GPIO (int)</code>:**  The GPIO pin used to transmit IR. Used by PiIR and RPiGPIO only. <code>LIRC</code> and <code>ir-ctl</code> use the pin configured in the <code>/boot/config.txt</code> file.  Loaded from <code>config.json</code>. PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using <code>writePWMFrequency(mypi, 12, 8000)</code>."[^2] Lego uses 38KHz.
+* **<code>keymap_file_name (str)</code>:** The name of the file containing the keymap.  Loaded from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code>, PiIR, and RPiGPIO to locate the keymap. <code>LIRC</code> uses remote names instead of keymap files. The remote name is inside the keymap file. As a matter of practice, the remote name should match the name of the keymap file minus the extension, but is not required by LIRC.<br />
+<code>Default = 'single_pwm.toml'</code>.
+* **<code>keymap_folder_name (str)</code>:** The name of the folder where the keymap is. Loaded from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code>, PiIR and RPiGPIO to locate the keymap. <code>LIRC</code> keymaps are all located at <code>/etc/lirc/lircd.conf.d</code> (you copy these as part of the setup).<br />
+<code>Default = 'maps/keymaps/ir_ctl'</code>.
 
 The function calls to create each type of object are:
 ```
@@ -115,28 +137,27 @@ remote_tx = irt.RPiGPIO(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME
 ```
 
 ##### &#x25B6; send(keycode: str) -> None:
-Send IR keycode (e.g., 'FW2_RV3') using system the respective underlying IR tool. In the case of RPiGPIO, it will convert the keycode (e.g., 'FW2_FW2') to scancode (e.g., 0x422B), then to <em>pigpio</em> wave and send it.
-
+Send IR keycode (e.g., 'FW2_RV3') using system the respective underlying IR tool.
 Args:
 * **keycode:** The keycode to be sent. For example 'FW2_RV3'
 
 ##### &#x25B6; send_hex(data_bytes: str) -> None:
-Takes a scancode in hexadecimal string format (e.g., '42 2B') and send it. This function is unique to PiIR and RPiGPIO.
+Takes a scancode in hexadecimal string format (e.g., '422B') and sends it. This function is unique to PiIR and RPiGPIO. The code must be a valid code. The function does not check for validity. The code is sent anyway and the receiver will reject it without any error.
 > **Notes:**
 > 
-> PiIR reverses the bits in each byte, so the function pre-processes the data to be sent. This is not the case with RPiGPIO, which was custom coded for this application.
+> PiIR reverses the bits in each byte, so the function pre-processes the data to be sent. This is not the case with RPiGPIO, which was custom coded for this application. This is done in the background without the user's awareness.
 > RPiGPIO converts the string to pigpio wave and sends it.
 Args:
 * **data_bytes:** the scancode to be sent as an hexadecimal string.
 
-##### &#x25B6; send_scancode(data: int) -> None:
+##### &#x25B6; send_raw(data: int) -> None:
 This function is unique to RPiGPIO. It takes a scancode in integer format (e.g., 16939 or 0x422B), and sends it. The code must be a valid code. The function does not check for validity. The code is sent anyway and the receiver will reject it without any error.
 Arguments:
-* **data:** the scancode as an integer. Could be binary (0b...), hexadecimal (0x...) or plain decimal.
+* **data:** the scancode as an integer. Could be binary (0b...), hexadecimal (0x...) or plain decimal. PiIR's tool is hardcoded for 2 bytes (16 bits).
 
 ### 3. Power Functions (Encoders)
 #### a. Features
-* There are four types (classes):
+* There are five types (classes):
   * ComboPWM
   * ComboDirect
   * SinglePWM
@@ -147,7 +168,7 @@ Arguments:
   * Toggle bit (changes with each request for keycode or scancode except for combo PWM)
   * Address bit (defaults to 0 and only changes in extended mode)
 * Provide keycode corresponding to action codes
-  * e.g., in single PWM &uarr; -which corresponds to full forward on output B- is mapped to ["B", "FW7"] by keyboard, and ["B", "FW7"] is mapped to the keycode B_FW7 by the encoder.
+  * e.g., in single PWM '&uarr;' is mapped to ["B", "FW7"] by keyboard. ["B", "FW7"] is then mapped to the keycode B_FW7 by the encoder.
 * Provide the scancode corresponding to button codes
   * e.g., in the previous case, the scancode is 0x057D with toggle 0 or 0x8575 with toggle 1
 
