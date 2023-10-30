@@ -14,23 +14,28 @@ This project is part of using a Raspberry Pi as a [Lego:tm: PowerFunctions](docs
 There are four IR tools that I found that work with Python and I use in this project (in the order I learnt them):
 * LIRC:
   - LIRC is a package that allows you to decode and send infra-red signals of many (but not all) commonly used remote controls.
-  - Recent linux kernels makes it possible to use some IR remote controls as regular input devices. Sometimes this makes LIRC redundant. However, LIRC offers more flexibility and functionality and is still the right tool in a lot of scenarios.
-  - The most important part of LIRC is the lircd daemon which decodes IR signals received by the device drivers and provides the information on a socket. It also accepts commands for IR signals to be sent if the hardware supports this.
+  - Recent linux kernels make it possible to use some IR remote controls as regular input devices. Sometimes this makes LIRC redundant. However, LIRC offers more flexibility and functionality and is still the right tool in a lot of scenarios.
+  - LIRC accepts commands for IR signals to be sent if the hardware supports this. Commands must match the keycode in the keymap file.
+  - Keymaps are provided and must be placed in /etc/lirc/lircd.conf.d/
   - [lirc.org](https://www.lirc.org/)
 * <code>ir-ctl</code>
   - ir-ctl is a tool that allows one to list the features of a lirc device, set its options, receive raw IR, and send IR.
-  - IR can be sent as the keycode of a keymap, or using a scancode, or using a raw IR file.
+  - IR can be sent as the keycode of a keymap, using a scancode, or using a raw IR file.
+  - In this app, we only coded for keycodes on keymaps. Keymaps are provided.
   - [<code>ir-ctl</code> - Man Page](https://www.mankier.com/1/ir-ctl)
 * PiIR
-   - PiIR is a client program for pigpio, a hardware-timed GPIO library. Some code are taken from its sample program irrp.py.
-   - It records and plays IR remote control code.
-   - It provides both command-line and programmatic control.
-   - [PiIR 0.2.5](https://pypi.org/project/PiIR/) by Takeshi Sone
+  - PiIR is a client program for pigpio, a hardware-timed GPIO library. Some code are taken from its sample program irrp.py.
+  - It records and plays IR remote control code.
+  - It provides both command-line and programmatic control. The app uses python programmatic control.
+  - IR can be sent as the keycode of a keymap, or using a scancode in hexadecimal format.
+  - In this app, we coded for keycodes on keymaps and 16 bit scancodes. Keymaps are provided.
+  - [PiIR 0.2.5](https://pypi.org/project/PiIR/) by Takeshi Sone
 * PiGPIO
-   - "pigpio is a library for the Raspberry which allows control of the General Purpose Input Outputs (GPIO).  pigpio works on all versions of the Pi." [^1]
-   - Among other things, it allows waveforms to generate GPIO level changes (time accurate to a few &mu;s)
-   - I developed a custom object to handle the codes.
-   - With almost direct access to the GPIO.
+  - "pigpio is a library for the Raspberry which allows control of the General Purpose Input Outputs (GPIO).  pigpio works on all versions of the Pi." [^1]
+  - Among other things, it allows waveforms to generate GPIO level changes (time accurate to a few &mu;s)
+  - I developed a custom object to handle the codes.
+  - IR can be sent as the keycode of a keymap, or using a scancode in hexadecimal or integer (decimal, binary or hexadecimal) format. Keymaps are provided.
+  - With almost direct access to the GPIO.
  
 In comparing speeds roughly by eye, there is no noticeable difference between the tools. New keys are almost instantaneous, while repeated keys seem limited by sshkeyboard. This poses a limitation for increment/decrement where it takes multiple keystrokes of the same key to reach a particular speed.
 
