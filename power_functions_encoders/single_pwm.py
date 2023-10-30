@@ -7,7 +7,7 @@ class SinglePWM(pf.LegoPF):
     ACTIONS = ['FLT', 'FW1', 'FW2', 'FW3', 'FW4', 'FW5', 'FW6', 'FW7',
                'BRK', 'RV7', 'RV6', 'RV5', 'RV4', 'RV3', 'RV2', 'RV1']
 
-    def __init__(self, channel : int = 1) -> None:
+    def __init__(self, channel : int = 0) -> None:
         """Encodes input into Lego PF codes using Single PWM mode.
 
         This class subclasses LegoPF. The main differences are:
@@ -23,7 +23,7 @@ class SinglePWM(pf.LegoPF):
             channel (int): the Lego PF channel to be used (0 to 3)
                 Default = 0
         """
-        self.nibble1 = 0x0 | (channel - 1)
+        self.nibble1 = 0x0 | (channel)
         self.nibble2 = 0x4
 
     def get_nibble2(self, output: int) -> int:

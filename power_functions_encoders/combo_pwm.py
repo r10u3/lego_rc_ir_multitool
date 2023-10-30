@@ -7,7 +7,7 @@ class ComboPWM(pf.LegoPF):
     ACTIONS = ['FLT', 'FW1', 'FW2', 'FW3', 'FW4', 'FW5', 'FW6', 'FW7',
                'BRK', 'RV7', 'RV6', 'RV5', 'RV4', 'RV3', 'RV2', 'RV1']
 
-    def __init__(self, channel : int = 1) -> None:
+    def __init__(self, channel : int = 0) -> None:
         """Encodes input into Lego PF codes using Combo PWM mode.
 
         This class subclasses LegoPF. The main differences are:

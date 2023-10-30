@@ -23,7 +23,7 @@ class SingleOther(pf.LegoPF):
         'TOG_1111'  # Toggle full backward (Stop → Bw, Bw → Stop, Fwd → Bw)
     ]
 
-    def __init__(self, channel : int = 1) -> None:
+    def __init__(self, channel : int = 0) -> None:
         """Encodes input into Lego PF codes using Single Other mode.
 
         This class subclasses LegoPF. The main differences are:

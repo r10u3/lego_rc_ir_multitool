@@ -16,7 +16,7 @@ class Extended(pf.LegoPF):
         'RSVD'       # Reserved
     ]
 
-    def __init__(self, channel : int = 1) -> None:
+    def __init__(self, channel : int = 0) -> None:
         """Encodes input into Lego PF codes using Extended mode.
 
         This class subclasses LegoPF. The main differences are:
