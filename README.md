@@ -315,7 +315,7 @@ Actions programmed:
     "GPIO" : 18
 }
 ```
-#### A. <code>system_mode</code>
+#### a. <code>system_mode</code>
 This determines the **send** command to be used. There are three possible modes:
 * **'KEY':** sends keycode from keymap. Keycodes are preset in the keymaps. This is the easiest mode to use.
 * **'RAW':** sends the scancode as **int**. Only available for PiIR and RPiGPIO. The scancode is produced from the [*key] pairs in the button maps.
