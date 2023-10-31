@@ -51,7 +51,7 @@ I organized the project into four directories:
   * The <code>Keyboard</code> class stands alone and did not justify creating a folder just for one file.
 * **<code>ir_tools</code>:** This directory contains the classes that take codes (keycodes or scancodes), and send them using the IR tools.
 * **<code>power_functions_encoders</code>:** This directory contains the classes that take an action and convert it to the keycode/scancode corresponding to the specific Lego(c) mode.
-* **<code>maps</code>:** This directory contains the button maps (keyboard &rarr; keycode) and key maps (keycode &rarr; scancode).
+* **<code>maps</code>:** This directory contains the button mapping (keyboard &rarr; keycode) and key mapping (keycode &rarr; scancode).
 
 ### 3. Use
 The code includes an app that takes pre-configured keystrokes and outputs corresponding IR codes. The config file allow to select the IR tool and the Lego(c) PowerFunctions mode. The options are:
@@ -62,16 +62,14 @@ The code includes an app that takes pre-configured keystrokes and outputs corres
 To use the system, yo can choose the existing app, or create your own. Each class is in its own module. While this is not practice in python, I structured it this way to allow for choosing a particular tool/mode rather than copying the whole set. If you choose to create your own app using these modules, you should:
 1. Create a flat structure with all the files. This will be the directory where you keep your project
 2. Copy the following files:
-       * your chosen IR tool
-       * your chosen PowerFunctions encoder
-       * the PowerFunctions super class module
-3. Flatten the imports and calls inside the modules
-       * The sample imports in the <code>sshkeyboard_.py</code> code and in this document include the module hierarchy.<br />
-       For example, in <code>import power_functions_encoders.combo_direct as pf</code>, <br />
-       change <code>power_functions_encoders.combo_direct</code> for <code>combo_direct</code>
-4. Copy the relevant code from both <code>sshkeyboard_.py</code> and <code>keyboard.py</code>.
-
-You can replace step 2 with including all three files into one module, or the encoder and super class into the same module.
+   * your chosen PowerFunctions encoder and the PowerFunctions super class module (these can be merged into one module)
+   * your chosen IR tool (can also be merged with encoders, but not as practical)
+   * the keymap for your chosen tool/mode combo.
+3. Copy the relevant code from both <code>sshkeyboard_.py</code> and <code>keyboard.py</code>.
+4. Flatten the imports and calls inside the modules and the copied code.
+   * The sample imports in the <code>sshkeyboard_.py</code> code and in this document include the module hierarchy.<br />
+   For example, in <code>import power_functions_encoders.combo_direct as pf</code>, <br />
+   change <code>power_functions_encoders.combo_direct</code> for <code>combo_direct</code>
 
 ## Multitool API
 > **Definitions:**
@@ -82,13 +80,14 @@ You can replace step 2 with including all three files into one module, or the en
 >
 > **Keycode:** The tool's interpretation of a key. It does not have to be a real key. Normally, remote apps link remote buttons to system keys that are used to create events. We are using a custom app and the keys are not system keys. Examples of keycodes are: 'FW2_RV3', 'A_FLT'
 >
-> **Scancode:** The actual code being sent. Could be an hexadecimal string  (e.g., 422B) or an integer in hexadecimal, binary or decimal form (e.g., 0x422B, 0b0100001000101011, or 16939). The keymap files, map keycodes to scancodes in hexadecimal format, each with its own syntax. The code is converted to binary by the ir tool.
+> **Scancode:** The actual code being sent. Could be an hexadecimal string  (e.g., 422B) or an integer in hexadecimal, binary or decimal form (e.g., 0x422B, 0b0100001000101011, or 16939). The keymap files, map keycodes to scancodes in hexadecimal format, each with its own syntax. The code is converted to binary by the IR tool.
 
 If you want to use parts of this project as an API, you can do without the <code>sshkeyboard_.py</code> file and access the objects directly. Here is a description of each object and their Members
 
 ### 1. Keypad
 #### a. Features
-* The <code>keypad</code> maps buttons to actions.
+* This is a simple class (<code>keypad</code>) that maps buttons to actions. It only has two functions.
+* You can easily code this functionality in your own app.
 * Note that the <code>keypad</code> does not match buttons to keycodes. The reason is that when creating scancodes for the **combo** modes, it is useful to have both outputs separate (e.g, ['FW2', 'RV3']), while a keycode combines them (e.g., 'FW2_RV3').
 
 #### b. Members
@@ -100,7 +99,7 @@ kb = keypad.Keypad(mapped_keys_file_name)
 ```
 **Args:**
 
-* **<code>mapped_keys_file_name</code>:** loaded from <code>maps/maps_config.json</code>.
+* **<code>mapped_keys_file_name</code>:** The name of the file with the button mapping. Must include folder structure (relative or absolute is fine).
 <br /><br />
 
 ##### &#x25B6; <code>is_mapped_key(key: str) -> bool</code>
@@ -142,11 +141,12 @@ get_action(key)
 #### b. Members
 ##### &#x25B6; New Object: <code>[Tool](GPIO: int, keymap_file_name: str, keymap_folder_name: str = '/maps/keymaps/[tool]') -> [Tool]</code>
 **Args:**
-* **<code>GPIO (int)</code>:**  The GPIO pin used to transmit IR. Used by PiIR and RPiGPIO only. <code>LIRC</code> and <code>ir-ctl</code> use the pin configured in the <code>/boot/config.txt</code> file.  Loaded from <code>config.json</code>. PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using <code>writePWMFrequency(mypi, 12, 8000)</code>."[^2] Lego uses 38KHz.
-* **<code>keymap_file_name (str)</code>:** The name of the file containing the keymap.  Loaded from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code>, PiIR, and RPiGPIO to locate the keymap. <code>LIRC</code> uses remote names instead of keymap files. The remote name is inside the keymap file. As a matter of practice, the remote name should match the name of the keymap file minus the extension, but is not required by LIRC.<br />
-<code>Default = 'single_pwm.toml'</code>.
-* **<code>keymap_folder_name (str)</code>:** The name of the folder where the keymap is. Loaded from <code>maps/maps_config.json</code>. Used by <code>ir-ctl</code>, PiIR and RPiGPIO to locate the keymap. <code>LIRC</code> keymaps are all located at <code>/etc/lirc/lircd.conf.d</code> (you copy these as part of the setup).<br />
-<code>Default = 'maps/keymaps/ir_ctl'</code>.
+* **<code>GPIO (int)</code>:**  The GPIO pin used to transmit IR. Used by PiIR and RPiGPIO only. <code>LIRC</code> and <code>ir-ctl</code> use the pin configured in the <code>/boot/config.txt</code> file.  PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using <code>writePWMFrequency(mypi, 12, 8000)</code>."[^2] Lego uses 38KHz.<br />
+Default: <code>18</code>. (<code>''</code> for LIRC and ir-ctl)
+* **<code>keymap_file_name (str)</code>:** The name of the file containing the keymap.  Used by <code>ir-ctl</code>, PiIR, and RPiGPIO to locate the keymap. <code>LIRC</code> uses remote names instead of keymap files which should be located in <code>/etc/lirc/lircd.conf.d</code>. The remote name is inside the keymap file. As a matter of practice, the remote name should match the name of the keymap file minus the extension, but is not required by LIRC.<br />
+Default: <code>single_pwm.*</code> (<code>''</code> for LIRC). Where * is the keymap file extension corresponding to the IR tool.
+* **<code>keymap_folder_name (str)</code>:** The name of the folder where the keymap is. Can be relative (e.g., <code>maps/keymaps</code>) or absolute (<code>/home/pi/Projects/lego_rc/maps/keymaps</code>). Used by <code>ir-ctl</code>, PiIR and RPiGPIO to locate the keymap. <code>LIRC</code> keymaps are all located at <code>/etc/lirc/lircd.conf.d</code> (you copy these as part of the setup).<br />
+Default: <code>maps/keymaps/<tool></code>. (<code>''</code> for LIRC)
 
 The function calls to create each type of object are:
 ```
@@ -167,7 +167,7 @@ remote_tx = irt.RPiGPIO(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME
 ```
 
 ##### &#x25B6; send(keycode: str) -> None:
-Send IR keycode (e.g., 'FW2_RV3') using system the respective underlying IR tool.
+Send IR keycode (e.g., 'FW2_RV3') using the respective underlying IR tool.
 Args:
 * **keycode:** The keycode to be sent. For example 'FW2_RV3'
 
