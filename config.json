@@ -3,6 +3,6 @@
     "project_folder" : "/home/pi/Projects/lego_rc",
     "rc_mode" : "SGL",
     "maps_config_file" : "maps/maps_config.json",
-    "ir_tool" : "piir",
+    "ir_tool" : "rpigpio",
     "GPIO" : 18
 }

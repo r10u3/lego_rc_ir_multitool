@@ -17,7 +17,7 @@ class RPiGPIO:
 
     def __init__(self,  GPIO: int = 18, keymap_file_name: str = 'single_pwm.json',
                  keymap_folder_name: str = 'maps/keymaps/rpigpio') -> None:
-        """Uses pigpio library to format and send IR codes.
+        """Uses pigpio library to transform and send IR codes.
 
         Args:
             GPIO (int): PIN must be Hardware PWM.
