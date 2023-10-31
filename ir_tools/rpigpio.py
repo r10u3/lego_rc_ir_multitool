@@ -15,18 +15,20 @@ def test_send(config_file_name_and_path, GPIO, keycode):
 
 class RPiGPIO:
 
-    def __init__(self,  GPIO: int = 18, keymap_file_name: str = 'single_pwm.json',
+    def __init__(self,  
+                 GPIO: int = 18, 
+                 keymap_file_name: str = 'single_pwm.json',
                  keymap_folder_name: str = 'maps/keymaps/rpigpio') -> None:
         """Uses pigpio library to transform and send IR codes.
 
         Args:
             GPIO (int): PIN must be Hardware PWM.
                 Default = 18.
-            keymap_file_name (str): the name of the file 
-                containing the keymap.
+            keymap_file_name (str): the name of the file containing 
+                the keymap.
                 Default = 'single_pwm.json'.
-            keymap_folder_name (str): the name of the file 
-                containing the keymap. Can be absolute or relative.
+            keymap_folder_name (str): the name of the folder where
+                the keymap file is. Can be absolute or relative.
                 Default = 'maps/keymaps/rpigpio'.
         """
         keymap_file = keymap_folder_name + '/' + keymap_file_name

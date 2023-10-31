@@ -1,7 +1,9 @@
 import lirc
 
 class IR_LIRC:
-    def __init__(self,  GPIO: int = '', keymap_file_name: str = '',
+    def __init__(self,  
+                 GPIO: int = '',
+                 keymap_file_name: str = '',
                  keymap_folder_name: str = '') -> None:
         """Uses LIRC to send IR codes.
 

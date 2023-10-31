@@ -11,10 +11,11 @@ class IR_ir_ctl:
             GPIO (int): not used. Left in for consistency with other
                 tools. ir-ctl uses the pin configured in the 
                 /boot/config.txt file.
-            keymap_file_name (str): the name of the file 
-                containing the keymap.
-                Default = 'single_pwm.toml'.
-            keymap_folder_name (str): the folder where the keymap is.
+            keymap_file_name (str): the name of the file containing 
+                the keymap.
+                Default = 'single_pwm.json'.
+            keymap_folder_name (str): the name of the folder where
+                the keymap file is. Can be absolute or relative.
                 Default = 'maps/keymaps/ir_ctl'.
         """
         self.keymap_file_name = (keymap_folder_name 

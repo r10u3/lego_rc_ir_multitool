@@ -39,6 +39,9 @@ class ComboDirect(pf.LegoPF):
 
     def get_nibble3(self, action_A: str, action_B: str) -> int:
         """Assemble <data nibble> for combo action in Combo Direct mode.
+
+        Extends the get_data_nibble() function by combining two data
+        elements into one data nibble.
         
         Args:
             action_A: the 'action' on output A to be encoded.
