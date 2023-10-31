@@ -55,23 +55,9 @@ I organized the project into four directories:
 
 ### 3. Use
 The code includes an app that takes pre-configured keystrokes and outputs corresponding IR codes. The config file allow to select the IR tool and the Lego(c) PowerFunctions mode. The options are:
-* IR tool(<code>ir_tool</code>):
-  * lirc
-  * ir_ctl
-  * piir
-  * rpigpio
-
-* Lego(c) PowerFunctions mode(<code>rc_mode</code>):
-  * SGL
-  * PWM
-  * DIR
-  * EXT
-  * OTH
-
-* There is also the option to choose the type of code exchanged between the two (<code>system_mode</code>):
-  * KEY
-  * RAW
-  * HEX
+| IR tool<br />(<code>ir_tool</code>) | Lego(c) PowerFunctions mode<br />(<code>rc_mode</code>) | Type of code exchanged between the two<br />(<code>system_mode</code>) |
+|---|---|---|
+|lirc<br />ir_ctl<br />piir<br />rpigpio | SGL<br />PWM<br />DIR<br />EXT<br />OTH | KEY<br />RAW<br />HEX |
 
 To use the system, yo can choose the existing app, or create your own. Each class is in its own module. While this is not practice in python, I structured it this way to allow for choosing a particular tool/mode rather than copying the whole set. If you choose to create your own app using these modules, you should:
 1. Create a flat structure with all the files. This will be the directory where you keep your project
