@@ -1,5 +1,5 @@
 # Lego:tm: Power Functions & Raspberry Pi
-<em>Last updated: 10/23/2023</em>
+<em>Last updated: 10/30/2023</em>
 
 ## Important
 **This project is not very practical.** It mostly shows the tools available and my own journey through these tools. You don't need all four tools. You only need one. But the tools are available for you to pick the tool and mode you prefer and import only those.
@@ -11,6 +11,7 @@
 This project is part of using a Raspberry Pi as a [Lego:tm: PowerFunctions](docs/Lego_Protocol.md) controller. In my case, I use a headless Raspberry Pi 1 version 2, with Raspbian Bullseye. I also use a simple transmitter using an IR LED and a simple circuit (see [rc_transmitter](docs/rc_transmitter.md) for more details).
 > **Note:** Technically, the app can use any remote configuration, not just Lego. Except for the IR_RPiGPIO which is coded for pulse distance encoding ([see pulse distance modulation](https://www.phidgets.com/docs/IR_Remote_Control_Guide)). Although it should be open to any pulse distance encoding. The IR_PiIR tool, on the other hand, is hardcoded for 16 bits for the RAW mode.
 
+### 1. Tools
 There are four IR tools that I found that work with Python and I use in this project (in the order I learnt them):
 * LIRC:
   - LIRC is a package that allows you to decode and send infra-red signals of many (but not all) commonly used remote controls.
@@ -42,6 +43,35 @@ There are four IR tools that I found that work with Python and I use in this pro
     - Keymaps are provided.
  
 In comparing speeds roughly by eye, there is no noticeable difference between the tools. New keys are almost instantaneous, while repeated keys seem limited by sshkeyboard. This poses a limitation for increment/decrement where it takes multiple keystrokes of the same key to reach a particular speed.
+
+### 2. Structure
+I organized the project into four directories:
+* **<code>Root</code>:** This directory contains the app-level modules and the <code>Keyboard</code> class.
+  * The app-level modules include the app itself (<code>sshkeyboard_.py</code>) and the config file (<code>config.json</code>).
+  * The <code>Keyboard</code> class stands alone and did not justify creating a folder just for one file.
+* **<code>ir_tools</code>:** This directory contains the classes that take codes (keycodes or scancodes), and send them using the IR tools.
+* **<code>power_functions_encoders</code>:** This directory contains the classes that take an action and convert it to the keycode/scancode corresponding to the specific Lego(c) mode.
+* **<code>maps</code>:** This directory contains the button maps (keyboard &rarr; keycode) and key maps (keycode &rarr; scancode).
+
+### 3. Use
+The code includes an app that takes pre-configured keystrokes and outputs corresponding IR codes. The config file allow to select the IR tool and the Lego(c) PowerFunctions mode. The options are:
+| IR tool<br />(<code>ir_tool</code>) | Lego(c) PowerFunctions mode<br />(<code>rc_mode</code>) | Type of code exchanged between the two<br />(<code>system_mode</code>) |
+|---|---|---|
+|lirc<br />ir_ctl<br />piir<br />rpigpio | SGL<br />PWM<br />DIR<br />EXT<br />OTH | KEY<br />RAW<br />HEX |
+
+To use the system, yo can choose the existing app, or create your own. Each class is in its own module. While this is not practice in python, I structured it this way to allow for choosing a particular tool/mode rather than copying the whole set. If you choose to create your own app using these modules, you should:
+1. Create a flat structure with all the files. This will be the directory where you keep your project
+2. Copy the following files:
+       * your chosen IR tool
+       * your chosen PowerFunctions encoder
+       * the PowerFunctions super class module
+3. Flatten the imports and calls inside the modules
+       * The sample imports in the <code>sshkeyboard_.py</code> code and in this document include the module hierarchy.<br />
+       For example, in <code>import power_functions_encoders.combo_direct as pf</code>, <br />
+       change <code>power_functions_encoders.combo_direct</code> for <code>combo_direct</code>
+4. Copy the relevant code from both <code>sshkeyboard_.py</code> and <code>keyboard.py</code>.
+
+You can replace step 2 with including all three files into one module, or the encoder and super class into the same module.
 
 ## Multitool API
 > **Definitions:**
@@ -195,15 +225,6 @@ rc_encoder = pf.SingleOther()
 
 ##### &#x25B6; <code>get_keycode(str, str) -> keycode: str</code>
 Get keycode for output/action or actions A/B pairs. Returns <code>keycode</code>
-Actions programmed include:
-* break then float='BRK'
-* increment speed='INC'
-* forward speeds='FW1' through 'FW7'
-* decrement speed= 'DEC'
-* reverse speeds ='RV1' through 'RV7'
-* float= 'FLT'
-* toggle bit= 'TOG'
-* <em>et cetera</em>
 
 <table>
   <thead>
@@ -243,6 +264,29 @@ Actions programmed include:
   </tbody>
 </table>
 
+Actions programmed:
+
+
+| Code | Combo PWM<br>Single PWM | Combo Direct | Extended | Single Other |
+| ---- | --- | --- | -------- | ------------ |
+| 0000 | FLT | FLT (00) | BRK      | TOG_0000     |
+| 0001 | FW1 | FW7 (01)  | INC      | TOG_0001     |
+| 0010 | FW2 | RV7 (10)  | DEC      | INC_NUM      |
+| 0011 | FW3 | BRK (11)  | NOT_USED | DEC_NUM      |
+| 0100 | FW4 |           | TOG      | INC_PWM      |
+| 0101 | FW5 |           | NOT_USED | DEC_PWM      |
+| 0110 | FW6 |           | ADD_TOG  | FUL_FWD      |
+| 0111 | FW7 |           | TOG_AGN  | FUL_REV      |
+| 1000 | BRK |           | RSVD     | TOG_1000     |
+| 1001 | RV7 |           |          | CLR_C1       |
+| 1010 | RV6 |           |          | SET_C1       |
+| 1011 | RV5 |           |          | TOG_C1       |
+| 1100 | RV4 |           |          | CLR_C2       |
+| 1101 | RV3 |           |          | SET_C2       |
+| 1110 | RV2 |           |          | TOG_C2       |
+| 1111 | RV1 |           |          | TOG_1111     |
+
+
 ## IR Multitool Configuration
 
 ### 1. Config file
@@ -257,7 +301,7 @@ Actions programmed include:
     "GPIO" : 18
 }
 ```
-#### A. <code>system_mode</code>
+#### a. <code>system_mode</code>
 This determines the **send** command to be used. There are three possible modes:
 * **'KEY':** sends keycode from keymap. Keycodes are preset in the keymaps. This is the easiest mode to use.
 * **'RAW':** sends the scancode as **int**. Only available for PiIR and RPiGPIO. The scancode is produced from the [*key] pairs in the button maps.
