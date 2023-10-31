@@ -1,5 +1,5 @@
 # Lego:tm: Power Functions & Raspberry Pi
-<em>Last updated: 10/30/2023</em>
+<em>Last updated: 10/31/2023</em>
 
 ## Important
 **This project is not very practical.** It mostly shows the tools available and my own journey through these tools. You don't need all four tools. You only need one. But the tools are available for you to pick the tool and mode you prefer and import only those.
@@ -168,8 +168,8 @@ remote_tx = irt.RPiGPIO(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME
 
 ##### &#x25B6; send(keycode: str) -> None:
 Send IR keycode (e.g., 'FW2_RV3') using the respective underlying IR tool.
-Args:
-* **keycode:** The keycode to be sent. For example 'FW2_RV3'
+**Args:**
+* **<code>keycode (str)</code>:** The keycode to be sent. For example 'FW2_RV3'
 
 ##### &#x25B6; send_hex(data_bytes: str) -> None:
 Takes a scancode in hexadecimal string format (e.g., '422B') and sends it. This function is unique to PiIR and RPiGPIO. The code must be a valid code. The function does not check for validity. The code is sent anyway and the receiver will reject it without any error.
@@ -177,13 +177,13 @@ Takes a scancode in hexadecimal string format (e.g., '422B') and sends it. This 
 > 
 > PiIR reverses the bits in each byte, so the function pre-processes the data to be sent. This is not the case with RPiGPIO, which was custom coded for this application. This is done in the background without the user's awareness.
 > RPiGPIO converts the string to pigpio wave and sends it.
-Args:
-* **data_bytes:** the scancode to be sent as an hexadecimal string.
+**Args:**
+* **<code>data_bytes (str)</code>:** the scancode to be sent as an hexadecimal string.
 
 ##### &#x25B6; send_raw(data: int) -> None:
 This function is unique to RPiGPIO. It takes a scancode in integer format (e.g., 16939 or 0x422B), and sends it. The code must be a valid code. The function does not check for validity. The code is sent anyway and the receiver will reject it without any error.
-Arguments:
-* **data:** the scancode as an integer. Could be binary (0b...), hexadecimal (0x...) or plain decimal. PiIR's tool is hardcoded for 2 bytes (16 bits).
+**Args:**
+* **<code>data (int)</code>:** the scancode as an integer. Could be binary (0b...), hexadecimal (0x...) or plain decimal. PiIR's tool is hardcoded for 2 bytes (16 bits).
 
 ### 3. Power Functions (Encoders)
 #### a. Features
@@ -193,7 +193,8 @@ Arguments:
   * SinglePWM
   * Extended
   * SingleOther
-* All have the same functions and variables (i.e., members) with the same signatures.
+* All have (mostly) the same functions and variables (i.e., members) with the same signatures.
+  * Exception is the Combo Direct mode which has a <code>get_nibble3()</code> function.
 * Keep track of:
   * Toggle bit (changes with each request for keycode or scancode except for combo PWM)
   * Address bit (defaults to 0 and only changes in extended mode)
@@ -205,91 +206,188 @@ Arguments:
 
 #### b. Members
 ##### &#x25B6; New Object: [encoder]&#40;&#41; -> [encoder]
-Does not require any parameters. The function calls to create each type of object are:
+The function calls to create each type of object are:
 ```
 import power_functions.combo_pwm as pf
-rc_encoder = pf.ComboPWM()
+rc_encoder = pf.ComboPWM(channel)
 ```
 ```
 import power_functions.combo_direct as pf
-rc_encoder = pf.ComboDirect()
+rc_encoder = pf.ComboDirect(channel)
 ```
 ```
 import power_functions.single_pwm as pf
-rc_encoder = pf.SinglePWM()
+rc_encoder = pf.SinglePWM(channel)
 ```
 ```
 import power_functions.single_other as pf
-rc_encoder = pf.SingleOther()
+rc_encoder = pf.SingleOther(channel)
 ```
+**Args:**
+* **<code>channel (int)</code>:** the channel to be used in the range 0-3. Where 0=channel 1, 3=channel 4. Optional defaults to 0.<br />
+<code>Default: 0</code>
+
 
 ##### &#x25B6; <code>get_keycode(str, str) -> keycode: str</code>
-Get keycode for output/action or actions A/B pairs. Returns <code>keycode</code>
+Get keycode for output/action or actions A/B pairs. The arguments are different for different modes. Variations:
+
+**Args for <code>get_keycode(output , action)</code>:**
+* **<code>output</code>:** The output to code the action for.
+* **<code>action</code>:** The action coded for the specific output.
+
+**Args for <code>get_keycode(action_A, action_B)</code>:**
+* **<code>action_A</code>:** The action coded for output A.
+* **<code>action_B</code>:** The action coded for output B.
+
+**Args for <code>get_keycode(\*key)</code>:**
+* **<code>\*key</code>:** one of the pairs of arguments stated above for the specific PowerFunctions mode as stated below:
 
 <table>
   <thead>
     <tr>
-      <th></th>
-      <th>Single Modes</th>
-      <th>Combo Modes</th>
+      <th colspan=2></th>
+      <th>Single Modes:<br />Single PWM, Extended and Single Other</th>
+      <th>Combo Modes:<br />Combo Direct and Combo PWM</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th>Pairs</th>
-      <td>[output, action]</td>
-      <td>[action A, action B]</td>
+      <th rowspan=2>Separate<br />Variables</th>
+      <th>Function</th>
+      <td><pre>get_keycode(output , action)</pre></td>
+      <td><pre>get_keycode(action_A, action_B)</pre></td>
     </tr>
     <tr>
-      <th rowspan=2>Code</th>
-      <td>
-        <pre>rc_encoder.get_keycode(output , action)</pre>
-        For example:
-        <pre>rc_encoder.get_keycode("A" , "FW4")</pre>
-      </td>
-      <td>
-        <pre>rc_encoder.action(action_A, action_B)</pre>
-        For example:
-        <pre>rc_encoder.get_keycode("RV3" , "FW4")</pre>
-      </td>
+      <th>Args:</th>
+      <td><pre>output (str), action (str)</pre></td>
+      <td><pre>action_A (str), action_B (str)</pre></td>
+    </tr>
+      <th rowspan=2>Unpacked<br />Variable</th>
+      <th>Function</th>
+      <td colspan=2><pre>get_keycode(*key)</pre></td>
+    <tr>
+      <th>Args:</th>
+      <td><pre>key: [output (str), action (str)]</pre></td>
+      <td><pre>key: [action_A (str), action_B (str)]</pre></td>
     </tr>
     <tr>
-      <td colspan=2><pre>rc_encoder.action(*key)</pre></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td>Where:<br />key is a [output, action] pair<br />such as ["A" , "FW4"]</td>
-      <td>Or:<br />key is a [action A, action B] pair<br />such as ["RV3" , "FW4"]</td>
+      <th colspan=2>Returns:</th>
+      <td colspan=2><pre><bold>keycode (str)</bold></pre></td>
     </tr>
   </tbody>
 </table>
 
-Actions programmed:
+##### &#x25B6; get_scancode(str, str) -> int
+Assembles and returns the \<scancode> for output/action or actions A/B pairs. The arguments are different for different modes with the same variations and applications as <code>get_keycode()</code>.
 
+**Args for <code>get_scancode(output , action)</code>:**
+* **<code>output</code>:** The output to code the action for.
+* **<code>action</code>:** The action coded for the specific output.
 
-| Code | Combo PWM<br>Single PWM | Combo Direct | Extended | Single Other |
+**Args for <code>get_scancode(action_A, action_B)</code>:**
+* **<code>action_A</code>:** The action coded for output A.
+* **<code>action_B</code>:** The action coded for output B.
+
+**Args for <code>get_scancode(\*key)</code>:**
+* **<code>\*key</code>:** one of the pairs of arguments stated above for the specific PowerFunctions mode as stated below:
+
+<table>
+  <thead>
+    <tr>
+      <th colspan=2></th>
+      <th>Single Modes:<br />Single PWM, Extended and Single Other</th>
+      <th>Combo Modes:<br />Combo Direct and Combo PWM</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan=2>Separate<br />Variables</th>
+      <th>Function</th>
+      <td><pre>get_scancode(output , action)</pre></td>
+      <td><pre>get_scancode(action_A, action_B)</pre></td>
+    </tr>
+    <tr>
+      <th>Args:</th>
+      <td><pre>output (str), action (str)</pre></td>
+      <td><pre>action_A (str), action_B (str)</pre></td>
+    </tr>
+      <th rowspan=2>Unpacked<br />Variable</th>
+      <th>Function</th>
+      <td colspan=2><pre>get_scancode(*key)</pre></td>
+    <tr>
+      <th>Args:</th>
+      <td><pre>key: [output (str), action (str)]</pre></td>
+      <td><pre>key: [action_A (str), action_B (str)]</pre></td>
+    </tr>
+    <tr>
+      <th colspan=2>Returns:</th>
+      <td colspan=2><pre><bold>scancode (str)</bold></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+Actions programmed for both <code>get_keycode()</code> and <code>get_scancode()</code> are listed below. The first column is the <em>data</em> (or index) that will be used in the scancode. The action columns represent the <code>ACTIONS[]</code> array for each mode.
+
+| PowerFunctions<br />Data (i.e., index) | Combo PWM<br>Single PWM | Combo Direct | Extended | Single Other |
 | ---- | --- | --- | -------- | ------------ |
-| 0000 | FLT | FLT (00) | BRK      | TOG_0000     |
-| 0001 | FW1 | FW7 (01)  | INC      | TOG_0001     |
-| 0010 | FW2 | RV7 (10)  | DEC      | INC_NUM      |
-| 0011 | FW3 | BRK (11)  | NOT_USED | DEC_NUM      |
-| 0100 | FW4 |           | TOG      | INC_PWM      |
-| 0101 | FW5 |           | NOT_USED | DEC_PWM      |
-| 0110 | FW6 |           | ADD_TOG  | FUL_FWD      |
-| 0111 | FW7 |           | TOG_AGN  | FUL_REV      |
-| 1000 | BRK |           | RSVD     | TOG_1000     |
-| 1001 | RV7 |           |          | CLR_C1       |
-| 1010 | RV6 |           |          | SET_C1       |
-| 1011 | RV5 |           |          | TOG_C1       |
-| 1100 | RV4 |           |          | CLR_C2       |
-| 1101 | RV3 |           |          | SET_C2       |
-| 1110 | RV2 |           |          | TOG_C2       |
-| 1111 | RV1 |           |          | TOG_1111     |
+| 0000 | FLT | FLT | BRK      | TOG_0000     |
+| 0001 | FW1 | FW7 | INC      | TOG_0001     |
+| 0010 | FW2 | RV7 | DEC      | INC_NUM      |
+| 0011 | FW3 | BRK | NOT_USED | DEC_NUM      |
+| 0100 | FW4 |     | TOG      | INC_PWM      |
+| 0101 | FW5 |     | NOT_USED | DEC_PWM      |
+| 0110 | FW6 |     | ADD_TOG  | FUL_FWD      |
+| 0111 | FW7 |     | TOG_AGN  | FUL_REV      |
+| 1000 | BRK |     | RSVD     | TOG_1000     |
+| 1001 | RV7 |     |          | CLR_C1       |
+| 1010 | RV6 |     |          | SET_C1       |
+| 1011 | RV5 |     |          | TOG_C1       |
+| 1100 | RV4 |     |          | CLR_C2       |
+| 1101 | RV3 |     |          | SET_C2       |
+| 1110 | RV2 |     |          | TOG_C2       |
+| 1111 | RV1 |     |          | TOG_1111     |
+
+##### &#x25B6; get_nibble1() -> int:
+Return nibble1 as stored in class variable. Implemented by super class. Overriden by ComboPWM() to account for the first bit being the address bit instead of the toggle bit.
+
+**Returns:**
+* **<code>nibble1 (int)</code>:** the first nibble in the scancode
+
+##### &#x25B6; get_nibble2() -> int:
+Return nibble2 as stored in class variable. Implemented by each class as except ComboPWM() which uses the second nibble for data.
+
+**Returns:**
+* **<code>nibble2 (int)</code>:** the second nibble in the scancode
+
+##### &#x25B6; get_data_nibble(action: str) -> int:
+Returns the data code corresponding to \<action> as laid out in the table above.
+
+**Returns:**
+* **<code>data_nibble (int)</code>:** index of the action within the <code>ACTIONS</code> array.
+
+##### &#x25B6; get_nibble3(action_A: str, action_B: str) -> int:
+Assemble \<data nibble> for combo action in **Combo Direct** mode only. Extends the <code>get_data_nibble()</code> function by combining two data elements into one data nibble.
+
+**Returns:**
+* **<code>data_nibble (int)</code>:** combination of indices for first action and second action as <code>(data_B << 2) | data_A</code>.
+
+##### &#x25B6; get_nibble4(nibble1: int, nibble2: int, nibble3: int) -> int:
+Calculates the bitwise LRC for the nibbles provided.
+
+**Returns:**
+* **<code>LRC (int)</code>:** LRC is calculated as <code>0xf ^ nibble1 ^ nibble2 ^ nibble3</code>
+
+##### &#x25B6; toggle_address_bit(self) -> None:
+Toggles the address_bit from 0 to 1 or viceversa.
+
+##### &#x25B6; toggle_toggle_bit(self) -> None:
+Toggles the toggle_bit from 0 to 1 or viceversa.
 
 
 ## IR Multitool Configuration
-
 ### 1. Config file
+This file is used by the <code>sshkeyboard_py</code> app to load the parameters to select and use the appropriate tools and modes. If you code your own app, you can use this description as a guideline.
+
 <code>config.json</code>
 ```
 {
@@ -334,7 +432,9 @@ The available tools (as used in the config files) are:
 PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using writePWMFrequency(mypi, 12, 8000)."[^2] Lego uses 38KHz.
 
 ### 2. Button Maps
-The keys are configured in the <code>maps/button_maps</code> folder. One file per rc mode. Each mode has its own set of key mappings. I only coded for the A output in most cases. Here are some **comparative examples**:
+The keys are configured in the <code>maps/button_maps</code> folder. You can create your own button map, or not use one at all. The actions in the following table (and more extensively in the maps) give you an idea of how to form and pass the actions to the encoders so you can retrieve a keycode or scancode.
+
+I created one file per rc mode so you can choose your own. Each mode has its own set of key mappings. I only coded for the A output in most cases. Here are some **comparative examples**:
 
 |  Key         |  Combo PWM   | Combo Direct |  Single PWM  |   Extended   | Single Other |
 | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
@@ -344,17 +444,15 @@ The keys are configured in the <code>maps/button_maps</code> folder. One file pe
 | &larr;       | FLT_RV7      | FLT_RV7      | B_BRK        | n/a          | A_DEC_PWM    |
 | SPACE        | BRK_BRK      | BRK_BRK      | A_BRK        | A_BRK        | A_TOG_DIR    |
 | 'l'          | FLT_FLT      | n/a          | A_FLT        | n/a          | B_TOG_C2     |
-| '1'          | FW1_FLT      | n/a          | A_FW1        | n/a          | CLR_C1       |
+| '1'          | FW1_FLT      | n/a          | A_FW1        | n/a          | A_CLR_C1     |
 | '2'          | FW2_FLT      | n/a          | A_FW2        | n/a          | n/a          |
 | ...          | ...          | ...          |  ...         | ...          | ...          |
-| '7'          | FW7_FLT      | n/a          | A_FW7        | n/a          | TOG_C1       |
-| 'a'          | RV1_FLT      | n/a          | A_RV1        | ADD_TOG      | TOG_FWD      |
-| 'b'          | RV2_FLT      | n/a          | A_RV2        | B_TOG        | FUL_REV      |
+| '7'          | FW7_FLT      | n/a          | A_FW7        | n/a          | A_TOG_C1     |
+| 'a'          | RV1_FLT      | n/a          | A_RV1        | ADD_TOG      | A_TOG_FWD    |
+| 'b'          | RV2_FLT      | n/a          | A_RV2        | B_TOG        | A_FUL_REV    |
 | ...          | ...          | ...          |  ...         | ...          | ...          |
 | 'g'          | RV7_FLT      | n/a          | A_RV7        | n/a          | n/a          |
 | Noteworthy |<sub>&bull; Both outputs simultaneously<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; Timeout with loss of IR (needs constant IR to keep going)</sub>|<sub>&bull; Both outputs simultaneously<br />&bull; Speeds Full Forward, Full Backward, Float, Break only<br />&bull; Timeout with loss of IR (needs constant IR to keep going)</sub> |<sub>&bull; One output at a time<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; No timeout for IR loss; keeps going until new key changes it</sub> |<sub>&bull; One output at a time<br />&bull; A speeds -7&#183;&#183;+7, B speeds Full Forward/Float<br />&bull; No timeout for IR loss; keeps going until new key changes it<br />&bull; Toggle address bit, but doesn't accept <em>extended</em> commands with <code>address bit = 1</code></sub> |<sub>&bull; One output at a time<br /> &bull; Speeds -7&#183;&#183;+7<br />&bull; No timeout for IR loss; keeps going until new key changes it. Except full forward/backward<br />&bull; C1 & C2 work as opposite directions. I haven't tested actual voltages to assess differences |
-
-One important difference between the combo (direct and PWM) and not combo modes (single PWM, extended and single other) is that with not combo modes, the state is permanent. When you press a key, the motor starts and keeps going. With the combo modes, the motor moves only for about a second and stops. You need to keep sending keycodes to keep the motor going.
 
 ### 3. Keymaps
 Every tool has its own different keymap format. They all have a header with basic protocol parameters followed by keycode-scancode pairs. But each has a different format:
