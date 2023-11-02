@@ -4,7 +4,7 @@
 ## Important
 **This project is not very practical as it is.** This project shows the tools available and my own journey through these tools.
 
-**Pick the tool and mode you prefer and use only those.** But if you want to control output through a LEGO Power Functions RC Receiver, you have the code and tools to do it. There are instructions below on how to do it.
+**Pick the tool and mode you prefer and use only those.** If you want to control output through a LEGO Power Functions RC Receiver, you have the code and tools to do it. There are instructions below on how to do it.
 
 
 **This project is complete.** I will maintain it if bugs appear, but it has been tested successfully and is finished. I am open to ideas for new features, but do not guarantee them.
