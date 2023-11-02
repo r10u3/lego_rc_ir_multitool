@@ -1,8 +1,11 @@
 # LEGO:tm: Power Functions & Raspberry Pi
-<em>Last updated: 10/31/2023</em>
+<em>Last updated: 11/2/2023</em>
 
 ## Important
-**This project is not very practical as it is.** But if you want to control output through a LEGO Power Functions RC Receiver, you have the code and tools to do it. This project shows the tools available and my own journey through these tools. You don't need all four tools. You only need one. But the tools are available for you to pick the tool and mode you prefer and import only those.
+**This project is not very practical as it is.** This project shows the tools available and my own journey through these tools.
+
+**Pick the tool and mode you prefer and use only those.** But if you want to control output through a LEGO Power Functions RC Receiver, you have the code and tools to do it. There are instructions below on how to do it.
+
 
 **This project is complete.** I will maintain it if bugs appear, but it has been tested successfully and is finished. I am open to ideas for new features, but do not guarantee them.
 
