@@ -2,7 +2,7 @@
 <em>Last updated: 11/2/2023</em>
 
 ## Important
-**This project is not very practical as it is.** This project shows the tools available and my own journey through these tools.
+**This project is not very practical as it is.** This project shows the tools available and my own journey through these tools. It also solves an old problem (LEGO PowerFunctions came out in 2009)
 
 **Pick the tool and mode you prefer and use only those.** If you want to control output through a LEGO Power Functions RC Receiver, you have the code and tools to do it. There are instructions below on how to do it.
 
