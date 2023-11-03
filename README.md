@@ -99,7 +99,7 @@ import keypad
 
 kb = keypad.Keypad(mapped_keys_file_name)
 ```
-**Args:**
+###### Args:
 
 * **<code>mapped_keys_file_name</code>:** The name of the file with the button mapping. Must include folder structure (relative or absolute is fine).
 <br /><br />
@@ -109,10 +109,10 @@ Checks whether a particular key (e.g., '&uarr;') is in the button map.
 ```
 is_mapped_key(key)
 ```
-**Args:**
+###### Args:
 * **<code>key (str)</code>:** The key to be considered (e.g., 'up' for '↑').
 
-**Returns:**
+###### Returns:
 * **<code>bool:</code>** <code>True</code> if the key exists, <code>False</code> otherwise.
 <br /><br />
 
@@ -122,10 +122,10 @@ Returns the action associated to a particular key.
 get_action(key)
 ```
 
-**Args:**
+###### Args:
 * **<code>key (str)</code>:** The key to be considered (e.g., 'up' for ↑).
 
-**Returns:**
+###### Returns:
 * **<code>[str, str]</code>:** A <code>[color , action]</code> array for the single output modes (single PWM, single other and extended) or <code>[action_A, action_B]</code> for the combo modes (combo PWM and combo direct).
 <br /><br />
 
@@ -142,13 +142,21 @@ get_action(key)
 
 #### b. Members
 ##### &#x25B6; <code>\__init__(GPIO: int, keymap_file_name: str, keymap_folder_name: str = '/maps/keymaps/\<tool>') -> None</code>
-**Args:**
-* **<code>GPIO (int)</code>:**  The GPIO pin used to transmit IR. Used by PiIR and RPiGPIO only. <code>LIRC</code> and <code>ir-ctl</code> use the pin configured in the <code>/boot/config.txt</code> file.  PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using <code>writePWMFrequency(mypi, 12, 8000)</code>."[^2] LEGO uses 38KHz.<br />
-<em>Default</em>: <code>18</code>. (<code>''</code> for LIRC and ir-ctl)
-* **<code>keymap_file_name (str)</code>:** The name of the file containing the keymap.  Used by <code>ir-ctl</code>, PiIR, and RPiGPIO to locate the keymap. <code>LIRC</code> uses remote control names instead of keymap files which should be located in <code>/etc/lirc/lircd.conf.d</code>. The remote control name is inside the keymap file. As a matter of practice, the remote control name should match the name of the keymap file minus the extension, but is not required by LIRC.<br />
-<em>Default</em>: <code>single_pwm.*</code> (<code>''</code> for LIRC). Where * is the keymap file extension corresponding to the IR tool.
-* **<code>keymap_folder_name (str)</code>:** The name of the folder where the keymap is. Can be relative (e.g., <code>maps/keymaps</code>) or absolute (<code>/home/pi/Projects/LEGO_rc/maps/keymaps</code>). Used by <code>ir-ctl</code>, PiIR and RPiGPIO to locate the keymap. LIRC keymaps are all located at <code>/etc/lirc/lircd.conf.d</code> (you copy these as part of the setup).<br />
-<em>Default</em>: <code>maps/keymaps/<tool></code>. (<code>''</code> for LIRC)
+###### Args:
+* **<code>GPIO (int)</code>:**  The GPIO pin used to transmit IR.
+  * Note that this is the GPIO (internal) number and not the pin number in the pinout (e.g, I use GPIO 18, which corresponds to pin nbr. 12).
+  * Used by PiIR and RPiGPIO only. <code>LIRC</code> and <code>ir-ctl</code> use the pin configured in the <code>/boot/config.txt</code> file.
+  * Pin must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using <code>writePWMFrequency(mypi, 12, 8000)</code>."[^2] LEGO uses 38KHz.
+  * <em>Default</em>: <code>18</code>. (<code>''</code> for LIRC and ir-ctl)
+* **<code>keymap_file_name (str)</code>:** The name of the file containing the keymap.
+  * Used by <code>ir-ctl</code>, PiIR, and RPiGPIO to locate the keymap.
+  * <code>LIRC</code> files should be located in <code>/etc/lirc/lircd.conf.d</code>. Also, LIRC uses remote control names instead of keymap files which are inside the keymap file. As a matter of practice, the remote control name should match the name of the keymap file minus the extension, but is not required by LIRC.
+  * <em>Default</em>: <code>single_pwm.*</code> (<code>''</code> for LIRC). Where * is the keymap file extension corresponding to the IR tool.
+* **<code>keymap_folder_name (str)</code>:** The name of the folder where the keymap is.
+  * Can be relative (e.g., <code>maps/keymaps</code>) or absolute (<code>/home/pi/Projects/LEGO_rc/maps/keymaps</code>).
+  * Used by <code>ir-ctl</code>, PiIR and RPiGPIO to locate the keymap.
+  * LIRC keymaps are all located at <code>/etc/lirc/lircd.conf.d</code> (you copy these as part of the setup).
+  * <em>Default</em>: <code>maps/keymaps/<tool></code>. (<code>''</code> for LIRC)
 
 The function calls to create each type of object are (remember to flatten if you create your own app):
 ```
@@ -170,7 +178,8 @@ remote_tx = irt.RPiGPIO(GPIO, REMOTE_KEYMAP_FILE_NAME, REMOTE_KEYMAP_FOLDER_NAME
 
 ##### &#x25B6; send(keycode: str) -> None:
 Sends IR keycode (e.g., 'FW2_RV3') using the respective underlying IR tool.
-**Args:**
+
+###### Args:
 * **<code>keycode (str)</code>:** The keycode to be sent. For example 'FW2_RV3'
 
 ##### &#x25B6; send_hex(data_bytes: str) -> None:
@@ -181,13 +190,13 @@ Takes a scancode in hexadecimal string format (e.g., '422B') and sends it. This 
 > 
 > RPiGPIO converts the string to pigpio wave and sends it.
 
-**Args:**
+###### Args:
 * **<code>data_bytes (str)</code>:** the scancode to be sent as an hexadecimal string.
 
 ##### &#x25B6; send_raw(data: int) -> None:
 This function is unique to RPiGPIO. It takes a scancode in integer format (e.g., 16939 or 0x422B), and sends it. The code must be a valid code. The function does not check for validity. The code is sent anyway and the receiver will reject it without any error.
 
-**Args:**
+###### Args:
 * **<code>data (int)</code>:** the scancode as an integer. Could be binary (0b...), hexadecimal (0x...) or plain decimal. PiIR's tool is hardcoded for 2 bytes (16 bits).
 
 ### 3. Power Functions (Encoders)
@@ -228,7 +237,7 @@ rc_encoder = pf.SinglePWM(channel)
 import power_functions.single_other as pf
 rc_encoder = pf.SingleOther(channel)
 ```
-**Args:**
+###### Args:
 * **<code>channel (int)</code>:** the channel to be used in the range 0-3. Where 0=channel 1, 3=channel 4. Optional, defaults to 0.<br />
 <code>Default: 0</code>
 
@@ -236,16 +245,19 @@ rc_encoder = pf.SingleOther(channel)
 ##### &#x25B6; <code>get_keycode(str, str) -> keycode: str</code>
 Get keycode for output/action or actions A/B pairs. The arguments are different for different modes. Variations:
 
-**Args for <code>get_keycode(output , action)</code>:**
+###### Args for <code>get_keycode(output , action)</code>:
 * **<code>output</code>:** The output to code the action for.
 * **<code>action</code>:** The action coded for the specific output.
 
-**Args for <code>get_keycode(action_A, action_B)</code>:**
+###### Args for <code>get_keycode(action_A, action_B)</code>:
 * **<code>action_A</code>:** The action coded for output A.
 * **<code>action_B</code>:** The action coded for output B.
 
-**Args for <code>get_keycode(\*key)</code>:**
+###### Args for <code>get_keycode(\*key)</code>:
 * **<code>\*key</code>:** one of the pairs of arguments stated above for the specific PowerFunctions mode as stated below:
+
+###### Returns:
+* **<code>keycode (str)</code>:** The keycode corresponding to the [output, action] or [action_A, action_B] pair.
 
 <table>
   <thead>
@@ -285,16 +297,19 @@ Get keycode for output/action or actions A/B pairs. The arguments are different 
 ##### &#x25B6; get_scancode(str, str) -> int
 Assembles and returns the \<scancode> for output/action or actions A/B pairs. The arguments are different for different modes with the same variations and applications as <code>get_keycode()</code>.
 
-**Args for <code>get_scancode(output , action)</code>:**
+###### Args for <code>get_scancode(output , action)</code>:
 * **<code>output</code>:** The output to code the action for.
 * **<code>action</code>:** The action coded for the specific output.
 
-**Args for <code>get_scancode(action_A, action_B)</code>:**
+###### Args for <code>get_scancode(action_A, action_B)</code>:
 * **<code>action_A</code>:** The action coded for output A.
 * **<code>action_B</code>:** The action coded for output B.
 
-**Args for <code>get_scancode(\*key)</code>:**
+###### Args for <code>get_scancode(\*key)</code>:
 * **<code>\*key</code>:** one of the pairs of arguments stated above for the specific PowerFunctions mode as stated below:
+
+###### Returns:
+* **<code>keycode (str)</code>:** The scancode corresponding to the [output, action] or [action_A, action_B] pair.
 
 <table>
   <thead>
@@ -353,40 +368,45 @@ Actions programmed for both <code>get_keycode()</code> and <code>get_scancode()<
 | 1111 | RV1 |     |          | TOG_1111     |
 
 ##### &#x25B6; get_nibble1() -> int:
-Return nibble1 as stored in class variable. Implemented by super class. Overriden by ComboPWM() to account for the first bit being the address bit instead of the toggle bit.
+Returns nibble1 as stored in class variable. Implemented by super class. Overriden by ComboPWM() to account for the first bit being the <em>address bit</em> instead of the <em>toggle bit</em>.
 
-**Returns:**
+###### Returns:
 * **<code>nibble1 (int)</code>:** the first nibble in the scancode
 
 ##### &#x25B6; get_nibble2() -> int:
-Return nibble2 as stored in class variable. Implemented by each class except ComboPWM() which uses the second nibble for data.
+Returns nibble2 as stored in class variable. Implemented by each class except ComboPWM() which uses the second nibble for data.
 
-**Returns:**
+###### Returns:
 * **<code>nibble2 (int)</code>:** the second nibble in the scancode
 
 ##### &#x25B6; get_data_nibble(action: str) -> int:
-Returns the data code corresponding to \<action> as laid out in the table above.
+Returns the data code (i.e., index) corresponding to \<action> as laid out in the table above.
 
-**Returns:**
+###### Returns:
 * **<code>data_nibble (int)</code>:** index of the action within the <code>ACTIONS</code> array.
 
 ##### &#x25B6; get_nibble3(action_A: str, action_B: str) -> int:
-Assemble \<data nibble> for combo action in **Combo Direct** mode only. Extends the <code>get_data_nibble()</code> function by combining two data elements into one data nibble.
+Assembles the \<data nibble> for combo action in **Combo Direct** mode only. Extends the <code>get_data_nibble()</code> function by combining two data elements into one data nibble.
 
-**Returns:**
+###### Returns:
 * **<code>data_nibble (int)</code>:** combination of indices for first action and second action as <code>(data_B << 2) | data_A</code>.
 
 ##### &#x25B6; get_nibble4(nibble1: int, nibble2: int, nibble3: int) -> int:
 Calculates the bitwise LRC for the nibbles provided.
 
-**Returns:**
+###### Args:
+* **<code>nibble1</code>:** one of three nibbles to input into LRC calculation.
+* **<code>nibble2</code>:** one of three nibbles to input into LRC calculation.
+* **<code>nibble3</code>:** one of three nibbles to input into LRC calculation.
+
+###### Returns:
 * **<code>LRC (int)</code>:** LRC is calculated as <code>0xf ^ nibble1 ^ nibble2 ^ nibble3</code>
 
 ##### &#x25B6; toggle_address_bit(self) -> None:
-Toggles the address_bit from 0 to 1 or viceversa.
+Toggles the <em>address_bit</em> from 0 to 1 or viceversa.
 
 ##### &#x25B6; toggle_toggle_bit(self) -> None:
-Toggles the toggle_bit from 0 to 1 or viceversa.
+Toggles the <em>toggle_bit</em> from 0 to 1 or viceversa.
 
 
 ## IR Multitool Configuration
@@ -406,17 +426,27 @@ This file is used by the <code>sshkeyboard_py</code> app to load the parameters 
 ```
 #### a. <code>system_mode</code>
 This determines the **send** command to be used. There are three possible modes:
-* **'KEY':** sends keycode from keymap. Keycodes are preset in the keymaps. This is the easiest mode to use.
-* **'RAW':** sends the scancode as **int**. Only available for PiIR and RPiGPIO. The scancode is produced from the [*key] pairs in the button maps.
-* **'HEX':** sends the scancode as hexadecimal string. Only available for PiIR and RPiGPIO. The scancode is produced from the [*key] pairs in the button maps.
+* **'KEY':** sends keycode from keymap.
+  * Keycodes are preset in the keymaps.
+  * This is the easiest mode to use.
+* **'RAW':** sends the scancode as **int**.
+  * Only available for PiIR and RPiGPIO.
+  * The scancode is produced from the [*key] pairs mapping [action] to <code>ACTIONS</code> harcoded into each encoder.
+  * You don't need keymaps in this mode.
+* **'HEX':** sends the scancode as hexadecimal string.
+  * Only available for PiIR and RPiGPIO.
+  * The scancode is produced from the [*key] pairs mapping [action] to <code>ACTIONS</code> harcoded into each encoder.
+  * You don't need keymaps in this mode.
 
 #### b. <code>project_folder</code>
-This is the absolute path to the project. It is not really used anywhere
+This is the absolute path to the project. It is not really used anywhere.
 
 #### c. <code>maps_config_file</code>
 This is quite important. If you change the location of the maps_config_file, make sure to modify here. I recommend you leave it where it is.
 
 The <code>maps_config_file</code> file has links to keymaps and button maps. If you change the names of the keymaps or use different ones, make sure to update the <code>maps_config_file</code>.
+
+If you use <code>RAW</code> or <code>HEX</code> mode you don't need keymaps. If you code your own <code>Keyboard</code> you might not need button maps either. This input might then be unnecessary.
 
 #### d. <code>rc_mode</code>
 The available modes are:
@@ -434,30 +464,32 @@ The available tools (as used in the config files) are:
    - rpigpio (the 'r' prefix is there to distinguish it from the pigpio library when it's imported)
 
 #### f. <code>gpio_pin</code>
-PIN must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using writePWMFrequency(mypi, 12, 8000)."[^2] LEGO uses 38KHz. As said above, this parameter is only used by PiIR and RPiGPIO, since LIRC and <code>ir-ctl</code> use the pin defined in <code>/boot/config.txt</code>.
+* Note that this is the GPIO (internal) number and not the pin number in the pinout (e.g, I use GPIO 18, which corresponds to pin nbr. 12).
+* Used by PiIR and RPiGPIO only. LIRC and ir-ctl use the pin configured in the /boot/config.txt file.
+* Pin must be Hardware PWM. "The maximum [software] PWM output frequency is 8 KHz using writePWMFrequency(mypi, 12, 8000)."[^2] LEGO uses 38KHz.
 
 ### 2. Button Maps
-The keys are configured in the <code>maps/button_maps</code> folder. You can create your own button map, or not use one at all. The actions in the following table (and more extensively in the maps) give you an idea of how to form and pass the actions to the encoders so you can retrieve a keycode or scancode.
+The keys are configured in the <code>maps/button_maps</code> folder. You can create your own button map, or not use one at all. The keycodes in the following table (and more extensively in the maps) give you an idea of how to form and pass the actions to the encoders so you can retrieve a keycode or scancode.
 
 I created one file per rc mode so you can choose your own. Each mode has its own set of key mappings. I only coded for the A output in most cases. Here are some **comparative examples**:
 
-|  Key         |  Combo PWM   | Combo Direct |  Single PWM  |   Extended   | Single Other |
+|  Keycode     |  Combo PWM   | Combo Direct |  Single PWM  |   Extended   | Single Other |
 | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
-| &uarr;       | FW7_FW7      | FW7_FLT      | B_FW7        | A_INC        | A_INC_NUM    |
-| &darr;       | RV7_FLT      | RV7_FLT      | B_RV7        | A_DEC        | A_DEC_NUM    |
-| &rarr;       | FLT_FW7      | FLT_FW7      | B_FLT        | n/a          | A_DEC_PWM    |
-| &larr;       | FLT_RV7      | FLT_RV7      | B_BRK        | n/a          | A_DEC_PWM    |
-| SPACE        | BRK_BRK      | BRK_BRK      | A_BRK        | A_BRK        | A_TOG_DIR    |
-| 'l'          | FLT_FLT      | n/a          | A_FLT        | n/a          | B_TOG_C2     |
-| '1'          | FW1_FLT      | n/a          | A_FW1        | n/a          | A_CLR_C1     |
-| '2'          | FW2_FLT      | n/a          | A_FW2        | n/a          | n/a          |
+| up           | [FW7, FLT]   | [FW7, FLT]   | [B, FW7]     | [A, INC]     | [A, INC_NUM] |
+| down         | [RV7, FLT]   | [RV7, FLT]   | [B, RV7]     | [A, DEC]     | [A, DEC_NUM] |
+| right        | [FLT, FW7]   | [FLT, FW7]   | [B, FLT]     | n/a          | [A, DEC_PWM] |
+| left         | [FLT, RV7]   | [FLT, RV7]   | [B, BRK]     | n/a          | [A, DEC_PWM] |
+| space        | [BRK, BRK]   | [BRK, BRK]   | [A, BRK]     | [A, BRK]     | [A, TOG_DIR] |
+| l            | [FLT, FLT]   | n/a          | [A, FLT]     | n/a          | [B, TOG_C2]  |
+| 1            | [FW1, FLT]   | n/a          | [A, FW1]     | n/a          | [A, CLR_C1]  |
+| 2            | [FW2, FLT]   | n/a          | [A, FW2]     | n/a          | n/a          |
 | ...          | ...          | ...          |  ...         | ...          | ...          |
-| '7'          | FW7_FLT      | n/a          | A_FW7        | n/a          | A_TOG_C1     |
-| 'a'          | RV1_FLT      | n/a          | A_RV1        | ADD_TOG      | A_TOG_FWD    |
-| 'b'          | RV2_FLT      | n/a          | A_RV2        | B_TOG        | A_FUL_REV    |
+| 7            | [FW7, FLT]   | n/a          | [A, FW7]     | n/a          | [A, TOG_C1]  |
+| a            | [RV1, FLT]   | n/a          | [A, RV1]     | ['', ADD_TOG]| [A, TOG_FWD] |
+| b            | [RV2, FLT]   | n/a          | [A, RV2]     | [B, TOG]     | [A, FUL_REV] |
 | ...          | ...          | ...          |  ...         | ...          | ...          |
-| 'g'          | RV7_FLT      | n/a          | A_RV7        | n/a          | n/a          |
-| Noteworthy |<sub>&bull; Both outputs simultaneously<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; Timeout with loss of IR (needs constant IR to keep going)</sub>|<sub>&bull; Both outputs simultaneously<br />&bull; Speeds Full Forward, Full Backward, Float, Break only<br />&bull; Timeout with loss of IR (needs constant IR to keep going)</sub> |<sub>&bull; One output at a time<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; No timeout for IR loss; keeps going until new key changes it</sub> |<sub>&bull; One output at a time<br />&bull; A speeds -7&#183;&#183;+7, B speeds Full Forward/Float<br />&bull; No timeout for IR loss; keeps going until new key changes it<br />&bull; Toggle address bit, but doesn't accept <em>extended</em> commands with <code>address bit = 1</code></sub> |<sub>&bull; One output at a time<br /> &bull; Speeds -7&#183;&#183;+7<br />&bull; No timeout for IR loss; keeps going until new key changes it. Except full forward/backward<br />&bull; C1 & C2 work as opposite directions; break when both set. |
+| g            | [RV7, FLT]   | n/a          | [A, RV7]     | n/a          | n/a          |
+| Noteworthy   |<sub>&bull; Both outputs simultaneously<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; Timeout with loss of IR (needs constant IR to keep going)</sub>|<sub>&bull; Both outputs simultaneously<br />&bull; Speeds Full Forward, Full Backward, Float, Break only<br />&bull; Timeout with loss of IR (needs constant IR to keep going)</sub> |<sub>&bull; One output at a time<br />&bull; Speeds -7&#183;&#183;+7<br />&bull; No timeout for IR loss; keeps going until new key changes it</sub> |<sub>&bull; One output at a time<br />&bull; A speeds -7&#183;&#183;+7, B speeds Full Forward/Float<br />&bull; No timeout for IR loss; keeps going until new key changes it<br />&bull; Toggle address bit, but doesn't accept <em>extended</em> commands with <code>address bit = 1</code></sub> |<sub>&bull; One output at a time<br /> &bull; Speeds -7&#183;&#183;+7<br />&bull; No timeout for IR loss; keeps going until new key changes it. Except full forward/backward<br />&bull; C1 & C2 work as opposite directions; break when both set. |
 
 ### 3. Keymaps
 Every tool has its own different keymap format. They all have a header with basic protocol parameters followed by keycode-scancode pairs. But each has a different format:
