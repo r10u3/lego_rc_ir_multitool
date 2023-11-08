@@ -166,7 +166,7 @@ The Lego:tm: receiver has two outputs (Red and Blue). Some of the modes control 
       <td>0</td>
       <td>1</td>
       <td>0</td>
-      <td>0<sub>R</sub><br />1<sub>B</sub></td>
+      <td>0<sub>A</sub><br />1<sub>B</sub></td>
       <td>D</td>
       <td>D</td>
       <td>D</td>
@@ -185,7 +185,7 @@ The Lego:tm: receiver has two outputs (Red and Blue). Some of the modes control 
       <td>0</td>
       <td>1</td>
       <td>1</td>
-      <td>0<sub>R</sub><br />1<sub>B</sub></td>
+      <td>0<sub>A</sub><br />1<sub>B</sub></td>
       <td>D</td>
       <td>D</td>
       <td>D</td>
@@ -228,9 +228,8 @@ The Lego:tm: receiver has two outputs (Red and Blue). Some of the modes control 
   </thead>
   <tbody>
     <tr>
-      <td rowspan=9>Extended<br /><em>DDDD</em></td>
-      <td>0000</td><td>Brake then float output A</td>
-    </tr>
+      <td rowspan=9>Extended (<em>DDDD</em>)<br /><br /><code>T0CC 0000 <b>DDDD</b> LLLL</code></td>
+      <td>0000</td><td>Brake then float output A</td></tr>
     <tr><td>0001</td><td>Increment speed on output A</td></tr>
     <tr><td>0010</td><td>Decrement speed on output A</td></tr>
     <tr><td>0011</td><td>Not used</td></tr>
@@ -241,14 +240,25 @@ The Lego:tm: receiver has two outputs (Red and Blue). Some of the modes control 
     <tr><td>1000</td><td>Reserved</td>
     </tr>
     <tr>
-      <td rowspan = 4>Combo Direct<br /><em>D<sub>A</sub>D<sub>A</sub> or D<sub>B</sub>D<sub>B</sub></em></td>
+      <td rowspan = 4>
+        Combo Direct<br />
+        (<em>D<sub>A</sub>D<sub>A</sub> or D<sub>B</sub>D<sub>B</sub></em>)<br /><br />
+        <code>T0CC 0001 <b>D<sub>B</sub>D<sub>B</sub>D<sub>A</sub>D<sub>A</sub></b> LLLL</code>
+      </td>
       <td>00</td><td>Float</td>
     </tr>
     <tr><td>01</td><td>Full Forward</td></tr>
     <tr><td>10</td><td>Full Backward</td></tr>
     <tr><td>11</td><td>Brake then float</td></tr>
     <tr>
-      <td rowspan = 16>Single Output: PWM<br /><em>DDDD</em><br /><br />Combo PWM<br /><em>D<sub>A</sub>D<sub>A</sub>D<sub>A</sub>D<sub>A</sub> or D<sub>B</sub>D<sub>B</sub>D<sub>B</sub>D<sub>B</sub></em></td>
+      <td rowspan = 16>
+        Single Output: PWM (<em>DDDD</em>)<br />
+        <code>T0CC 010<b>0</b> <b>D<sub>A</sub>D<sub>A</sub>D<sub>A</sub>D<sub>A</sub></b> LLLL</code><br />
+        <em>or</em><br />
+        <code>T0CC 010<b>1</b> <b>D<sub>B</sub>D<sub>B</sub>D<sub>B</sub>D<sub>B</sub></b> LLLL</code><br /><br /><br />
+        Combo PWM (D<sub>A</sub>D<sub>A</sub>D<sub>A</sub>D<sub>A</sub> or D<sub>B</sub>D<sub>B</sub>D<sub>B</sub>D<sub>B</sub>)<br />
+        <code>01CC <b>D<sub>B</sub>D<sub>B</sub>D<sub>B</sub>D<sub>B</sub> D<sub>A</sub>D<sub>A</sub>D<sub>A</sub>D<sub>A</sub></b> LLLL</code>
+      </td>
     <td>0000</td><td>Float</td>
     </tr>
     <tr><td>0001</td><td>PWM forward step 1</td></tr>
@@ -267,7 +277,14 @@ The Lego:tm: receiver has two outputs (Red and Blue). Some of the modes control 
     <tr><td>1110</td><td>PWM backward step 2</td></tr>
     <tr><td>1111</td><td>PWM backward step 1</td></tr>
     <tr>
-      <td rowspan = 16>Single Output:<br />Clear/Set/Toggle/<br />Inc/Dec<br /><em>DDDD</em></td>
+      <td rowspan = 16>
+        Single Output:<br />
+        Clear/Set/Toggle/Inc/Dec<br />
+        (<em>DDDD</em>)<br /><br />
+        <code>T0CC 011<b>0</b> <b>D<sub>A</sub>D<sub>A</sub>D<sub>A</sub>D<sub>A</sub></b> LLLL</code><br />
+        <em>or</em><br />
+        <code>T0CC 011<b>1</b> <b>D<sub>B</sub>D<sub>B</sub>D<sub>B</sub>D<sub>B</sub></b> LLLL</code><br /><br /><br />
+      </td>
       <td>0000</td><td>Toggle full forward (Stop → Fw, Fw → Stop, Bw → Fw)</td></tr>
     <tr><td>0001</td><td>Toggle direction</td></tr>
     <tr><td>0010</td><td>Increment numerical PWM</td></tr>
