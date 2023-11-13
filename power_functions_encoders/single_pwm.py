@@ -32,7 +32,7 @@ class SinglePWM(pf.LegoPF):
         Implements method from LegoPF.
         Returns:
             nibble2 (int): the second nibble in the scancode
-                for this PowerFunction mode.
+                for this PowerFunction mode. A=0, B=1.
         """
         output_bit = 0 if output == 'A' else 1
         return self.nibble2 | (self.address_bit  << 3) | output_bit     # adds output
@@ -49,7 +49,7 @@ class SinglePWM(pf.LegoPF):
         """
         self.toggle_toggle_bit()
         nibble1 = self.get_nibble1()
-        nibble2 = self.get_nibble2(output)          # Output = A or B
+        nibble2 = self.get_nibble2(output)          # Output = 'A' or 'B'
         nibble3 = self.get_data_nibble(action)
         nibble4 = self.get_nibble4(nibble1, nibble2, nibble3)
         return (nibble1 << 12) | (nibble2 << 8) | (nibble3 << 4) | (nibble4)
@@ -65,4 +65,4 @@ class SinglePWM(pf.LegoPF):
                 for this PowerFunction mode.
         """
         self.toggle_toggle_bit()
-        return output + '_' + action + '_' + str(self.toggle_bit)
+        return f'{output}_{action}_{self.toggle_bit}'

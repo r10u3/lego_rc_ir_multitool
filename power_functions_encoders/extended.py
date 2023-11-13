@@ -77,7 +77,7 @@ class Extended(pf.LegoPF):
                 for this PowerFunction mode.
         """
         self.toggle_toggle_bit()
-        keycode = action + '_' + str(self.toggle_bit) + str(self.address_bit)\
+        keycode = f'{action}_{str(self.toggle_bit)}{str(self.address_bit)}'\
                 if output == '' else\
-                output + '_' + action + '_' + str(self.toggle_bit) + str(self.address_bit)
+                f'{output}_{action}_{self.toggle_bit}{self.address_bit}'
         return keycode

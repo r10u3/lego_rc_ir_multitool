@@ -72,7 +72,7 @@ class ComboDirect(pf.LegoPF):
         nibble4 = self.get_nibble4(nibble1, nibble2, nibble3)
         return (nibble1 << 12) | (nibble2 << 8) | (nibble3 << 4) | (nibble4)
 
-    def get_keycode(self, action_A: str, action_blue: str) -> str:
+    def get_keycode(self, action_A: str, action_B: str) -> str:
         """Assemble the <keycode> for output/action in Combo Direct.
         
         Args:
@@ -82,4 +82,4 @@ class ComboDirect(pf.LegoPF):
             keycode (str): the keycode for the actions given
                 for this PowerFunction mode.
         """
-        return action_A + '_' + action_blue + '_' + str(self.toggle_bit)
+        return f'{action_A}_{action_B}_{self.toggle_bit}'

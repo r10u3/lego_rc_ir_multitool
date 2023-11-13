@@ -81,4 +81,4 @@ class SingleOther(pf.LegoPF):
                 for this PowerFunction mode.
         """
         self.toggle_toggle_bit()
-        return output + '_' + action + '_' + str(self.toggle_bit)
+        return f'{output}_{action}_{self.toggle_bit}'

@@ -64,4 +64,4 @@ class ComboPWM(pf.LegoPF):
             keycode (str): the keycode for the actions given
                 for this PowerFunction mode.
         """
-        return action_A + '_' + action_B   # no toggle for combo_pwm
+        return f'{action_A}_{action_B}'   # no toggle for combo_pwm
